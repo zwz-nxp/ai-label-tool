@@ -1,0 +1,58 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Set Tags</h2>
+
+  <mat-dialog-content>
+    <div class="info-text">
+      Set tags for {{ selectedImageCount }} selected image{{
+        selectedImageCount !== 1 ? "s" : ""
+      }}
+    </div>
+
+    <!-- Search Box -->
+    <mat-form-field class="search-field" appearance="outline">
+      <input
+        matInput
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Find or create tags"
+      />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- Tags Grid -->
+    <div class="tags-container">
+      <div class="tags-grid">
+        <div
+          *ngFor="let tag of filteredTags"
+          class="tag-item"
+          [class.selected]="isTagSelected(tag.id!)"
+          (click)="toggleTag(tag.id!)"
+        >
+          <mat-checkbox
+            [checked]="isTagSelected(tag.id!)"
+            (click)="$event.stopPropagation()"
+            (change)="toggleTag(tag.id!)"
+          >
+            {{ tag.name }}
+          </mat-checkbox>
+        </div>
+      </div>
+
+      <div *ngIf="filteredTags.length === 0" class="no-results">
+        No tags found
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onApply()"
+      [disabled]="!canApply()"
+    >
+      Apply
+    </button>
+  </mat-dialog-actions>
+</div>

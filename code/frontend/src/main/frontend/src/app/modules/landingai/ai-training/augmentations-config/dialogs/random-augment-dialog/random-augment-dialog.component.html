@@ -1,0 +1,86 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">auto_fix_high</mat-icon>
+  Random Augment
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure random augmentation settings. This applies a random combination of
+    augmentations with the specified magnitude.
+  </p>
+
+  <div class="form-container">
+    <!-- Number of Transforms -->
+    <div class="form-field">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Number of transforms</mat-label>
+        <input
+          (change)="onNumTransformsChange($event)"
+          [(ngModel)]="numTransforms"
+          data-testid="random-augment-num-transforms-input"
+          matInput
+          min="1"
+          type="number"
+        />
+        <mat-error *ngIf="numTransformsError"
+          >{{ numTransformsError }}
+        </mat-error>
+        <mat-hint>Number of augmentations to apply per image</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- Magnitude Slider -->
+    <div class="slider-field">
+      <label class="field-label">Magnitude</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatMagnitude"
+          class="magnitude-slider"
+          data-testid="random-augment-magnitude-slider"
+          discrete
+          max="10"
+          min="0"
+          step="1"
+        >
+          <input
+            (valueChange)="onMagnitudeChange($event)"
+            [(ngModel)]="magnitude"
+            matSliderThumb
+          />
+        </mat-slider>
+        <span class="value-display">{{ magnitude }}</span>
+      </div>
+      <div class="slider-labels">
+        <span>0 (Weak)</span>
+        <span>10 (Strong)</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span
+        >{{ numTransforms }} random augmentation(s) with magnitude
+        {{ magnitude }} will be applied</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="random-augment-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="random-augment-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

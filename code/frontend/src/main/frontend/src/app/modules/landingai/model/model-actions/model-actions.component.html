@@ -1,0 +1,91 @@
+<!-- Model Actions Component -->
+<!-- Implementation requirements 5.1, 5.2: Actions column includes favorite star icon and kebab menu -->
+<div
+  [class]="getActionsContainerClass()"
+  role="group"
+  [attr.aria-label]="'Actions for ' + model.modelName"
+>
+  <!-- Favorite Toggle Button - Requirements 5.1, 3.3, 3.4: Favorite star icon -->
+  <button
+    *ngIf="shouldShowFavoriteButton()"
+    mat-icon-button
+    (click)="onFavoriteToggle($event)"
+    [attr.aria-label]="getFavoriteAriaLabel()"
+    [attr.aria-pressed]="model.isFavorite"
+    [matTooltip]="getFavoriteTooltip()"
+    [class]="'favorite-button ' + getFavoriteButtonClass()"
+    type="button"
+  >
+    <mat-icon
+      [class.favorite-star-active]="model.isFavorite"
+      [class.favorite-star-inactive]="!model.isFavorite"
+    >
+      {{ getFavoriteIconName() }}
+    </mat-icon>
+  </button>
+
+  <!-- Kebab Menu Button - Requirement 5.2: Kebab menu (three-dot icon) and dropdown menu -->
+  <button
+    *ngIf="shouldShowKebabMenu()"
+    mat-icon-button
+    [matMenuTriggerFor]="actionMenu"
+    (click)="onKebabMenuClick($event)"
+    [attr.aria-label]="getKebabAriaLabel()"
+    [matTooltip]="getKebabTooltip()"
+    class="kebab-button"
+    type="button"
+  >
+    <mat-icon>more_vert</mat-icon>
+  </button>
+
+  <!-- Action Menu - Requirement 5.2: Display available model actions -->
+  <mat-menu
+    #actionMenu="matMenu"
+    class="model-action-menu"
+    [attr.aria-label]="'Action menu for ' + model.modelName"
+  >
+    <!-- Copy Model ID Action -->
+    <button
+      mat-menu-item
+      (click)="onActionMenuClick('copyId', $event)"
+      [attr.aria-label]="'Copy Model ID for ' + model.modelName"
+      class="action-item copy-id-action"
+    >
+      <mat-icon aria-hidden="true">content_copy</mat-icon>
+      <span>Copy Model ID</span>
+    </button>
+
+    <!-- Test Model Action -->
+    <button
+      mat-menu-item
+      (click)="onActionMenuClick('testModel', $event)"
+      [attr.aria-label]="'Test ' + model.modelName"
+      class="action-item test-model-action"
+    >
+      <mat-icon aria-hidden="true">science</mat-icon>
+      <span>Test Model</span>
+    </button>
+
+    <!-- Download Model Action -->
+    <button
+      mat-menu-item
+      (click)="onActionMenuClick('download', $event)"
+      [attr.aria-label]="'Download ' + model.modelName"
+      class="action-item download-action"
+    >
+      <mat-icon aria-hidden="true">download</mat-icon>
+      <span>Download Model</span>
+    </button>
+
+    <!-- Delete Model Action -->
+    <button
+      mat-menu-item
+      (click)="onActionMenuClick('delete', $event)"
+      [attr.aria-label]="'Delete ' + model.modelName"
+      class="action-item delete-action"
+    >
+      <mat-icon aria-hidden="true">delete</mat-icon>
+      <span>Delete Model</span>
+    </button>
+  </mat-menu>
+</div>

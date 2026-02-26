@@ -1,0 +1,167 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane" class="max-h-[87vh]">
+  <mat-toolbar cdkDragHandle class="w-4/5 justify-between" color="primary">
+    <span>{{ title }}</span>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div>
+    <div class="m-2 max-h-[50%] overflow-auto">
+      <div
+        *ngIf="
+          isJobOverviewAuditLoaded;
+          then jobAuditing;
+          else emptyJobAuditing
+        "
+      ></div>
+      <ng-template #jobAuditing>
+        <span class="font-bold">Job Audit</span>
+        <table
+          [dataSource]="jobOverviewDataSource"
+          aria-label="Status and Last/Next Execution Details of Scheduled Jobs"
+          mat-table
+          matSort="scheduledSort"
+        >
+          <ng-container matColumnDef="jobDescription">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Job description
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.jobDescription }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="triggerName">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Trigger Name
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.triggerName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="triggerDescription">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Trigger Description
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.triggerDescription }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="cronExpression">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Schedule</th>
+            <td
+              *matCellDef="let element"
+              [matTooltip]="element.displayCronDescription"
+              mat-cell
+            >
+              {{ element.cronExpression }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="timeZone">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Schedule Time Zone
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.timeZone | translateTimezone }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Action</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.action }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastUpdated">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Last Updated
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.lastUpdated | dateFormatter }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="updatedBy">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Updated By
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.updatedBy | userName }}
+            </td>
+          </ng-container>
+
+          <tr *matHeaderRowDef="auditColumns; sticky: true" mat-header-row></tr>
+          <tr
+            *matRowDef="let row; columns: auditColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </ng-template>
+      <ng-template #emptyJobAuditing
+        ><span>No Auditing information available yet</span>
+      </ng-template>
+    </div>
+
+    <div class="m-2 max-h-[50%] overflow-auto">
+      <div
+        *ngIf="
+          isJobExecutionLogsLoaded;
+          then executionLogs;
+          else emptyExecutionLogs
+        "
+      ></div>
+      <ng-template #executionLogs>
+        <span class="font-bold">Job Execution Logs</span>
+        <table
+          [dataSource]="jobExecutionLogDataSource"
+          aria-label="Job Execution Logs"
+          mat-table
+          matSort="scheduledSort"
+        >
+          <ng-container matColumnDef="executionTime">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>When</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.time }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Info</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.info }}
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="executionTimeColumns; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: executionTimeColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </ng-template>
+      <ng-template #emptyExecutionLogs
+        ><span>No Execution logs available yet</span></ng-template
+      >
+    </div>
+  </div>
+
+  <mat-dialog-actions align="end" class="flex gap-1">
+    <button (click)="loadMore()" mat-stroked-button>Load more logs</button>
+    <button (click)="loadJobExecutionLogs()" mat-stroked-button>
+      Reset logs
+    </button>
+    <button (click)="close()" color="accent" mat-flat-button>Close</button>
+  </mat-dialog-actions>
+</div>
+<app-spinner *ngIf="isLoading"></app-spinner>

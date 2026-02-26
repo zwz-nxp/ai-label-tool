@@ -1,0 +1,65 @@
+<div class="test-model-dialog">
+  <!-- Dialog Header -->
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Try this model</h2>
+    <button mat-icon-button (click)="closeDialog()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Dialog Content -->
+  <mat-dialog-content class="dialog-content">
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoading" class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Processing images...</p>
+    </div>
+
+    <!-- Initial Upload State -->
+    <div *ngIf="!showResults" class="initial-state">
+      <app-test-model-upload-zone
+        (filesUploaded)="handleImagesUploaded($event)"
+      >
+      </app-test-model-upload-zone>
+    </div>
+
+    <!-- Results State -->
+    <div *ngIf="showResults" class="results-state">
+      <div class="results-layout">
+        <!-- Left: Featured Image (8/12 width) -->
+        <div class="featured-image-container">
+          <app-featured-image
+            *ngIf="selectedImage && selectedImagePredictions"
+            [imageUrl]="selectedImage.blobUrl"
+            [predictions]="selectedImagePredictions"
+            [projectId]="data.projectId"
+          >
+          </app-featured-image>
+        </div>
+
+        <!-- Right: Prediction Panel (4/12 width) -->
+        <div class="prediction-panel-container">
+          <app-prediction-panel
+            *ngIf="selectedImagePredictions"
+            [predictions]="selectedImagePredictions"
+            [confidenceThreshold]="confidenceThreshold"
+            [projectId]="data.projectId"
+            (thresholdChanged)="handleThresholdChanged($event)"
+          >
+          </app-prediction-panel>
+        </div>
+      </div>
+
+      <!-- Bottom: Image Thumbnail List -->
+      <div class="thumbnail-list-container">
+        <app-image-thumbnail-list
+          [images]="uploadedImages"
+          [selectedIndex]="selectedImageIndex"
+          (imageSelected)="handleImageSelected($event)"
+          (continueUpload)="handleContinueUpload($event)"
+        >
+        </app-image-thumbnail-list>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

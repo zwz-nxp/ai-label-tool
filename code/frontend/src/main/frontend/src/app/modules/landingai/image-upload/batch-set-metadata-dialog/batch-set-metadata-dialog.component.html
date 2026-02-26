@@ -1,0 +1,88 @@
+<div class="batch-set-metadata-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>info</mat-icon>
+    Batch Set Metadata
+  </h2>
+
+  <mat-dialog-content>
+    <div class="info-message">
+      <mat-icon>info_outline</mat-icon>
+      <span
+        >Setting metadata for {{ selectedImageCount }} selected image(s)</span
+      >
+    </div>
+
+    <form [formGroup]="metadataForm" class="metadata-form">
+      <div *ngFor="let metadata of availableMetadata" class="metadata-field">
+        <!-- Predefined values with single selection -->
+        <mat-form-field
+          *ngIf="isPredefined(metadata) && !allowsMultiple(metadata)"
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>{{ metadata.name }}</mat-label>
+          <mat-select [formControlName]="metadata.name">
+            <mat-option value="">-- Select --</mat-option>
+            <mat-option
+              *ngFor="let option of getPredefinedValues(metadata)"
+              [value]="option"
+            >
+              {{ option }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Predefined values with multiple selection -->
+        <mat-form-field
+          *ngIf="isPredefined(metadata) && allowsMultiple(metadata)"
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>{{ metadata.name }}</mat-label>
+          <mat-select [formControlName]="metadata.name" multiple>
+            <mat-option
+              *ngFor="let option of getPredefinedValues(metadata)"
+              [value]="option"
+            >
+              {{ option }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Free text input -->
+        <mat-form-field
+          *ngIf="!isPredefined(metadata)"
+          appearance="outline"
+          class="full-width"
+        >
+          <mat-label>{{ metadata.name }}</mat-label>
+          <input
+            matInput
+            [formControlName]="metadata.name"
+            [placeholder]="'Enter ' + metadata.name"
+          />
+        </mat-form-field>
+      </div>
+
+      <div *ngIf="availableMetadata.length === 0" class="no-metadata-message">
+        <mat-icon>warning</mat-icon>
+        <p>No metadata fields configured for this project.</p>
+        <p class="hint">
+          Go to Manage → Manage Metadata to create metadata fields first.
+        </p>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSave()"
+      [disabled]="!hasValues() || availableMetadata.length === 0"
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

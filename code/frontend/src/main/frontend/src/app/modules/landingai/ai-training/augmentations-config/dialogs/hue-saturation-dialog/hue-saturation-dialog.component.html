@@ -1,0 +1,126 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">palette</mat-icon>
+  Hue Saturation Value
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the limits for randomly adjusting hue, saturation, and value
+    (brightness) of images. Each parameter will be randomly shifted within the
+    specified range.
+  </p>
+
+  <div class="form-container">
+    <!-- Hue Shift Limit Slider -->
+    <!-- Requirement 16.1: Display Hue shift limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Hue Shift Limit</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatValue"
+          class="hue-slider"
+          data-testid="hue-shift-slider"
+          discrete
+          max="180"
+          min="0"
+          step="1"
+        >
+          <input
+            (valueChange)="onHueChange($event)"
+            [(ngModel)]="hueShiftLimit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <span class="value-display">{{ hueShiftLimit }}°</span>
+      </div>
+      <div class="slider-labels">
+        <span>0</span>
+        <span>180</span>
+      </div>
+    </div>
+
+    <!-- Saturation Shift Limit Slider -->
+    <!-- Requirement 16.1: Display Saturation shift limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Saturation Shift Limit</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatValue"
+          class="saturation-slider"
+          data-testid="saturation-shift-slider"
+          discrete
+          max="100"
+          min="0"
+          step="1"
+        >
+          <input
+            (valueChange)="onSaturationChange($event)"
+            [(ngModel)]="saturationShiftLimit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <span class="value-display">{{ saturationShiftLimit }}%</span>
+      </div>
+      <div class="slider-labels">
+        <span>0</span>
+        <span>100</span>
+      </div>
+    </div>
+
+    <!-- Value Shift Limit Slider -->
+    <!-- Requirement 16.1: Display Value shift limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Value (Brightness) Shift Limit</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatValue"
+          class="value-slider"
+          data-testid="value-shift-slider"
+          discrete
+          max="100"
+          min="0"
+          step="1"
+        >
+          <input
+            (valueChange)="onValueChange($event)"
+            [(ngModel)]="valueShiftLimit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <span class="value-display">{{ valueShiftLimit }}%</span>
+      </div>
+      <div class="slider-labels">
+        <span>0</span>
+        <span>100</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>
+        HSV adjustments: H ±{{ hueShiftLimit }}°, S ±{{
+          saturationShiftLimit
+        }}%, V ±{{ valueShiftLimit }}%
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="hue-saturation-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="hue-saturation-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

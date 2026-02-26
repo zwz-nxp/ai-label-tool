@@ -1,0 +1,116 @@
+<div class="manage-tags-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Manage Tags</h2>
+    <div class="header-actions">
+      <button
+        (click)="onAddNewTag()"
+        class="create-tag-btn"
+        color="primary"
+        mat-raised-button
+      >
+        Create Tag
+      </button>
+      <button (click)="onClose()" class="close-button" mat-icon-button>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Search -->
+    <div class="search-section">
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          (input)="onSearchChange()"
+          [(ngModel)]="searchQuery"
+          matInput
+          placeholder="Search"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Tags Table -->
+    <div *ngIf="!loading" class="tags-table">
+      <div class="table-header">
+        <div class="col-name">Name</div>
+        <div class="col-rename">Rename</div>
+        <div class="col-delete">Delete</div>
+      </div>
+
+      <div class="table-body">
+        <div *ngFor="let tag of filteredTags" class="table-row">
+          <div class="col-name">
+            <span class="tag-badge">{{ tag.name }}</span>
+          </div>
+          <div class="col-rename">
+            <button
+              (click)="onRenameTag(tag)"
+              mat-icon-button
+              matTooltip="Rename"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          <div class="col-delete">
+            <button
+              (click)="onDeleteTag(tag)"
+              color="warn"
+              mat-icon-button
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="filteredTags.length === 0" class="empty-state">
+          <p *ngIf="searchQuery">No tags found matching "{{ searchQuery }}"</p>
+          <p *ngIf="!searchQuery">
+            No tags yet. Create your first tag to get started.
+          </p>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>
+
+<!-- Create/Rename Tag Dialog -->
+<ng-template #tagDialog>
+  <div class="tag-dialog">
+    <h2 mat-dialog-title>{{ isEditMode ? "Rename Tag" : "Create Tag" }}</h2>
+    <button class="close-button" mat-dialog-close mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <mat-dialog-content>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Tag Name</mat-label>
+        <input
+          (keyup.enter)="onSaveTag()"
+          [(ngModel)]="editingTagName"
+          matInput
+          maxlength="100"
+          placeholder="Enter tag name"
+        />
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button color="primary" mat-button mat-dialog-close>Discard</button>
+      <button
+        (click)="onSaveTag()"
+        [disabled]="!editingTagName.trim()"
+        color="primary"
+        mat-raised-button
+      >
+        {{ isEditMode ? "Save Tag" : "Save Tag" }}
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

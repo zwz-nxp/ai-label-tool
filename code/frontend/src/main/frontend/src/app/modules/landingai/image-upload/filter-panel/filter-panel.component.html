@@ -1,0 +1,185 @@
+<div class="filter-panel">
+  <div class="filter-header">
+    <h3>Filters</h3>
+    <button
+      (click)="onClose()"
+      class="close-button"
+      mat-icon-button
+      matTooltip="Close"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="filter-content">
+    <!-- Media Status Filter -->
+    <div class="filter-section">
+      <h4>Media Status</h4>
+      <div class="filter-options">
+        <mat-checkbox
+          (change)="toggleMediaStatus(option.value)"
+          *ngFor="let option of mediaStatusOptions"
+          [checked]="isMediaStatusSelected(option.value)"
+        >
+          {{ option.label }}
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Ground Truth Labels Filter -->
+    <div class="filter-section">
+      <h4>Ground Truth Labels</h4>
+      <div class="filter-options">
+        <!-- Class options -->
+        <mat-checkbox
+          (change)="toggleGroundTruthLabel(classItem.id)"
+          *ngFor="let classItem of availableClasses"
+          [checked]="isGroundTruthLabelSelected(classItem.id)"
+        >
+          <span class="checkbox-label-content">
+            <span
+              [style.background-color]="classItem.colorCode"
+              class="class-indicator"
+            ></span>
+            <span class="label-text">{{ classItem.className }}</span>
+          </span>
+        </mat-checkbox>
+        <!-- No Class option (always last) -->
+        <mat-checkbox
+          (change)="toggleNoClass()"
+          [checked]="isNoClassSelected()"
+        >
+          No Class
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Prediction Labels Filter (hidden for snapshots) -->
+    <div
+      *ngIf="!hidePredictionLabels && availableClasses.length > 0"
+      class="filter-section"
+    >
+      <h4>Prediction Labels</h4>
+      <div class="filter-options">
+        <mat-checkbox
+          (change)="togglePredictionLabel(classItem.id)"
+          *ngFor="let classItem of availableClasses"
+          [checked]="isPredictionLabelSelected(classItem.id)"
+        >
+          <span class="checkbox-label-content">
+            <span
+              [style.background-color]="classItem.colorCode"
+              class="class-indicator"
+            ></span>
+            <span class="label-text">{{ classItem.className }}</span>
+          </span>
+        </mat-checkbox>
+        <!-- No Class option for Prediction Labels (always last) -->
+        <mat-checkbox
+          (change)="togglePredictionNoClass()"
+          [checked]="isPredictionNoClassSelected()"
+        >
+          No Class
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Split Filter -->
+    <div class="filter-section">
+      <h4>Split</h4>
+      <div class="filter-options">
+        <mat-checkbox
+          (change)="toggleSplit(option.value)"
+          *ngFor="let option of splitOptions"
+          [checked]="isSplitSelected(option.value)"
+        >
+          {{ option.label }}
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- Tags Filter -->
+    <div *ngIf="availableTags.length > 0" class="filter-section">
+      <h4>Tags</h4>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-chip-grid #chipGrid>
+          <mat-chip-row
+            (removed)="removeTag(tagId)"
+            *ngFor="let tagId of localFilters.tags || []"
+          >
+            {{ getTagName(tagId) }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </mat-chip-grid>
+        <input
+          #tagInput
+          (ngModelChange)="filterTags($event)"
+          [(ngModel)]="tagSearchText"
+          [matAutocomplete]="tagAutocomplete"
+          [matChipInputFor]="chipGrid"
+          matInput
+          placeholder="Type to search tags..."
+        />
+        <mat-autocomplete
+          #tagAutocomplete="matAutocomplete"
+          (optionSelected)="selectTag($event); tagInput.value = ''"
+        >
+          <mat-option *ngFor="let tag of filteredTags" [value]="tag.id">
+            {{ tag.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!-- Media Name Filter -->
+    <div class="filter-section">
+      <h4>Media Name</h4>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search by name</mat-label>
+        <input
+          (input)="updateMediaName($any($event.target).value)"
+          [value]="localFilters.mediaName || ''"
+          matInput
+          placeholder="Search by name"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Labeler Filter -->
+    <div class="filter-section">
+      <h4>Labeler</h4>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Search by labeler</mat-label>
+        <input
+          (input)="updateLabeler($any($event.target).value)"
+          [value]="localFilters.labeler || ''"
+          matInput
+          placeholder="Search by labeler"
+        />
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="filter-footer">
+    <button
+      (click)="clearFilters()"
+      [disabled]="!hasActiveFilters()"
+      class="clear-filters-btn"
+      mat-stroked-button
+    >
+      Clear Filters
+    </button>
+    <button
+      (click)="applyFilters()"
+      class="apply-filters-btn"
+      color="primary"
+      mat-raised-button
+    >
+      Apply Filters
+    </button>
+  </div>
+</div>

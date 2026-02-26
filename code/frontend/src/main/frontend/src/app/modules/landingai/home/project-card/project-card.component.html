@@ -1,0 +1,124 @@
+<mat-card
+  (click)="onCardClick()"
+  (keydown.enter)="onCardClick()"
+  (keydown.space)="onCardClick()"
+  [attr.aria-label]="'Open project ' + project.name"
+  class="project-card"
+  role="button"
+  tabindex="0"
+>
+  <!-- Project Thumbnail -->
+  <div class="project-thumbnail">
+    <img
+      [alt]="project.name + ' thumbnail'"
+      [src]="getThumbnailUrl()"
+      class="thumbnail-image"
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Project Information -->
+  <mat-card-content class="project-info">
+    <!-- Project Name and Menu Button -->
+    <div class="project-header">
+      <!-- Project Type Icon -->
+      <mat-icon
+        [matTooltip]="project.type"
+        aria-hidden="true"
+        class="type-icon"
+        matTooltipPosition="above"
+      >
+        {{ getTypeIcon() }}
+      </mat-icon>
+
+      <h3 [title]="project.name" class="project-name">
+        {{ project.name }}
+        <span class="image-count-badge">{{ project.imageCount }} images</span>
+      </h3>
+
+      <!-- Three-dot menu button -->
+      <button
+        (click)="onMenuClick($event)"
+        [matMenuTriggerFor]="projectMenu"
+        aria-label="Project options"
+        class="menu-button"
+        mat-icon-button
+      >
+        <span class="three-dots">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </span>
+      </button>
+    </div>
+
+    <!-- Menu -->
+    <mat-menu #projectMenu="matMenu">
+      <button (click)="onEditClick()" mat-menu-item>
+        <mat-icon>edit</mat-icon>
+        <span>Edit</span>
+      </button>
+      <button (click)="onDeleteClick()" mat-menu-item>
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
+      </button>
+    </mat-menu>
+
+    <!-- Creator Name and Statistics on same line -->
+    <div class="project-meta">
+      <!-- Creator Name -->
+      <p [title]="'Created by ' + project.createdBy" class="creator-name">
+        <mat-icon aria-hidden="true" class="creator-icon">person</mat-icon>
+        <span>{{ project.createdBy }}</span>
+      </p>
+
+      <!-- Statistics -->
+      <div class="project-stats">
+        <!-- Image Count -->
+        <div
+          [attr.aria-label]="project.imageCount + ' images'"
+          [matTooltip]="
+            project.imageCount +
+            ' image' +
+            (project.imageCount !== 1 ? 's' : '')
+          "
+          class="stat-item"
+          matTooltipPosition="above"
+        >
+          <mat-icon aria-hidden="true">image</mat-icon>
+          <span>{{ project.imageCount }}</span>
+        </div>
+
+        <!-- Label Count -->
+        <div
+          [attr.aria-label]="project.labelCount + ' labeled images'"
+          [matTooltip]="
+            project.labelCount +
+            ' labeled image' +
+            (project.labelCount !== 1 ? 's' : '')
+          "
+          class="stat-item"
+          matTooltipPosition="above"
+        >
+          <mat-icon aria-hidden="true">label</mat-icon>
+          <span>{{ project.labelCount }}</span>
+        </div>
+
+        <!-- Model Count -->
+        <div
+          [attr.aria-label]="project.modelCount + ' models'"
+          [matTooltip]="
+            project.modelCount +
+            ' model' +
+            (project.modelCount !== 1 ? 's' : '')
+          "
+          class="stat-item"
+          matTooltipPosition="above"
+        >
+          <mat-icon aria-hidden="true">view_in_ar</mat-icon>
+          <span>{{ project.modelCount }}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

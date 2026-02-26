@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">rotate_right</mat-icon>
+  Random Rotate
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure random rotation parameters. Images will be rotated by a random
+    angle within the specified limit. The border mode determines how edges are
+    handled.
+  </p>
+
+  <div class="form-container">
+    <!-- Rotation Limit Slider -->
+    <!-- Requirement 19.1: Display Limit slider for rotation angle -->
+    <div class="slider-field">
+      <label class="field-label">Rotation Limit (degrees)</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatLimit"
+          class="limit-slider"
+          data-testid="random-rotate-limit-slider"
+          discrete
+          max="180"
+          min="0"
+          step="1"
+        >
+          <input
+            (valueChange)="onLimitChange($event)"
+            [(ngModel)]="limit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onLimitInputChange($event)"
+            [value]="limit"
+            data-testid="random-rotate-limit-input"
+            matInput
+            max="180"
+            min="0"
+            type="number"
+          />
+          <span matSuffix>°</span>
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>0°</span>
+        <span>180°</span>
+      </div>
+    </div>
+
+    <!-- Border Mode Dropdown -->
+    <!-- Requirement 19.2: Display Border mode dropdown -->
+    <div class="form-field">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Border Mode</mat-label>
+        <mat-select
+          (selectionChange)="onBorderModeChange($event.value)"
+          [(ngModel)]="borderMode"
+          data-testid="random-rotate-border-mode-select"
+        >
+          <mat-option *ngFor="let mode of borderModes" [value]="mode.value">
+            {{ mode.label }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>How to handle image edges after rotation</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span
+        >Images will be rotated by ±{{ limit }}° with {{ borderMode }} border
+        handling</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="random-rotate-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="random-rotate-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

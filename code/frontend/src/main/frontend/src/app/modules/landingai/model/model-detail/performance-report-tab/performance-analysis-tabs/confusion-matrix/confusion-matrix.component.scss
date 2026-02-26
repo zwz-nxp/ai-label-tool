@@ -1,0 +1,621 @@
+.confusion-matrix-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: visible; // 移除 scrollbar
+}
+
+// Loading State
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Error State
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    color: #d32f2f;
+    font-size: 14px;
+    text-align: center;
+    max-width: 400px;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #999;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .hint {
+    color: #999;
+    font-size: 12px;
+    font-style: italic;
+  }
+}
+
+// Main Content: Matrix + Analyze
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+// Matrix Section
+.matrix-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.matrix-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    line-height: 40px;
+  }
+}
+
+// Analyze Section
+.analyze-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: visible; // 移除 scrollbar
+}
+
+.analyze-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 40px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    line-height: 40px;
+  }
+
+  .close-button {
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// Analyze Controls
+.analyze-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+
+  .search-field {
+    flex: 0 0 auto;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+
+    ::ng-deep {
+      .mat-mdc-form-field-wrapper {
+        padding-bottom: 0;
+        margin-bottom: 0;
+      }
+
+      .mat-mdc-form-field-flex {
+        align-items: center;
+        height: 40px;
+      }
+
+      .mat-mdc-form-field-icon-prefix {
+        padding-right: 8px;
+        display: flex;
+        align-items: center;
+      }
+
+      .mat-icon {
+        color: rgba(0, 0, 0, 0.54);
+      }
+
+      .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .mdc-notched-outline__notch {
+          border-right: none;
+          border-left: none;
+        }
+      }
+
+      .mat-mdc-input-element {
+        padding: 0;
+        line-height: normal;
+        height: auto;
+      }
+
+      .mat-form-field-infix {
+        display: flex;
+        align-items: center;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-top: 0;
+        min-height: 40px;
+      }
+
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+
+      .mdc-floating-label {
+        display: none;
+      }
+    }
+  }
+
+  .control-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex: 1;
+    justify-content: space-between;
+
+    .center-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .image-count {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      white-space: nowrap;
+      line-height: 40px;
+    }
+
+    .clear-filter-button {
+      flex: 0 0 auto;
+      min-width: auto;
+      padding: 0 8px;
+      height: 32px;
+      line-height: 32px;
+
+      .button-label {
+        font-size: 14px;
+        color: #1976d2;
+        text-transform: none;
+        font-weight: 500;
+      }
+
+      &:hover {
+        background-color: rgba(25, 118, 210, 0.04);
+      }
+    }
+
+    .sort-by-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      height: 40px;
+
+      .sort-label {
+        font-size: 14px;
+        color: #666;
+        white-space: nowrap;
+        line-height: 40px;
+      }
+    }
+
+    .sort-field {
+      width: 100px;
+      margin: 0;
+
+      ::ng-deep {
+        .mat-form-field-wrapper {
+          padding-bottom: 0;
+          margin: 0;
+        }
+
+        .mat-mdc-form-field-flex {
+          align-items: center;
+          height: 40px;
+        }
+
+        .mat-form-field-infix {
+          padding: 0;
+          border-top: 0;
+          width: auto;
+          min-width: 80px;
+        }
+
+        .mat-mdc-text-field-wrapper {
+          padding: 0;
+        }
+
+        // 移除外框線
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border: none !important;
+        }
+
+        // 調整字形與大小與標籤一致
+        .mat-mdc-select-value-text,
+        .mat-mdc-select-min-line {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.5;
+        }
+
+        .mat-mdc-select-arrow-wrapper {
+          padding-left: 4px;
+        }
+
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Analyze Content: Left Stats + Right Images
+.analyze-content {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: visible; // 允許內容正常顯示，不產生 scrollbar
+}
+
+// Left: Statistics Panel
+.stats-panel {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible; // 移除 scrollbar
+  padding-top: 16px;
+}
+
+// Column Headers (Ground Truth / Prediction / Count)
+.column-headers {
+  display: flex;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-bottom: 2px solid #e0e0e0;
+  border-radius: 4px 4px 0 0;
+  padding: 12px 0; // 移除左右 padding
+  gap: 0; // 移除 gap
+
+  .header-item {
+    display: flex;
+    align-items: center;
+    padding: 0 16px; // 改為在每個 item 內部設定 padding
+
+    &.gt-header {
+      flex: 1; // 改為彈性寬度
+      min-width: 0; // 允許收縮
+    }
+
+    &.pred-header {
+      flex: 1; // 改為彈性寬度
+      min-width: 0; // 允許收縮
+    }
+
+    &.count-header {
+      flex: 0 0 120px; // 增加寬度到 120px 確保不會被切到
+      justify-content: flex-end; // Count 靠右對齊
+    }
+
+    .header-text {
+      margin: 0;
+      font-size: 12px;
+      color: #333;
+      white-space: nowrap; // 防止換行
+    }
+  }
+}
+
+// Table-based Statistics Block
+.stat-table-container {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  overflow: hidden;
+}
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  .stat-table-header {
+    background-color: #fafafa;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .stat-table-cell-header {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 500;
+
+    &.count-cell {
+      width: 120px; // 與 column-headers 的 count-header 寬度一致
+      text-align: center;
+    }
+  }
+
+  .stat-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .stat-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .info-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #666;
+      margin-left: 8px;
+      margin-right: auto;
+    }
+
+    .header-count {
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin-left: auto;
+    }
+  }
+
+  .count-value {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .stat-table-row {
+    background-color: #f0f8ff;
+
+    &:hover {
+      background-color: #e3f2fd;
+    }
+  }
+
+  .stat-table-cell {
+    padding: 12px 16px;
+    vertical-align: middle;
+
+    &.label-cell {
+      padding: 12px 16px; // 改為與 header 一致的 padding，確保靠左對齊
+      // 不設定固定寬度，讓它自動平分剩餘空間
+    }
+
+    &.count-cell {
+      width: 120px; // 與 column-headers 的 count-header 寬度一致
+      text-align: right; // Count 靠右對齊
+      padding-right: 16px;
+    }
+  }
+}
+
+// Label Box (horizontal layout)
+.label-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0; // 移除 padding，讓內容直接靠左
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  max-width: 100%;
+  width: fit-content;
+
+  .label-color-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .label-text {
+    margin: 0;
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;
+  }
+}
+
+.label-box.gt-label .label-color-box {
+  background-color: #4caf50;
+}
+
+.label-box.pred-label .label-color-box {
+  background-color: #2196f3;
+}
+
+// Legacy stat-block (keep for backward compatibility)
+.stat-block {
+  background: #fafafa;
+  border-radius: 4px;
+  padding: 12px;
+  border-left: 3px solid #f44336;
+  border: 1px solid #e0e0e0;
+
+  &.correct {
+    border-left-color: #4caf50;
+    background: #f1f8f4;
+  }
+
+  .stat-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+    min-height: 34px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #f44336;
+    }
+
+    .stat-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+  }
+
+  &.correct .stat-header mat-icon {
+    color: #4caf50;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+
+    .label {
+      color: #666;
+      font-weight: 400;
+    }
+
+    .value {
+      color: #333;
+      font-weight: 600;
+    }
+  }
+}
+
+// Right: Images Panel
+.images-panel {
+  flex: 1;
+  min-width: 0;
+  overflow: visible; // 移除 scrollbar
+}
+
+// Responsive Design
+@media (max-width: 1200px) {
+  .analyze-content {
+    flex-direction: column;
+  }
+
+  .stats-panel {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .confusion-matrix-container {
+    padding: 16px;
+  }
+
+  .analyze-controls {
+    flex-direction: column;
+    align-items: stretch;
+
+    .search-field {
+      min-width: 100%;
+    }
+
+    .control-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+
+      .sort-field {
+        width: 100%;
+      }
+    }
+  }
+}

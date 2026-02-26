@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">aspect_ratio</mat-icon>
+  Rescale with Padding
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the target image size. Images will be rescaled to fit within these
+    dimensions while maintaining their aspect ratio. Padding will be added to
+    fill any remaining space.
+  </p>
+
+  <div class="form-container">
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="size-field">
+        <mat-label>Width</mat-label>
+        <input
+          (ngModelChange)="validateWidth()"
+          [(ngModel)]="width"
+          data-testid="rescale-dialog-width-input"
+          matInput
+          min="1"
+          type="number"
+        />
+        <span matSuffix>px</span>
+        <mat-error *ngIf="widthError">{{ widthError }}</mat-error>
+      </mat-form-field>
+
+      <span class="size-separator">×</span>
+
+      <mat-form-field appearance="outline" class="size-field">
+        <mat-label>Height</mat-label>
+        <input
+          (ngModelChange)="validateHeight()"
+          [(ngModel)]="height"
+          data-testid="rescale-dialog-height-input"
+          matInput
+          min="1"
+          type="number"
+        />
+        <span matSuffix>px</span>
+        <mat-error *ngIf="heightError">{{ heightError }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>Output size: {{ width }} × {{ height }} pixels</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="rescale-dialog-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="rescale-dialog-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

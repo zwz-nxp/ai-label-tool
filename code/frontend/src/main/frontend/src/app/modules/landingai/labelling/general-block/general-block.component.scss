@@ -1,0 +1,177 @@
+@use "../colors" as colors;
+
+.general-block {
+  padding: colors.$spacing-md;
+
+  .general-content {
+    display: flex;
+    flex-direction: column;
+    gap: colors.$spacing-md;
+
+    .file-name-header {
+      font-size: colors.$font-size-base;
+      font-weight: 600;
+      color: colors.$text-primary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-bottom: colors.$spacing-sm;
+      border-bottom: 1px solid colors.$border-light;
+    }
+
+    .combined-info-section {
+      display: flex;
+      flex-direction: column;
+      gap: colors.$spacing-xs;
+      background-color: #e3f2fd; // Light blue background
+      padding: colors.$spacing-sm;
+      border-radius: colors.$border-radius-medium;
+      border-left: 4px solid #2196f3; // Blue accent border
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2px 0;
+
+        .info-label {
+          font-size: colors.$font-size-sm;
+          color: colors.$text-hint;
+          flex-shrink: 0;
+        }
+
+        .info-value {
+          font-size: colors.$font-size-sm;
+          color: colors.$text-primary;
+          font-weight: 500;
+          text-align: right;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 60%;
+        }
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: colors.$spacing-sm;
+
+      button {
+        flex: 1;
+        min-width: 0;
+
+        mat-icon {
+          margin-right: 4px;
+        }
+
+        &.copy-button {
+          background-color: #ff9800;
+          color: white;
+
+          &:hover:not(:disabled) {
+            background-color: #f57c00;
+          }
+
+          &:disabled {
+            background-color: #ffcc80;
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        // Override delete button to green
+        &[color="warn"] {
+          background-color: #4caf50 !important;
+          color: white !important;
+
+          &:hover:not(:disabled) {
+            background-color: #2e7d32 !important;
+          }
+
+          &:disabled {
+            background-color: #a5d6a7 !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+          }
+        }
+      }
+    }
+
+    .split-field {
+      width: 100%;
+
+      mat-icon[matSuffix] {
+        cursor: help;
+        color: colors.$text-hint;
+      }
+    }
+
+    .no-class-checkbox {
+      mat-checkbox {
+        width: 100%;
+      }
+    }
+  }
+
+  .no-image-message {
+    text-align: center;
+    color: colors.$text-hint;
+    padding: colors.$spacing-md;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .general-block {
+    padding: 12px;
+
+    .general-content {
+      gap: 12px;
+
+      .file-name-header {
+        font-size: 13px;
+      }
+
+      .combined-info-section {
+        .info-row {
+          .info-label,
+          .info-value {
+            font-size: 11px;
+          }
+        }
+      }
+
+      .action-buttons {
+        gap: 6px;
+
+        button {
+          font-size: 13px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .general-block {
+    padding: 8px;
+
+    .general-content {
+      gap: 8px;
+
+      .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

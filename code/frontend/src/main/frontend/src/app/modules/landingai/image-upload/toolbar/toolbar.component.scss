@@ -1,0 +1,595 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5; // Light grey
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+
+  // Row 1: Project Name + Action Buttons
+  .toolbar-row-1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
+    border-bottom: 1px solid #e0e0e0;
+
+    .project-info {
+      flex: 0 1 auto;
+      min-width: 0;
+
+      .project-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 500;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        .image-count-badge {
+          font-size: 16px;
+          font-weight: 400;
+          color: #757575;
+          white-space: nowrap;
+        }
+
+        .project-type-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #1976d2;
+          background-color: #e3f2fd;
+          padding: 4px 12px;
+          border-radius: 16px;
+          white-space: nowrap;
+
+          .type-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+
+    .action-buttons {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+
+  // Row 2: View Controls + Filter & Sort
+  .toolbar-row-2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 12px;
+
+    .filter-sort-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .select-batch-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+  }
+}
+
+// Annotation Type Toggle
+.annotation-type-toggle {
+  .toggle-group-container {
+    display: flex;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .toggle-btn {
+      border-radius: 0;
+      border: none;
+      padding: 0 12px;
+      min-width: auto;
+      line-height: 36px;
+      font-size: 14px;
+      background-color: white;
+      color: rgba(0, 0, 0, 0.87);
+      transition: all 0.2s ease;
+
+      &:not(:last-child) {
+        border-right: 1px solid #e0e0e0;
+      }
+
+      &.active {
+        background-color: #2e7d32;
+        color: white;
+      }
+
+      &:not(.active):hover {
+        background-color: #f5f5f5;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f5f5f5;
+        color: rgba(0, 0, 0, 0.38);
+
+        // Keep active styling when disabled in instances view
+        &.active {
+          opacity: 1;
+          background-color: #2e7d32;
+          color: white;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// Model Selector Button
+.model-selector-btn {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  max-width: 220px;
+  min-width: 0;
+
+  &:hover:not(:disabled) {
+    background-color: #f5f5f5;
+    border-color: #2e7d32;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    color: rgba(0, 0, 0, 0.38);
+  }
+
+  // Override Angular Material's internal button layout
+  ::ng-deep .mat-mdc-button-touch-target,
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .model-name {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .dropdown-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+// View Mode Toggle
+.view-mode-toggle {
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .view-mode-btn {
+    border-radius: 0;
+    border: none;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &.active {
+      background-color: #2e7d32;
+      color: white;
+
+      mat-icon {
+        color: white;
+      }
+    }
+
+    &:not(.active):hover {
+      background-color: #f5f5f5;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Filter Button - Orange color
+.filter-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px !important;
+  min-width: auto !important;
+  height: 36px;
+  background-color: #ff9800;
+  color: white;
+
+  &:hover {
+    background-color: #f57c00;
+  }
+
+  &.has-filters,
+  &.filter-active {
+    background-color: #fb8c00;
+  }
+
+  .filter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Sort Button - Blue color
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px !important;
+  min-width: auto !important;
+  height: 36px;
+  background-color: #2196f3;
+  color: white;
+
+  &:hover {
+    background-color: #1976d2;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Label Details Toggle
+.label-details-toggle {
+  display: flex;
+  align-items: center;
+
+  mat-slide-toggle {
+    font-size: 13px;
+  }
+}
+
+// Select Button
+.select-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .dropdown-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Batch Update Button
+.batch-update-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 36px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .selection-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background-color: white;
+    color: #2e7d32;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Action Buttons Common Styles
+.manage-btn,
+.snapshot-btn,
+.upload-btn,
+.training-btn,
+.model-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 12px;
+  height: 36px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Manage Button - Orange
+.manage-btn {
+  background-color: #ff9800;
+  color: white;
+
+  &:hover {
+    background-color: #f57c00;
+  }
+}
+
+// Snapshot Button - Blue
+.snapshot-btn {
+  background-color: #2196f3;
+  color: white;
+
+  &:hover {
+    background-color: #1976d2;
+  }
+}
+
+// Upload Button - Green
+.upload-btn {
+  background-color: #4caf50;
+  color: white;
+
+  &:hover {
+    background-color: #388e3c;
+  }
+}
+
+// Train Button - Cyan-blue
+.training-btn {
+  background-color: #00bcd4;
+  color: white;
+
+  &:hover {
+    background-color: #00acc1;
+  }
+}
+
+// Model Button - Purple
+.model-btn {
+  background-color: #9c27b0;
+  color: white;
+
+  &:hover {
+    background-color: #7b1fa2;
+  }
+}
+
+// Menu Items
+::ng-deep .mat-mdc-menu-panel {
+  .mat-mdc-menu-item {
+    &.active {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+
+      mat-icon {
+        color: #2e7d32;
+      }
+    }
+
+    mat-icon {
+      margin-right: 12px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .no-models-message {
+    padding: 16px;
+    text-align: center;
+    color: #666;
+    max-width: 250px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+}
+
+// Responsive - hide text on smaller screens
+@media (max-width: 900px) {
+  .toolbar {
+    gap: 6px;
+  }
+
+  .model-selector-btn {
+    max-width: 200px;
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 10px 12px;
+  }
+
+  // Hide text on action buttons
+  .manage-btn,
+  .snapshot-btn,
+  .upload-btn,
+  .training-btn,
+  .model-btn {
+    padding: 0 10px;
+
+    .btn-text {
+      display: none;
+    }
+  }
+
+  .label-details-toggle .btn-text {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  // Hide text on filter/sort buttons
+  .filter-btn .btn-text,
+  .sort-btn .btn-text {
+    display: none;
+  }
+
+  .model-selector-btn {
+    max-width: 150px;
+  }
+
+  .view-mode-toggle .view-mode-btn {
+    padding: 6px 8px;
+
+    .btn-text {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .annotation-type-toggle .toggle-group-container .toggle-btn {
+    padding: 0 8px;
+    font-size: 12px;
+    line-height: 32px;
+  }
+
+  .model-selector-btn {
+    max-width: 120px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+
+  .manage-btn,
+  .snapshot-btn,
+  .upload-btn,
+  .training-btn,
+  .model-btn {
+    padding: 0 8px;
+    height: 32px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .view-mode-toggle .view-mode-btn {
+    padding: 4px 6px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .filter-btn mat-icon,
+  .sort-btn mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Delete Menu Item - Red styling
+::ng-deep .mat-mdc-menu-panel {
+  .delete-menu-item {
+    color: #d32f2f !important;
+
+    mat-icon {
+      color: #d32f2f !important;
+    }
+
+    &:hover {
+      background-color: #ffebee !important;
+    }
+  }
+}

@@ -1,0 +1,68 @@
+<div class="tags-block">
+  <div *ngIf="currentImage" class="tags-content">
+    <!-- Tag Input with Autocomplete -->
+    <mat-form-field appearance="fill" class="tag-input-field">
+      <mat-label>Add Tag</mat-label>
+      <input
+        type="text"
+        matInput
+        [(ngModel)]="tagInputValue"
+        [matAutocomplete]="auto"
+        (keydown.enter)="onAddTag()"
+        (input)="onInputChange()"
+        [disabled]="!currentImage || isLoadingProjectTags || isAddingTag"
+        placeholder="Type tag name and press Enter"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onTagSelected($event)"
+      >
+        <mat-option *ngFor="let tag of filteredTags" [value]="tag.name">
+          {{ tag.name }}
+        </mat-option>
+        <mat-option
+          *ngIf="filteredTags.length === 0 && tagInputValue.trim()"
+          [value]="tagInputValue"
+          disabled
+        >
+          <em>Press Enter to create "{{ tagInputValue }}"</em>
+        </mat-option>
+      </mat-autocomplete>
+      <mat-icon matSuffix>label</mat-icon>
+    </mat-form-field>
+
+    <!-- Loading Indicator -->
+    <div
+      *ngIf="isLoadingTags || isLoadingProjectTags"
+      class="loading-indicator"
+    >
+      <mat-spinner diameter="30"></mat-spinner>
+      <span>Loading tags...</span>
+    </div>
+
+    <!-- Tags List -->
+    <div *ngIf="!isLoadingTags && tags.length > 0" class="tags-list">
+      <mat-chip-listbox aria-label="Image tags">
+        <mat-chip-option
+          *ngFor="let tag of tags"
+          [removable]="true"
+          class="tag-chip"
+        >
+          {{ tag.projectTag.name }}
+          <button (click)="onDeleteTag(tag)" matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip-option>
+      </mat-chip-listbox>
+    </div>
+
+    <!-- No Tags Message -->
+    <div *ngIf="!isLoadingTags && tags.length === 0" class="no-tags-message">
+      <p>No tags yet. Type a tag name and press Enter to add one.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!currentImage" class="no-image-message">
+    <p>No image selected</p>
+  </div>
+</div>

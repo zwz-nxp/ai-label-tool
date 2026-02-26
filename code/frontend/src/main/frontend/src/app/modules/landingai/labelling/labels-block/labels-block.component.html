@@ -1,0 +1,69 @@
+<div class="labels-block">
+  <!-- Header -->
+  <div class="labels-header">
+    <span class="labels-title">Labels</span>
+    <span class="labels-count">({{ filteredAnnotations.length }})</span>
+    <mat-slide-toggle
+      (change)="onShowLabelsChange()"
+      [(ngModel)]="showLabels"
+      class="labels-toggle"
+      matTooltip="Show/Hide labels on canvas"
+    ></mat-slide-toggle>
+  </div>
+
+  <!-- No Annotations Message -->
+  <div *ngIf="filteredAnnotations.length === 0" class="no-annotations-message">
+    <p>No annotations yet. Start annotating to see labels here.</p>
+  </div>
+
+  <!-- Annotation Groups -->
+  <div
+    *ngIf="filteredAnnotations.length > 0"
+    [class.hidden-labels]="!showLabels"
+    class="annotation-groups"
+  >
+    <mat-accordion multi>
+      <mat-expansion-panel
+        *ngFor="let group of annotationGroups"
+        [expanded]="group.expanded"
+        class="annotation-group"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="group-title">
+            <span
+              [style.background-color]="group.color"
+              class="color-indicator"
+            ></span>
+            <span class="class-name">{{ group.className }}</span>
+            <span class="annotation-count"
+              >({{ group.annotations.length }})</span
+            >
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- Annotations List -->
+        <div class="annotations-list">
+          <div
+            (click)="onAnnotationClick(annotation, $event)"
+            *ngFor="let annotation of group.annotations; let i = index"
+            [class.selected]="isAnnotationSelected(annotation)"
+            class="annotation-item"
+          >
+            <div class="annotation-header">
+              <span class="annotation-label">{{ annotation.id }}</span>
+              <span class="annotation-type">{{ annotation.type }}</span>
+            </div>
+            <div class="annotation-coordinates">
+              {{ getCoordinateInfo(annotation) }}
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <!-- Selected count indicator -->
+  <div *ngIf="selectedAnnotations.length > 1" class="selection-count">
+    {{ selectedAnnotations.length }} labels selected
+  </div>
+</div>

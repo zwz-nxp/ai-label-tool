@@ -1,0 +1,175 @@
+<div class="detail-panel">
+  <!-- Header (conditionally shown) -->
+  <div *ngIf="!hideHeader" class="panel-header">
+    <button mat-icon-button (click)="onClose()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="header-content">
+      <h3>Cell Detail</h3>
+      <p class="cell-info">
+        Ground Truth: <strong>{{ cellSelection.gtClassName }}</strong> →
+        Prediction: <strong>{{ cellSelection.predClassName }}</strong> ({{
+          totalCount
+        }}
+        label pairs, {{ images.length }} unique images)
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading images...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="onRetry()">Retry</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error" class="panel-content">
+    <!-- Empty State -->
+    <div *ngIf="images.length === 0" class="empty-state">
+      <mat-icon>image_not_supported</mat-icon>
+      <p>No images found for this cell</p>
+    </div>
+
+    <!-- Image Gallery: Two Columns (Ground Truth + Prediction) -->
+    <div *ngIf="images.length > 0" class="image-gallery-columns">
+      <!-- Column Headers -->
+      <div class="column-headers">
+        <div class="column-header">
+          <mat-icon>label</mat-icon>
+          <span>Ground Truth</span>
+        </div>
+        <div class="column-header">
+          <mat-icon>psychology</mat-icon>
+          <span>Prediction</span>
+        </div>
+      </div>
+
+      <!-- Image Rows -->
+      <div class="image-rows">
+        <div *ngFor="let image of images" class="image-row-pair">
+          <!-- Ground Truth Column -->
+          <div class="image-card" (click)="onImageClick(image)">
+            <div class="image-container">
+              <img
+                [src]="getImageUrl(image.imageId)"
+                [alt]="image.fileName"
+                class="thumbnail"
+              />
+              <!-- Ground Truth Label Overlay - Show all GT labels for this image -->
+              <div class="label-overlay gt-overlay">
+                <div
+                  *ngFor="let label of image.groundTruthLabels"
+                  class="label-box"
+                  [style.border-color]="label.classColor"
+                >
+                  <span class="label-text">{{ label.className }}</span>
+                </div>
+              </div>
+              <div class="image-overlay">
+                <mat-icon>zoom_in</mat-icon>
+              </div>
+            </div>
+            <div class="image-info">
+              <p class="image-name" [title]="image.fileName">
+                {{ image.fileName }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Prediction Column -->
+          <div class="image-card" (click)="onImageClick(image)">
+            <div class="image-container">
+              <img
+                [src]="getImageUrl(image.imageId)"
+                [alt]="image.fileName"
+                class="thumbnail"
+              />
+              <!-- Prediction Label Overlay - Show all Pred labels for this image -->
+              <div class="label-overlay pred-overlay">
+                <div
+                  *ngFor="let label of image.predictionLabels"
+                  class="label-box"
+                  [style.border-color]="label.classColor"
+                >
+                  <span class="label-text">{{ label.className }}</span>
+                  <span *ngIf="label.confidenceRate" class="confidence-badge">
+                    {{ label.confidenceRate.toFixed(2) }}
+                  </span>
+                </div>
+              </div>
+              <div class="image-overlay">
+                <mat-icon>zoom_in</mat-icon>
+              </div>
+            </div>
+            <div class="image-info">
+              <p class="image-name" [title]="image.fileName">
+                {{ image.fileName }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlarged Image View -->
+  <div
+    *ngIf="selectedImage"
+    class="enlarged-view"
+    (click)="onCloseEnlargedView()"
+  >
+    <div class="enlarged-content" (click)="$event.stopPropagation()">
+      <button
+        mat-icon-button
+        (click)="onCloseEnlargedView()"
+        class="close-enlarged-button"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <img
+        [src]="getImageUrl(selectedImage.imageId)"
+        [alt]="selectedImage.fileName"
+        class="enlarged-image"
+      />
+      <div class="enlarged-info">
+        <h4>{{ selectedImage.fileName }}</h4>
+        <div class="metadata">
+          <div class="metadata-item">
+            <strong>Ground Truth:</strong> {{ cellSelection.gtClassName }}
+          </div>
+          <div class="metadata-item">
+            <strong>Prediction:</strong> {{ cellSelection.predClassName }}
+          </div>
+          <div
+            *ngIf="selectedImage.predictionLabels.length > 0"
+            class="metadata-item"
+          >
+            <strong>Confidence:</strong>
+            {{
+              selectedImage.predictionLabels[0].confidenceRate
+                ? selectedImage.predictionLabels[0].confidenceRate.toFixed(1) +
+                  "%"
+                : "N/A"
+            }}
+          </div>
+          <div class="metadata-item">
+            <strong>Correct:</strong>
+            <mat-icon
+              [class.correct]="selectedImage.isCorrect"
+              [class.incorrect]="!selectedImage.isCorrect"
+            >
+              {{ selectedImage.isCorrect ? "check_circle" : "cancel" }}
+            </mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

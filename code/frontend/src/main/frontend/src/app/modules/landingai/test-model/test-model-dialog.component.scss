@@ -1,0 +1,118 @@
+.test-model-dialog {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 90vh; // 最大高度為視窗的 90%
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0; // 防止被壓縮
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .close-button {
+      margin-right: -12px;
+    }
+  }
+
+  .dialog-content {
+    position: relative;
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; // 允許 flex 子元素正確縮小
+    max-height: none !important; // 覆蓋 Material 預設的 max-height
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    p {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #666;
+    }
+  }
+
+  .initial-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+  }
+
+  .results-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0; // 允許 flex 子元素正確縮小
+  }
+
+  .results-layout {
+    flex: 1; // 佔據剩餘空間
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    overflow: hidden;
+    min-height: 400px; // 調整為 400px
+
+    .featured-image-container {
+      flex: 0 0 66.666%; // 8/12 width
+      display: flex;
+      overflow: hidden;
+      min-width: 0; // 允許內容正確縮小
+    }
+
+    .prediction-panel-container {
+      flex: 0 0 33.333%; // 4/12 width
+      display: flex;
+      overflow: hidden;
+      min-width: 0; // 允許內容正確縮小
+      max-width: 33.333%; // 確保不會超過
+    }
+  }
+
+  .thumbnail-list-container {
+    flex: 0 0 auto; // 根據內容自動調整高度
+    border-top: 1px solid #e0e0e0;
+    padding: 16px;
+    overflow-y: auto;
+    max-height: 200px; // 最大高度 200px,超過會出現捲軸
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .test-model-dialog {
+    .results-layout {
+      flex-direction: column;
+
+      .featured-image-container,
+      .prediction-panel-container {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}

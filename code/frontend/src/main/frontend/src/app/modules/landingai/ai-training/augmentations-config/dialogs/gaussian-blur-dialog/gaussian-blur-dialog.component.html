@@ -1,0 +1,120 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">blur_circular</mat-icon>
+  Gaussian Blur
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure Gaussian blur parameters. The blur limit controls the kernel size,
+    and sigma controls the standard deviation of the Gaussian distribution. Set
+    sigma to 0 for automatic calculation based on kernel size.
+  </p>
+
+  <div class="form-container">
+    <!-- Blur Limit Slider -->
+    <!-- Requirement 15.1: Display Blur limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Blur Limit (Kernel Size)</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatBlurLimit"
+          class="blur-slider"
+          data-testid="gaussian-blur-limit-slider"
+          discrete
+          max="21"
+          min="3"
+          step="2"
+        >
+          <input
+            (valueChange)="onBlurLimitChange($event)"
+            [(ngModel)]="blurLimit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onBlurLimitInputChange($event)"
+            [value]="blurLimit"
+            data-testid="gaussian-blur-limit-input"
+            matInput
+            max="21"
+            min="3"
+            step="2"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>3 (Subtle)</span>
+        <span>21 (Strong)</span>
+      </div>
+    </div>
+
+    <!-- Sigma Slider -->
+    <!-- Requirement 15.1: Display Sigma slider -->
+    <div class="slider-field">
+      <label class="field-label">Sigma (σ)</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatSigma"
+          class="sigma-slider"
+          data-testid="gaussian-sigma-slider"
+          discrete
+          max="10"
+          min="0"
+          step="0.1"
+        >
+          <input
+            (valueChange)="onSigmaChange($event)"
+            [(ngModel)]="sigma"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onSigmaInputChange($event)"
+            [value]="sigma"
+            data-testid="gaussian-sigma-input"
+            matInput
+            max="10"
+            min="0"
+            step="0.1"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>0 (Auto)</span>
+        <span>10</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>
+        Gaussian blur with kernel size up to {{ blurLimit }}×{{ blurLimit }}
+        <ng-container *ngIf="sigma === 0">(sigma auto-calculated)</ng-container>
+        <ng-container *ngIf="sigma > 0">(σ = {{ sigma }})</ng-container>
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="gaussian-blur-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="gaussian-blur-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

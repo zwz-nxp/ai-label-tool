@@ -1,0 +1,173 @@
+<div class="hyperparameters-config-container">
+  <!-- Section Header -->
+  <div class="section-header">
+    <h3>Hyperparameters</h3>
+    <p class="section-description">
+      Configure the training hyperparameters for your model.
+    </p>
+  </div>
+
+  <!-- Epoch and Model Size Configuration - Same Row -->
+  <div class="config-row-inline">
+    <!-- Epoch Configuration -->
+    <!--
+      Validates: Requirement 5.1 - Number input and slider for Epoch configuration
+      Validates: Requirement 5.2 - Default Epoch value is 40
+      Validates: Requirement 5.3 - Epoch range 1-100
+      Validates: Requirement 5.4 - Tooltip explaining what an epoch is
+      Validates: Requirement 5.5 - Synchronize input and slider
+      Validates: Requirement 5.6 - Clamp value to valid range
+    -->
+    <!--
+    <div class="config-item epoch-config">
+      <div class="config-label">
+        <span class="label-text">Epoch</span>
+        <mat-icon
+          [matTooltip]="epochTooltip"
+          class="info-icon"
+          data-testid="epoch-tooltip-icon"
+          matTooltipPosition="above"
+        >
+          info_outline
+        </mat-icon>
+      </div>
+
+      <div class="config-controls">
+        -- Number Input --
+        <mat-form-field appearance="outline" class="epoch-input-field">
+          <mat-label>Epochs</mat-label>
+          <input
+            (change)="onEpochInputChange($event)"
+            [matTooltip]="epochTooltip"
+            [max]="EPOCH_MAX"
+            [min]="EPOCH_MIN"
+            [step]="EPOCH_STEP"
+            [value]="epochValue"
+            data-testid="epoch-input"
+            matInput
+            matTooltipPosition="above"
+            type="number"
+          />
+          <mat-hint *ngIf="!isEpochValid" class="error-hint"
+            >{{ epochErrorMessage }}
+          </mat-hint>
+        </mat-form-field>
+
+        -- Slider --
+        <div class="slider-wrapper">
+          <span class="slider-min">{{ EPOCH_MIN }}</span>
+          <mat-slider
+            [discrete]="true"
+            [matTooltip]="epochTooltip"
+            [max]="EPOCH_MAX"
+            [min]="EPOCH_MIN"
+            [showTickMarks]="false"
+            [step]="EPOCH_STEP"
+            class="epoch-slider"
+            data-testid="epoch-slider"
+            matTooltipPosition="above"
+          >
+            <input
+              (valueChange)="onEpochSliderChange($event)"
+              [value]="epochValue"
+              matSliderThumb
+            />
+          </mat-slider>
+          <span class="slider-max">{{ EPOCH_MAX }}</span>
+        </div>
+      </div>
+
+      -- Current Value Display --
+      <div class="value-display">
+        <span [class.invalid]="!isEpochValid" class="value-number">{{
+          epochValue
+        }}</span>
+        <span class="value-unit">epochs</span>
+      </div>
+    </div>
+    -->
+
+    <!-- Model Size Configuration -->
+    <!--
+      Validates: Requirement 6.1 - Dropdown for Model Size selection
+      Validates: Requirement 6.2 - Three fixed options
+      Validates: Requirement 6.3 - Default Model Size is "RepPoints-[37M]"
+      Validates: Requirement 6.4 - Tooltip explaining model size implications
+      Validates: Requirement 6.5 - Update configuration when model size changes
+    -->
+    <div class="config-item model-size-config">
+      <div class="config-label">
+        <span class="label-text">Base Model</span>
+        <mat-icon
+          [matTooltip]="modelSizeTooltip"
+          class="info-icon"
+          data-testid="model-size-tooltip-icon"
+          matTooltipPosition="above"
+        >
+          info_outline
+        </mat-icon>
+      </div>
+
+      <div class="config-controls">
+        <mat-form-field appearance="outline" class="model-size-select">
+          <mat-label>Select model size</mat-label>
+          <mat-select
+            (selectionChange)="onModelSizeChange($event.value)"
+            [disabled]="isLoadingModelSizes"
+            [matTooltip]="modelSizeTooltip"
+            [value]="modelSizeValue"
+            data-testid="model-size-select"
+            matTooltipPosition="above"
+          >
+            <mat-option
+              *ngFor="let size of modelSizeOptions"
+              [value]="size.value"
+            >
+              <mat-icon>memory</mat-icon>
+              {{ size.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-spinner
+          *ngIf="isLoadingModelSizes"
+          class="model-size-spinner"
+          diameter="20"
+        ></mat-spinner>
+      </div>
+
+      <!-- Model Size Info -->
+      <!--
+      <div class="model-size-info">
+        <ng-container [ngSwitch]="modelSizeValue">
+          <span *ngSwitchCase="'RepPoints-[37M]'" class="size-description">
+            <mat-icon>speed</mat-icon>
+            Fastest training, suitable for simple tasks
+          </span>
+          <span *ngSwitchCase="'RepPoints-[50M]'" class="size-description">
+            <mat-icon>balance</mat-icon>
+            Balanced performance and training time
+          </span>
+          <span *ngSwitchCase="'RepPoints-[101M]'" class="size-description">
+            <mat-icon>precision_manufacturing</mat-icon>
+            Highest accuracy, longer training time
+          </span>
+        </ng-container>
+      </div>
+      -->
+    </div>
+  </div>
+
+  <!-- Configuration Summary -->
+  <!--
+  <div class="config-summary">
+    <div class="summary-item">
+      <mat-icon>repeat</mat-icon>
+      <span>{{ epochValue }} training epochs</span>
+    </div>
+    <div class="summary-item">
+      <mat-icon>memory</mat-icon>
+      <span>{{ getModelSizeLabel(modelSizeValue) }}</span>
+    </div>
+  </div>
+  -->
+</div>

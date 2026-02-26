@@ -1,0 +1,90 @@
+<h2 mat-dialog-title>Snapshots</h2>
+
+<mat-dialog-content>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading snapshots...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!loading && !error && snapshots.length === 0"
+    class="empty-container"
+  >
+    <mat-icon>photo_camera</mat-icon>
+    <p>No snapshots found for this project</p>
+    <p class="hint">
+      Create a snapshot to preserve the current state of your dataset
+    </p>
+  </div>
+
+  <!-- Snapshots Table -->
+  <div
+    *ngIf="!loading && !error && snapshots.length > 0"
+    class="table-container"
+  >
+    <table [dataSource]="snapshots" class="snapshots-table" mat-table>
+      <!-- Snapshot Name Column -->
+      <ng-container matColumnDef="snapshotName">
+        <th *matHeaderCellDef mat-header-cell>Name</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          <strong>{{ snapshot.name }}</strong>
+        </td>
+      </ng-container>
+
+      <!-- Description Column -->
+      <ng-container matColumnDef="description">
+        <th *matHeaderCellDef mat-header-cell>Description</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          {{ snapshot.description || "-" }}
+        </td>
+      </ng-container>
+
+      <!-- Image Count Column -->
+      <ng-container matColumnDef="imageCount">
+        <th *matHeaderCellDef mat-header-cell>Images</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          {{ snapshot.imageCount }}
+        </td>
+      </ng-container>
+
+      <!-- Label Count Column -->
+      <ng-container matColumnDef="labelCount">
+        <th *matHeaderCellDef mat-header-cell>Labels</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          {{ snapshot.labelCount }}
+        </td>
+      </ng-container>
+
+      <!-- Created At Column -->
+      <ng-container matColumnDef="createdAt">
+        <th *matHeaderCellDef mat-header-cell>Created</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          {{ formatDate(snapshot.createdAt) }}
+        </td>
+      </ng-container>
+
+      <!-- Created By Column -->
+      <ng-container matColumnDef="createdBy">
+        <th *matHeaderCellDef mat-header-cell>Created By</th>
+        <td *matCellDef="let snapshot" mat-cell>
+          {{ snapshot.createdBy }}
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns" mat-row></tr>
+    </table>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onClose()" mat-button>Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,25 @@
+<div class="download-progress-dialog">
+  <h2 mat-dialog-title>{{ data.title }}</h2>
+
+  <mat-dialog-content>
+    <div class="progress-content">
+      <!-- Spinner -->
+      <mat-spinner diameter="60"></mat-spinner>
+
+      <!-- Message -->
+      <p class="message">{{ data.message }}</p>
+
+      <!-- Timer -->
+      <div class="timer">
+        <mat-icon>schedule</mat-icon>
+        <span class="time">{{ getFormattedTime() }}</span>
+      </div>
+
+      <!-- Progress bar (indeterminate) -->
+      <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+
+      <!-- Info text -->
+      <p class="info-text">Please wait while we prepare your download...</p>
+    </div>
+  </mat-dialog-content>
+</div>

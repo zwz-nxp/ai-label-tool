@@ -1,0 +1,27 @@
+<div class="performance-analysis-tabs">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <p class="tab-label">Analyze by confusion matrix</p>
+      </ng-template>
+      <div class="tab-content">
+        <app-confusion-matrix></app-confusion-matrix>
+      </div>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <p class="tab-label">Analyze all images</p>
+      </ng-template>
+      <div class="tab-content">
+        <ng-container *ngIf="selectedModelId$ | async as modelId">
+          <ng-container *ngIf="selectedEvaluationSet$ | async as evaluationSet">
+            <app-analyze-all-images
+              [modelId]="modelId"
+              [evaluationSet]="evaluationSet"
+            ></app-analyze-all-images>
+          </ng-container>
+        </ng-container>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

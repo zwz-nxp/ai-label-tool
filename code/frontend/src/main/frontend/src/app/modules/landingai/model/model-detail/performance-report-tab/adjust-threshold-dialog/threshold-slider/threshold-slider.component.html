@@ -1,0 +1,45 @@
+<div class="threshold-slider-container">
+  <label>Confidence Threshold</label>
+  <div class="threshold-inputs">
+    <!-- 滑桿 -->
+    <mat-slider
+      class="threshold-slider"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [disabled]="disabled"
+      [displayWith]="formatLabel.bind(this)"
+    >
+      <input
+        matSliderThumb
+        [value]="value"
+        (input)="onSliderInput($event)"
+        (valueChange)="onSliderChange($event)"
+      />
+    </mat-slider>
+
+    <!-- 數字輸入框 -->
+    <input
+      type="number"
+      class="threshold-input"
+      [value]="formatValue(value)"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [disabled]="disabled"
+      (input)="onInputChange($event)"
+      data-testid="threshold-input"
+    />
+  </div>
+
+  <!-- 原始閾值標記（暫時移除，比例計算有問題） -->
+  <!-- <div
+    *ngIf="originalThreshold !== undefined"
+    class="original-threshold-marker"
+    [style.--position]="getMarkerPosition()"
+    [title]="formatValue(originalThreshold) + ' (saved)'"
+  >
+    <div class="marker-line"></div>
+    <div class="marker-label">{{ formatValue(originalThreshold) }}</div>
+  </div> -->
+</div>

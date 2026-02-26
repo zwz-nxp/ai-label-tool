@@ -1,0 +1,106 @@
+<div class="confusion-matrix-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>重新計算中...</p>
+  </div>
+
+  <!-- Confusion Matrix (使用與 Performance Report 相同的 Grid 佈局) -->
+  <div *ngIf="!loading && data" class="matrix-section">
+    <!-- Matrix Header (與 Performance Report 相同) -->
+    <div class="matrix-header">
+      <h3>Confusion Matrix</h3>
+    </div>
+
+    <div class="confusion-matrix-grid">
+      <!-- Main Container -->
+      <div class="main-container">
+        <!-- Left Section: GT labels and Precision label -->
+        <div class="left-section">
+          <div class="ground-truth-label">Ground truth</div>
+          <div
+            *ngFor="let className of data.classNames"
+            class="gt-class-label"
+            [title]="className"
+          >
+            <span class="class-name">{{ className }}</span>
+          </div>
+          <div class="precision-label">Precision</div>
+        </div>
+
+        <!-- Middle Section: Matrix cells and Prediction labels -->
+        <div class="middle-section">
+          <!-- Empty space at top -->
+          <div class="top-empty"></div>
+
+          <!-- Matrix rows -->
+          <div
+            *ngFor="let row of data.matrix; let i = index"
+            class="matrix-cells-row"
+          >
+            <div
+              *ngFor="let count of row; let j = index"
+              class="matrix-cell"
+              [class.diagonal]="i === j"
+              [class.clickable]="count > 0"
+              [style.background-color]="getCellColor(count, i === j)"
+              [style.color]="getTextColor(count)"
+              [title]="
+                'GT: ' +
+                data.classNames[i] +
+                ', Pred: ' +
+                data.classNames[j] +
+                ', Count: ' +
+                count
+              "
+            >
+              {{ formatCount(count, i, j) }}
+            </div>
+          </div>
+
+          <!-- Precision row: one value per prediction class -->
+          <div class="bottom-row">
+            <div class="precision-row">
+              <div
+                *ngFor="let precision of data.precisionByClass"
+                class="precision-cell"
+              >
+                {{ formatPercentage(precision) }}
+              </div>
+            </div>
+            <div class="prediction-class-labels">
+              <div
+                *ngFor="let className of data.predictionClassNames"
+                class="prediction-class-label"
+                [title]="className"
+              >
+                <span class="class-name">{{ className }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Section: Recall values (one per GT class), Prediction label -->
+        <div class="right-section">
+          <div class="recall-header">
+            <div class="recall-label">Recall</div>
+          </div>
+          <div
+            *ngFor="let recall of data.recallByClass"
+            class="recall-value-row"
+          >
+            {{ formatPercentage(recall) }}
+          </div>
+          <div class="right-empty"></div>
+          <div class="prediction-label-bottom">Prediction</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 無資料狀態 -->
+    <div *ngIf="!loading && !data" class="no-data">
+      <mat-icon>info</mat-icon>
+      <p>無混淆矩陣資料</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+<div class="flex max-h-full flex-col">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-2">
+    <app-page-title>Manage IE-MDM users</app-page-title>
+
+    <div class="flex items-center gap-4">
+      <button (click)="resetFilters()" color="primary" mat-button>
+        Reset filters
+      </button>
+
+      <button
+        (click)="downloadExcel()"
+        [disabled]="!isCurrentUserAuthorized"
+        [matTooltip]="getDownloadTooltip()"
+        color="accent"
+        mat-mini-fab
+      >
+        <mat-icon>download</mat-icon>
+      </button>
+
+      <button
+        (click)="openAddUser()"
+        [disabled]="!isCurrentUserAuthorized"
+        [matTooltip]="getAddTooltip()"
+        color="accent"
+        mat-mini-fab
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="overflow-auto">
+    <table
+      (matSortChange)="sortData($event)"
+      [dataSource]="usersDataSource"
+      class="text-sm"
+      mat-table
+      matSort
+    >
+      <ng-container matColumnDef="name">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Name</th>
+        <td *matCellDef="let user" mat-cell>
+          {{ user.name }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="wbi">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>WBI</th>
+        <td *matCellDef="let user" mat-cell>
+          {{ user.wbi }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="primaryLocation.acronym">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header>Primary site</th>
+        <td *matCellDef="let user" mat-cell>
+          {{ user.primaryLocation.acronym }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell></th>
+        <td *matCellDef="let user" mat-cell>
+          <div class="flex items-center gap-1">
+            <button
+              (click)="openEditUser(user)"
+              [disabled]="!isAuthorized(user)"
+              [matTooltip]="getEditTooltip(user)"
+              matIcon="edit"
+              table-icon-button
+            ></button>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container
+        *ngFor="let column of searchColumns"
+        [matColumnDef]="column.sortField"
+      >
+        <th *matHeaderCellDef mat-header-cell>
+          <app-generic-search
+            (emitSearchTrigger)="searchFieldTriggered($event)"
+            [searchField]="column.sortField"
+          >
+          </app-generic-search>
+        </th>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumnsUsers" mat-header-row></tr>
+      <tr *matHeaderRowDef="searchColumnNames" mat-header-row></tr>
+      <tr
+        *matRowDef="let user; columns: displayedColumnsUsers"
+        class="hover:!bg-table-row-hover"
+        mat-row
+      ></tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    (page)="onPageEvent()"
+    [pageSizeOptions]="[25, 50, 100, 250]"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+
+  <app-spinner *ngIf="isLoading"></app-spinner>
+</div>

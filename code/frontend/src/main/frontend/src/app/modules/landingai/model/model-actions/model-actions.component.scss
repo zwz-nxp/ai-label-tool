@@ -1,0 +1,493 @@
+// Model Actions Component Styles
+// Implementation requirements 5.1, 5.2: Actions column includes favorite star icon and kebab menu
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 80px;
+  padding: 0 !important;
+  position: relative;
+  margin: 0 !important;
+
+  // Style adjustment when only one button
+  &.no-favorite {
+    justify-content: flex-start;
+  }
+
+  &.no-kebab {
+    justify-content: flex-start;
+  }
+
+  // Ensure all buttons do not overflow
+  button {
+    overflow: visible !important;
+    flex-shrink: 0;
+  }
+}
+
+// Favorite Button - Requirements 3.3, 3.4, 5.4: Star icon state indication
+.favorite-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  position: relative;
+  margin-right: 4px !important;
+  padding: 0 !important;
+
+  .mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    transition: all 0.2s ease;
+  }
+
+  // Completely hide Material touch target
+  ::ng-deep .mat-mdc-button-touch-target {
+    display: none !important;
+  }
+
+  // Prevent ripple from overflowing
+  ::ng-deep .mat-mdc-button-persistent-ripple,
+  ::ng-deep .mat-ripple,
+  ::ng-deep .mat-mdc-button-ripple {
+    display: none !important;
+  }
+
+  // Favorite state styling - Requirement 3.3: When model is marked as favorite, star icon displays in active state
+  &.favorite-active {
+    .favorite-star-active {
+      color: #ffc107;
+    }
+
+    &:hover {
+      background-color: rgba(255, 193, 7, 0.1);
+
+      .favorite-star-active {
+        color: #ffb300;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  // Non-favorite state styling - Requirement 3.4: When model is not marked as favorite, star icon displays in inactive state
+  &.favorite-inactive {
+    .favorite-star-inactive {
+      color: #bdbdbd;
+    }
+
+    &:hover {
+      background-color: rgba(189, 189, 189, 0.1);
+
+      .favorite-star-inactive {
+        color: #999;
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  // Accessibility: Focus state - Requirement 6.3: Maintain visible focus outline for keyboard users
+  &:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+    background-color: rgba(25, 118, 210, 0.1);
+  }
+
+  // Accessibility: Keyboard activation state
+  &:focus-visible {
+    outline: 3px solid #1976d2;
+    outline-offset: 2px;
+  }
+
+  // Pressed state
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Accessibility: Disabled state
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+
+      .mat-icon {
+        transform: none;
+      }
+    }
+  }
+}
+
+// Kebab Menu Button - Requirement 5.2: Kebab menu
+.kebab-button {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  position: relative;
+  margin-right: 0 !important;
+  padding: 0 !important;
+  color: #666;
+
+  .mat-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    color: #666;
+    transition: all 0.2s ease;
+  }
+
+  // Completely hide Material touch target
+  ::ng-deep .mat-mdc-button-touch-target {
+    display: none !important;
+  }
+
+  // Prevent ripple from overflowing
+  ::ng-deep .mat-mdc-button-persistent-ripple,
+  ::ng-deep .mat-ripple,
+  ::ng-deep .mat-mdc-button-ripple {
+    display: none !important;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+
+    .mat-icon {
+      color: #333;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(102, 102, 102, 0.1);
+
+    .mat-icon {
+      color: #333;
+      transform: scale(1.1);
+    }
+  }
+
+  // Accessibility: Focus state - Requirement 6.3: Maintain visible focus outline for keyboard users
+  &:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+    background-color: rgba(25, 118, 210, 0.1);
+  }
+
+  // Accessibility: Keyboard activation state
+  &:focus-visible {
+    outline: 3px solid #1976d2;
+    outline-offset: 2px;
+  }
+
+  // Pressed state
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // Menu open state
+  &[aria-expanded="true"] {
+    background-color: rgba(102, 102, 102, 0.15);
+
+    .mat-icon {
+      color: #333;
+    }
+  }
+
+  // Accessibility: Disabled state
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+
+      .mat-icon {
+        transform: none;
+        color: #666;
+      }
+    }
+  }
+}
+
+// Action Menu Styling - Requirement 5.2: Display available model actions
+.model-action-menu {
+  .mat-mdc-menu-panel {
+    min-width: 180px;
+    max-width: 250px;
+
+    // Accessibility: Ensure menu has proper border and shadow
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .action-item {
+    font-size: 14px;
+    min-height: 44px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+
+    .mat-icon {
+      margin-right: 12px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    span {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // Specific styling for different actions
+    &.view-action:hover {
+      background-color: #e3f2fd;
+
+      .mat-icon {
+        color: #1976d2;
+      }
+    }
+
+    &.edit-action:hover {
+      background-color: #f3e5f5;
+
+      .mat-icon {
+        color: #7b1fa2;
+      }
+    }
+
+    &.download-action:hover {
+      background-color: #e8f5e8;
+
+      .mat-icon {
+        color: #388e3c;
+      }
+    }
+
+    &.duplicate-action:hover {
+      background-color: #fff3e0;
+
+      .mat-icon {
+        color: #f57c00;
+      }
+    }
+
+    &.delete-action {
+      color: #d32f2f;
+
+      .mat-icon {
+        color: #d32f2f;
+      }
+
+      &:hover {
+        background-color: #ffebee;
+        color: #c62828;
+
+        .mat-icon {
+          color: #c62828;
+        }
+      }
+    }
+
+    // Accessibility: Focus state
+    &:focus {
+      background-color: rgba(25, 118, 210, 0.1);
+      outline: 2px solid #1976d2;
+      outline-offset: -2px;
+    }
+
+    // Accessibility: Keyboard activation state
+    &:focus-visible {
+      outline: 3px solid #1976d2;
+      outline-offset: -2px;
+    }
+
+    // Accessibility: Disabled state
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  // Divider styling
+  .mat-divider {
+    margin: 4px 0;
+    border-top-color: #e0e0e0;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .actions-container {
+    gap: 2px;
+    min-width: 70px;
+  }
+
+  .favorite-button,
+  .kebab-button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+
+    .mat-icon {
+      font-size: 18px !important;
+      width: 18px !important;
+      height: 18px !important;
+    }
+  }
+
+  .model-action-menu {
+    .mat-mdc-menu-panel {
+      min-width: 160px;
+    }
+
+    .action-item {
+      font-size: 13px;
+      min-height: 40px;
+      padding: 0 12px;
+
+      .mat-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .actions-container {
+    min-width: 60px;
+  }
+
+  .favorite-button,
+  .kebab-button {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+
+    .mat-icon {
+      font-size: 16px !important;
+      width: 16px !important;
+      height: 16px !important;
+    }
+  }
+}
+
+// Accessibility Enhancements - Requirement 6.1, 6.2, 6.3: Accessibility features
+@media (prefers-contrast: high) {
+  .favorite-button {
+    border: 2px solid transparent;
+
+    &.favorite-active {
+      .favorite-star-active {
+        color: #ff6f00;
+      }
+
+      &:focus {
+        border-color: #000000;
+        outline: none;
+      }
+    }
+
+    &.favorite-inactive {
+      .favorite-star-inactive {
+        color: #424242;
+      }
+
+      &:focus {
+        border-color: #000000;
+        outline: none;
+      }
+    }
+  }
+
+  .kebab-button {
+    border: 2px solid transparent;
+
+    .mat-icon {
+      color: #424242;
+    }
+
+    &:focus {
+      border-color: #000000;
+      outline: none;
+    }
+  }
+
+  .model-action-menu {
+    .mat-mdc-menu-panel {
+      border: 2px solid #000000;
+    }
+
+    .action-item {
+      &.delete-action {
+        color: #b71c1c;
+
+        .mat-icon {
+          color: #b71c1c;
+        }
+      }
+
+      &:focus {
+        background-color: #000000;
+        color: #ffffff;
+        outline: none;
+
+        .mat-icon {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}
+
+// Accessibility: Reduced motion preference support
+@media (prefers-reduced-motion: reduce) {
+  .favorite-button,
+  .kebab-button,
+  .action-item {
+    transition: none !important;
+  }
+
+  .mat-icon {
+    transition: none !important;
+  }
+
+  .favorite-button:hover .mat-icon,
+  .kebab-button:hover .mat-icon {
+    transform: none !important;
+  }
+}
+
+// Accessibility: Print styles
+@media print {
+  .actions-container {
+    display: none;
+  }
+}

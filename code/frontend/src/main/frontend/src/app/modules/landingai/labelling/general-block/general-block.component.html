@@ -1,0 +1,96 @@
+<div class="general-block">
+  <div *ngIf="currentImage" class="general-content">
+    <!-- Combined Info Section -->
+    <div class="combined-info-section">
+      <!-- File Name -->
+      <div class="info-row">
+        <span class="info-label">File Name</span>
+        <span [title]="currentImage.fileName" class="info-value">{{
+          currentImage.fileName
+        }}</span>
+      </div>
+
+      <!-- Project Info -->
+      <div *ngIf="project" class="info-row">
+        <span class="info-label">Project Name</span>
+        <span class="info-value">{{ project.name }}</span>
+      </div>
+      <div *ngIf="project" class="info-row">
+        <span class="info-label">Project Type</span>
+        <span class="info-value">{{ project.type }}</span>
+      </div>
+      <div *ngIf="project" class="info-row">
+        <span class="info-label">Project Status</span>
+        <span class="info-value">{{ project.status }}</span>
+      </div>
+
+      <!-- Image Info -->
+      <div class="info-row">
+        <span class="info-label">Image ID</span>
+        <span class="info-value">{{ currentImage.id }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Dimensions</span>
+        <span class="info-value"
+          >{{ currentImage.width }} x {{ currentImage.height }}</span
+        >
+      </div>
+      <div class="info-row">
+        <span class="info-label">Uploaded</span>
+        <span class="info-value">{{
+          currentImage.createdAt | date: "medium"
+        }}</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button
+        (click)="copyFileName()"
+        [disabled]="!currentImage"
+        class="copy-button"
+        mat-raised-button
+      >
+        <mat-icon>content_copy</mat-icon>
+        Copy
+      </button>
+      <button
+        (click)="onDownload()"
+        [disabled]="!currentImage"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>download</mat-icon>
+        Download
+      </button>
+      <button
+        (click)="onDelete()"
+        [disabled]="!currentImage"
+        color="warn"
+        mat-raised-button
+      >
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    </div>
+
+    <!-- Split Dropdown -->
+    <mat-form-field appearance="fill" class="split-field">
+      <mat-label>Split</mat-label>
+      <mat-select
+        (selectionChange)="onSplitChange($event.value)"
+        [(value)]="selectedSplit"
+        [disabled]="!currentImage || isUpdating"
+      >
+        <mat-option *ngFor="let option of splitOptions" [value]="option">
+          {{ option }}
+        </mat-option>
+      </mat-select>
+      <mat-icon [matTooltip]="splitTooltip" matSuffix>info</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="!currentImage" class="no-image-message">
+    <p>No image selected</p>
+  </div>
+</div>

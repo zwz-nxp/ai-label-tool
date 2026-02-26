@@ -1,0 +1,54 @@
+<!-- Snapshot Card Component Template -->
+<!-- Requirements: 2.2, 2.4 -->
+
+<div
+  class="snapshot-card"
+  [class.selected]="selected"
+  (click)="onClick()"
+  (keydown)="onKeydown($event)"
+  [attr.aria-label]="'Select snapshot ' + snapshot.name"
+  [attr.aria-selected]="selected"
+  role="option"
+  tabindex="0"
+>
+  <!-- Snapshot Name -->
+  <div class="snapshot-name" [title]="snapshot.name">
+    {{ snapshot.name }}
+  </div>
+
+  <!-- Snapshot Metadata -->
+  <div class="snapshot-metadata">
+    <!-- Snapshot ID -->
+    <div class="metadata-item" *ngIf="snapshot.id">
+      <mat-icon aria-hidden="true">tag</mat-icon>
+      <span>ID: {{ snapshot.id }}</span>
+    </div>
+
+    <!-- Creation Date -->
+    <div class="metadata-item" *ngIf="snapshot.createdAt">
+      <mat-icon aria-hidden="true">calendar_today</mat-icon>
+      <span>{{ formatDate(snapshot.createdAt) }}</span>
+    </div>
+
+    <!-- Creator -->
+    <div class="metadata-item" *ngIf="snapshot.createdBy">
+      <mat-icon aria-hidden="true">person</mat-icon>
+      <span>{{ snapshot.createdBy }}</span>
+    </div>
+
+    <!-- Image Count -->
+    <div class="metadata-item">
+      <mat-icon aria-hidden="true">image</mat-icon>
+      <span>{{ snapshot.imageCount || 0 }} images</span>
+    </div>
+
+    <!-- Class Count -->
+    <div
+      class="metadata-item"
+      *ngIf="snapshot.classCount !== undefined && snapshot.classCount !== null"
+    >
+      <mat-icon aria-hidden="true">category</mat-icon>
+      <span>{{ snapshot.classCount }} classes</span>
+    </div>
+  </div>
+</div>

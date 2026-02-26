@@ -1,0 +1,46 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2 class="text-lg">Add NXP production year</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <mat-dialog-content>
+    <form class="flex flex-wrap items-center gap-4">
+      <mat-form-field>
+        <mat-label>Year</mat-label>
+        <input
+          [(ngModel)]="nxpProdYear.year"
+          matInput
+          name="year"
+          readonly
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Start date</mat-label>
+        <input
+          [(ngModel)]="nxpProdYear.startDate"
+          [matDatepickerFilter]="du.isMonday"
+          [matDatepicker]="picker"
+          matInput
+          name="date"
+        />
+        <mat-hint>YYYY-MM-DD</mat-hint>
+        <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker
+          #picker
+          [startAt]="datepickerStartDate"
+        ></mat-datepicker>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+  <mat-dialog-actions align="center">
+    <button (click)="submitNewYear(nxpProdYear)" color="accent" mat-flat-button>
+      Save
+    </button>
+    <button (click)="close()" mat-stroked-button>Close</button>
+  </mat-dialog-actions>
+</div>

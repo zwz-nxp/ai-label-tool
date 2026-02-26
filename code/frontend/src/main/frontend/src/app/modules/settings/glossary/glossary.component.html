@@ -1,0 +1,59 @@
+<div class="flex max-h-full flex-col">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-2">
+    <app-page-title>Glossary</app-page-title>
+  </div>
+
+  <div class="overflow-auto">
+    <table
+      #tableList
+      [dataSource]="glossaryList"
+      mat-table
+      multiTemplateDataRows
+    >
+      <ng-container matColumnDef="term">
+        <th *matHeaderCellDef mat-header-cell>Term</th>
+        <td *matCellDef="let element" mat-cell>{{ element.term }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th *matHeaderCellDef mat-header-cell>Description</th>
+        <td *matCellDef="let element" mat-cell>
+          {{ element.shortDescription }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <td
+          *matCellDef="let element"
+          [attr.colspan]="displayedColumnsGlossaryItems.length"
+          mat-cell
+        >
+          <p
+            [@detailExpand]="
+              element === expandedElement ? 'expanded' : 'collapsed'
+            "
+            class="overflow-hidden p-2"
+          >
+            ➤ {{ element.longDescription }}
+          </p>
+        </td>
+      </ng-container>
+
+      <tr
+        *matHeaderRowDef="displayedColumnsGlossaryItems; sticky: true"
+        mat-header-row
+      ></tr>
+      <tr
+        (click)="expandedElement = expandedElement === row ? null : row"
+        *matRowDef="let row; columns: displayedColumnsGlossaryItems"
+        class="cursor-pointer hover:!bg-table-row-hover"
+        mat-row
+      ></tr>
+      <tr
+        *matRowDef="let row; columns: ['expandedDetail']"
+        class="!h-0"
+        mat-row
+      ></tr>
+    </table>
+  </div>
+</div>

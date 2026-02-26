@@ -1,0 +1,49 @@
+<div class="left-toolbar">
+  <!-- Image List Section -->
+  <div class="image-list-section">
+    <div class="section-header">
+      <h3 class="section-title">Images ({{ images.length }})</h3>
+    </div>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoadingImages" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading images...</p>
+    </div>
+
+    <!-- Image list -->
+    <div *ngIf="!isLoadingImages" class="image-list">
+      <div
+        (click)="onImageClick(image)"
+        *ngFor="let image of images"
+        [class.selected]="isCurrentImage(image)"
+        class="image-item"
+      >
+        <div class="image-info">
+          <div [title]="image.fileName" class="image-name">
+            {{ image.fileName }}
+          </div>
+          <div class="image-meta">
+            <span
+              *ngIf="image.split"
+              [class]="'split-' + image.split.toLowerCase()"
+              [title]="image.split"
+              class="split-badge"
+            >
+              {{ getSplitLabel(image.split) }}
+            </span>
+            <span *ngIf="image.isNoClass" class="no-class-badge">
+              No Object
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="images.length === 0" class="empty-state">
+        <mat-icon>image_not_supported</mat-icon>
+        <p>No images uploaded yet</p>
+      </div>
+    </div>
+  </div>
+</div>

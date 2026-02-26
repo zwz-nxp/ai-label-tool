@@ -1,0 +1,195 @@
+<!-- Snapshot List View Component Template -->
+<!-- Requirements: 1.1, 2.1, 9.1 -->
+
+<div class="snapshot-list-view">
+  <!-- Header with project info, Filter, Sort, and Manage buttons -->
+  <div class="header">
+    <div class="header-left">
+      <button
+        (click)="onBackToProject()"
+        mat-icon-button
+        matTooltip="Back to Project"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div *ngIf="project$ | async as project" class="project-info">
+        <mat-icon class="project-type-icon"
+          >{{ getProjectTypeIcon(project.type) }}
+        </mat-icon>
+        <span class="project-name">{{ project.name }}</span>
+        <span class="separator">|</span>
+        <span class="view-title">Snapshots</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Filter Button -->
+      <button
+        (click)="onToggleFilterPanel()"
+        [class.has-active-filters]="hasActiveFilters(filters$ | async)"
+        class="filter-btn"
+        mat-raised-button
+      >
+        <div class="icon-wrapper">
+          <mat-icon>filter_list</mat-icon>
+          <span
+            *ngIf="hasActiveFilters(filters$ | async)"
+            class="filter-badge"
+          ></span>
+        </div>
+        <span class="btn-text">Filters</span>
+      </button>
+
+      <!-- Sort Button -->
+      <button [matMenuTriggerFor]="sortMenu" class="sort-btn" mat-raised-button>
+        <mat-icon>sort</mat-icon>
+        <span class="btn-text">Sort</span>
+      </button>
+
+      <!-- Manage Button -->
+      <app-snapshot-toolbar
+        (manageAction)="onManageAction($event)"
+        [loading]="(operationLoading$ | async) || false"
+        [selectedSnapshot]="selectedSnapshot$ | async"
+      >
+      </app-snapshot-toolbar>
+    </div>
+  </div>
+
+  <!-- Sort Menu -->
+  <mat-menu #sortMenu="matMenu">
+    <button
+      (click)="onSortApplied('upload_time_desc')"
+      [class.active]="(sortCriteria$ | async) === 'upload_time_desc'"
+      mat-menu-item
+    >
+      <mat-icon>arrow_downward</mat-icon>
+      <span>Upload Time (Newest)</span>
+    </button>
+    <button
+      (click)="onSortApplied('upload_time_asc')"
+      [class.active]="(sortCriteria$ | async) === 'upload_time_asc'"
+      mat-menu-item
+    >
+      <mat-icon>arrow_upward</mat-icon>
+      <span>Upload Time (Oldest)</span>
+    </button>
+    <button
+      (click)="onSortApplied('label_time_desc')"
+      [class.active]="(sortCriteria$ | async) === 'label_time_desc'"
+      mat-menu-item
+    >
+      <mat-icon>arrow_downward</mat-icon>
+      <span>Label Time (Newest)</span>
+    </button>
+    <button
+      (click)="onSortApplied('label_time_asc')"
+      [class.active]="(sortCriteria$ | async) === 'label_time_asc'"
+      mat-menu-item
+    >
+      <mat-icon>arrow_upward</mat-icon>
+      <span>Label Time (Oldest)</span>
+    </button>
+    <button
+      (click)="onSortApplied('name_asc')"
+      [class.active]="(sortCriteria$ | async) === 'name_asc'"
+      mat-menu-item
+    >
+      <mat-icon>sort_by_alpha</mat-icon>
+      <span>Name (A-Z)</span>
+    </button>
+    <button
+      (click)="onSortApplied('name_desc')"
+      [class.active]="(sortCriteria$ | async) === 'name_desc'"
+      mat-menu-item
+    >
+      <mat-icon>sort_by_alpha</mat-icon>
+      <span>Name (Z-A)</span>
+    </button>
+  </mat-menu>
+
+  <!-- Main content area -->
+  <div
+    [class.sidebar-collapsed]="sidebarCollapsed$ | async"
+    class="content-area"
+  >
+    <!-- Left side: Filter panel and image grid -->
+    <div class="main-content">
+      <!-- Image grid with pagination -->
+      <div class="image-grid-container">
+        <!-- Loading spinner for images -->
+        <div *ngIf="imagesLoading$ | async" class="loading-overlay">
+          <mat-spinner diameter="48"></mat-spinner>
+          <span class="loading-text">Loading images...</span>
+        </div>
+
+        <!-- Empty state when no snapshot selected -->
+        <div
+          *ngIf="!(selectedSnapshotId$ | async) && !(snapshotsLoading$ | async)"
+          class="empty-state"
+        >
+          <mat-icon class="empty-icon">photo_library</mat-icon>
+          <h3>No Snapshot Selected</h3>
+          <p>Select a snapshot from the sidebar to view its images.</p>
+        </div>
+
+        <!-- Empty state when no images in snapshot -->
+        <div
+          *ngIf="
+            (selectedSnapshotId$ | async) &&
+            !(imagesLoading$ | async) &&
+            (images$ | async)?.length === 0
+          "
+          class="empty-state"
+        >
+          <mat-icon class="empty-icon">image_not_supported</mat-icon>
+          <h3>No Images Found</h3>
+          <p>This snapshot contains no images matching your filters.</p>
+        </div>
+
+        <!-- Image grid -->
+        <app-image-grid
+          (imageClick)="onImageClick($event)"
+          (pageChange)="onPageChanged($event)"
+          *ngIf="(images$ | async)?.length"
+          [availableClasses]="availableClasses"
+          [currentPage]="(currentPage$ | async) || 1"
+          [images]="(images$ | async) || []"
+          [projectType]="(project$ | async)?.type || 'Object Detection'"
+          [selectMode]="false"
+          [showLabelDetails]="true"
+          [totalElements]="(totalElements$ | async) || 0"
+          [totalPages]="(totalPages$ | async) || 1"
+          [viewMode]="'images'"
+          [zoomLevel]="3"
+        >
+        </app-image-grid>
+      </div>
+    </div>
+
+    <!-- Right side: Snapshot sidebar -->
+    <app-snapshot-sidebar
+      (snapshotSelected)="onSnapshotSelected($event)"
+      (toggleCollapse)="onToggleSidebar()"
+      [collapsed]="(sidebarCollapsed$ | async) || false"
+      [loading]="(snapshotsLoading$ | async) || false"
+      [selectedId]="selectedSnapshotId$ | async"
+      [snapshots]="(snapshots$ | async) || []"
+    >
+    </app-snapshot-sidebar>
+  </div>
+
+  <!-- Error display -->
+  <div *ngIf="error$ | async as error" class="error-banner">
+    <mat-icon>error</mat-icon>
+    <span>{{ error }}</span>
+    <button (click)="onClearError()" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Operation loading overlay -->
+  <div *ngIf="operationLoading$ | async" class="operation-overlay">
+    <mat-spinner diameter="64"></mat-spinner>
+    <span class="operation-text">Processing...</span>
+  </div>
+</div>

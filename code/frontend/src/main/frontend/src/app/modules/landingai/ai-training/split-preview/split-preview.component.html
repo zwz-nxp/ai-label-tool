@@ -1,0 +1,211 @@
+<div class="split-preview-container">
+  <!-- Section Header with Title -->
+  <!-- Validates: Requirement 4.1 - Display title "Preview your split ({count} images)" -->
+  <div class="section-header">
+    <h3 class="preview-title">Preview your split</h3>
+    <p class="section-description">
+      Visualize how your images are distributed across training, development,
+      and test sets.
+    </p>
+  </div>
+
+  <!-- View Mode Toggle -->
+  <!-- Validates: Requirement 4.2 - Toggle button group with "By class" and "By Split" options -->
+  <div class="view-toggle">
+    <mat-button-toggle-group
+      (change)="toggleView($event.value)"
+      [value]="viewMode"
+      aria-label="View mode"
+      data-testid="view-mode-toggle"
+    >
+      <mat-button-toggle
+        data-testid="by-class-toggle"
+        matTooltip="View distribution of splits within each class"
+        value="byClass"
+      >
+        <mat-icon>category</mat-icon>
+        By class
+      </mat-button-toggle>
+      <mat-button-toggle
+        data-testid="by-split-toggle"
+        matTooltip="View distribution of classes within each split"
+        value="bySplit"
+      >
+        <mat-icon>pie_chart</mat-icon>
+        By Split
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Preview Content -->
+  <div *ngIf="hasData(); else noData" class="preview-content">
+    <!-- By Class View -->
+    <!-- Validates: Requirement 4.3 - Display each class with its train/dev/test distribution -->
+    <div
+      *ngIf="viewMode === 'byClass' && splitPreview?.byClass"
+      class="by-class-view"
+    >
+      <div
+        *ngFor="let classData of splitPreview?.byClass || []"
+        class="class-row"
+        data-testid="class-row"
+      >
+        <!-- Class Label -->
+        <div class="row-label">
+          <span
+            [style.background-color]="
+              classData.classColor || getClassColor(classData.className)
+            "
+            class="color-indicator"
+          >
+          </span>
+          <span [matTooltip]="classData.className" class="label-text">
+            {{ classData.className }}
+          </span>
+          <span class="label-count">({{ getClassTotal(classData) }})</span>
+        </div>
+
+        <!-- Color Bar -->
+        <!-- Validates: Requirement 28.1 - Render horizontal color bars -->
+        <!-- Validates: Requirement 28.4 - Segment width proportional to percentage -->
+        <div class="color-bar-container">
+          <div class="color-bar">
+            <ng-container
+              *ngFor="let segment of getClassBarSegments(classData)"
+            >
+              <div
+                [matTooltip]="getSegmentTooltip(segment)"
+                [style.background-color]="segment.color"
+                [style.width.%]="segment.percentage"
+                class="bar-segment"
+                data-testid="bar-segment"
+              >
+                <span *ngIf="segment.percentage >= 10" class="segment-label">
+                  {{ segment.percentage | number: "1.0-0" }}%
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Split View -->
+    <!-- Validates: Requirement 4.4 - Display each split with its class distribution -->
+    <div
+      *ngIf="viewMode === 'bySplit' && splitPreview?.bySplit"
+      class="by-split-view"
+    >
+      <div
+        *ngFor="let splitData of splitPreview?.bySplit || []"
+        class="split-row"
+        data-testid="split-row"
+      >
+        <!-- Split Label -->
+        <div class="row-label">
+          <span
+            [style.background-color]="getSplitColor(splitData.splitType)"
+            class="color-indicator"
+          >
+          </span>
+          <span class="label-text">
+            {{ getSplitLabel(splitData.splitType) }}
+          </span>
+          <span class="label-count">({{ getSplitTotal(splitData) }})</span>
+        </div>
+
+        <!-- Color Bar -->
+        <!-- Validates: Requirement 28.3 - Dynamically assign colors to classes -->
+        <div class="color-bar-container">
+          <div class="color-bar">
+            <ng-container
+              *ngFor="let segment of getSplitBarSegments(splitData)"
+            >
+              <div
+                [matTooltip]="getSegmentTooltip(segment)"
+                [style.background-color]="segment.color"
+                [style.width.%]="segment.percentage"
+                class="bar-segment"
+                data-testid="bar-segment"
+              >
+                <span *ngIf="segment.percentage >= 10" class="segment-label">
+                  {{ segment.percentage | number: "1.0-0" }}%
+                </span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data Message -->
+  <ng-template #noData>
+    <div class="no-data-message">
+      <mat-icon>info_outline</mat-icon>
+      <span
+        >No split data available. Please load a dataset to see the
+        preview.</span
+      >
+    </div>
+  </ng-template>
+
+  <!-- Legend Section -->
+  <!-- Validates: Requirement 4.5 - Display color legend -->
+  <!-- Validates: Requirement 28.5 - Display legend mapping colors to meanings -->
+  <div *ngIf="hasData()" class="legend-section">
+    <h4 class="legend-title">Legend</h4>
+
+    <!-- Split Type Legend (shown in "By class" view) -->
+    <div *ngIf="viewMode === 'byClass'" class="legend-group">
+      <div class="legend-subtitle">Split Types</div>
+      <div class="legend-items">
+        <div
+          *ngFor="let splitType of getSplitTypesForLegend()"
+          class="legend-item"
+          data-testid="legend-item-split"
+        >
+          <span [style.background-color]="splitType.color" class="legend-color">
+          </span>
+          <span class="legend-label">{{ splitType.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Legend (shown in "By Split" view) -->
+    <div *ngIf="viewMode === 'bySplit'" class="legend-group">
+      <div class="legend-subtitle">Classes</div>
+      <div class="legend-items">
+        <div
+          *ngFor="let cls of getUniqueClasses()"
+          class="legend-item"
+          data-testid="legend-item-class"
+        >
+          <span [style.background-color]="cls.color" class="legend-color">
+          </span>
+          <span class="legend-label">{{ cls.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Statistics -->
+  <div *ngIf="splitPreview" class="summary-section">
+    <div class="summary-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ splitPreview.totalImages }}</span>
+        <span class="stat-label">Total Images</span>
+      </div>
+      <div *ngIf="splitPreview.unassignedCount > 0" class="stat-item">
+        <span class="stat-value warning">{{
+          splitPreview.unassignedCount
+        }}</span>
+        <span class="stat-label">Unassigned</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ splitPreview.byClass.length || 0 }}</span>
+        <span class="stat-label">Classes</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Set Class</h2>
+
+  <mat-dialog-content>
+    <div class="info-text">
+      Set class for {{ selectedImageCount }} selected image{{
+        selectedImageCount !== 1 ? "s" : ""
+      }}
+    </div>
+
+    <!-- Classes List -->
+    <mat-radio-group
+      class="classes-container"
+      [(ngModel)]="selectedClassId"
+      (change)="onClassSelect($event.value)"
+    >
+      <div class="classes-grid">
+        <div
+          *ngFor="let classItem of availableClasses"
+          class="class-item"
+          [class.selected]="isClassSelected(classItem.id!)"
+          (click)="onClassSelect(classItem.id!)"
+        >
+          <mat-radio-button [value]="classItem.id">
+            <div class="class-content">
+              <span
+                class="class-color"
+                [style.background-color]="classItem.colorCode"
+              ></span>
+              <span class="class-name">{{ classItem.className }}</span>
+            </div>
+          </mat-radio-button>
+        </div>
+      </div>
+
+      <div *ngIf="availableClasses.length === 0" class="no-results">
+        No classes available. Please create classes first.
+      </div>
+    </mat-radio-group>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="onSave()"
+      [disabled]="!canSave()"
+    >
+      Save
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,80 @@
+.project-name-dialog {
+  min-width: 450px;
+  max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 0 16px 0;
+    border-bottom: 1px solid #e0e0e0;
+
+    h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .close-btn {
+      color: #666;
+      margin: -8px -8px -8px 0;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 0;
+    margin: 0 0 24px 0;
+    min-height: 150px;
+    overflow-y: auto;
+
+    .dialog-description {
+      margin: 0 0 24px 0;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .form-field {
+      margin-bottom: 8px;
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .full-width {
+        width: 100%;
+      }
+    }
+  }
+
+  mat-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 0 0 0;
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+
+    .cancel-btn {
+      color: #666;
+      padding: 8px 20px;
+    }
+
+    .create-btn {
+      padding: 8px 20px;
+
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+}

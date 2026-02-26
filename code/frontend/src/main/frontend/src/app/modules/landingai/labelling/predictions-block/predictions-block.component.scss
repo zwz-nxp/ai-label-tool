@@ -1,0 +1,191 @@
+@use "../colors" as colors;
+@use "../mixins" as mixins;
+
+.predictions-block {
+  padding: colors.$spacing-md;
+
+  .predictions-header {
+    display: flex;
+    align-items: center;
+    padding: colors.$spacing-sm colors.$spacing-md;
+    background-color: #fff3e0;
+    border-left: 3px solid #ff9800;
+    border-radius: colors.$border-radius-small;
+    margin-bottom: colors.$spacing-sm;
+
+    .predictions-title {
+      font-weight: 600;
+      font-size: colors.$font-size-base;
+      color: colors.$text-primary;
+    }
+
+    .predictions-count {
+      color: colors.$text-hint;
+      font-size: colors.$font-size-sm;
+      margin-left: colors.$spacing-sm;
+    }
+
+    .predictions-toggle {
+      margin-left: auto;
+      transform: scale(0.8);
+    }
+  }
+
+  .model-selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: colors.$spacing-sm colors.$spacing-md;
+    background-color: #fafafa;
+    border-radius: colors.$border-radius-small;
+    margin-bottom: colors.$spacing-sm;
+
+    .model-name {
+      font-size: colors.$font-size-sm;
+      color: colors.$text-primary;
+      font-weight: 500;
+    }
+
+    .label-assist-btn {
+      font-size: 12px;
+      padding: 0 12px;
+      height: 28px;
+      line-height: 28px;
+    }
+  }
+
+  .no-predictions-message {
+    text-align: center;
+    color: colors.$text-hint;
+    padding: colors.$spacing-md;
+    font-size: colors.$font-size-base;
+  }
+
+  .hidden-predictions {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .annotation-groups {
+    mat-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: colors.$spacing-sm;
+    }
+
+    .annotation-group {
+      @include mixins.smooth-transition(all);
+      border-left: 3px solid #ff9800;
+
+      &:hover {
+        @include mixins.elevation(1);
+      }
+
+      .group-title {
+        display: flex;
+        align-items: center;
+        gap: colors.$spacing-sm;
+
+        .color-indicator {
+          width: 16px;
+          height: 16px;
+          border-radius: colors.$border-radius-small;
+          flex-shrink: 0;
+          border: 1px solid colors.$border-light;
+          @include mixins.smooth-transition(transform);
+
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
+
+        .class-name {
+          font-weight: 500;
+          flex: 1;
+        }
+
+        .annotation-count {
+          color: colors.$text-hint;
+          font-size: colors.$font-size-sm;
+          @include mixins.badge(
+            colors.$background-tertiary,
+            colors.$text-secondary
+          );
+        }
+      }
+
+      .annotations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: colors.$spacing-sm;
+
+        .annotation-item {
+          padding: colors.$spacing-sm;
+          border-radius: colors.$border-radius-medium;
+          cursor: pointer;
+          border: 1px dashed colors.$border-light;
+          background-color: #fafafa;
+          @include mixins.hover-effect;
+          @include mixins.click-feedback;
+          @include mixins.smooth-transition(all);
+
+          &:hover {
+            @include mixins.elevation(1);
+            transform: translateX(4px);
+          }
+
+          &.selected {
+            @include mixins.selected-state;
+            @include mixins.highlight-animation;
+          }
+
+          .annotation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 4px;
+
+            .annotation-label {
+              font-weight: 500;
+              font-size: colors.$font-size-base;
+              color: colors.$text-primary;
+            }
+
+            .prediction-badge {
+              font-size: 10px;
+              padding: 2px 6px;
+              background-color: #ff9800;
+              color: white;
+              border-radius: 10px;
+            }
+
+            .confidence-rate {
+              font-size: 11px;
+              padding: 2px 6px;
+              background-color: #4caf50;
+              color: white;
+              border-radius: 10px;
+              margin-right: auto;
+            }
+
+            .annotation-type {
+              @include mixins.badge(
+                colors.$background-tertiary,
+                colors.$text-secondary
+              );
+            }
+          }
+
+          .annotation-coordinates {
+            font-size: colors.$font-size-sm;
+            color: colors.$text-hint;
+            font-family: monospace;
+          }
+        }
+      }
+    }
+  }
+}

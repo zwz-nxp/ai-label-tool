@@ -1,0 +1,171 @@
+.prediction-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%; // 確保寬度固定
+  min-width: 100%; // 強制最小寬度
+  max-width: 100%; // 強制最大寬度
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .threshold-control {
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0; // 防止被壓縮
+    width: 100%; // 確保寬度固定
+    box-sizing: border-box;
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .threshold-inputs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .threshold-slider {
+        flex: 1;
+        min-width: 0; // 允許縮小
+      }
+
+      .threshold-input {
+        width: 80px;
+        flex-shrink: 0; // 防止被壓縮
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // 確保 mat-tab-group 佔據剩餘空間 - 參考 performance-analysis-tabs 的做法
+  ::ng-deep mat-tab-group,
+  ::ng-deep mat-tab-group.fixed-width-tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+
+    .mat-mdc-tab-header {
+      flex-shrink: 0 !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .mat-mdc-tab-header-pagination {
+      display: none !important; // 隱藏分頁按鈕
+    }
+
+    .mat-mdc-tab-label-container {
+      width: 100% !important;
+      flex-grow: 1 !important; // 讓容器填滿空間
+    }
+
+    .mat-mdc-tab-list {
+      width: 100% !important;
+      flex-grow: 1 !important; // 讓列表填滿空間
+    }
+
+    .mat-mdc-tab-labels {
+      width: 100% !important;
+      display: flex !important;
+      justify-content: flex-start !important;
+      gap: 0 !important;
+
+      .mat-mdc-tab,
+      .mdc-tab {
+        flex: 1 !important; // 平均分配寬度
+        min-width: 0 !important;
+        flex-grow: 1 !important;
+        flex-shrink: 1 !important;
+      }
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      flex: 1 !important;
+      overflow: hidden !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .mat-mdc-tab-body {
+      overflow: hidden !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .mat-mdc-tab-body-content {
+      height: 100% !important;
+      overflow: hidden !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+
+  .tab-content {
+    padding: 16px;
+    overflow-y: auto;
+    height: 100%; // 確保佔滿容器
+    max-height: 100%; // 防止超出
+    width: 100%; // 確保寬度固定
+    min-width: 350px; // 增加最小寬度,防止內容被壓縮
+    box-sizing: border-box; // 包含 padding 在寬度計算內
+
+    .class-marker {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      margin-right: 8px;
+    }
+
+    mat-accordion {
+      min-width: 330px; // accordion 最小寬度
+    }
+
+    .instance-list {
+      padding: 8px 0;
+
+      .instance-item {
+        padding: 4px 0;
+        font-size: 13px;
+        color: #666;
+        font-family: monospace;
+      }
+    }
+
+    .no-predictions {
+      text-align: center;
+      color: #999;
+      padding: 32px;
+    }
+
+    .json-output {
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      width: 100%; // 確保寬度固定
+      min-width: 330px; // 增加最小寬度,強制撐開容器
+      box-sizing: border-box; // 包含 padding 在寬度計算內
+    }
+  }
+}

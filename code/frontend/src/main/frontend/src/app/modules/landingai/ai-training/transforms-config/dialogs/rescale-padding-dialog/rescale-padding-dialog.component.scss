@@ -1,0 +1,107 @@
+/**
+ * RescalePaddingDialogComponent Styles
+ *
+ * Requirements:
+ * - 27.2: Use mat-raised-button with primary color for primary actions (Save)
+ * - 27.3: Use mat-stroked-button for secondary actions (Cancel)
+ * - 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/training-shared" as shared;
+@use "app/styles/dialog-shared" as dialog;
+
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  @include dialog.dialog-title;
+}
+
+mat-dialog-content {
+  @include dialog.dialog-content;
+}
+
+.dialog-description {
+  @include dialog.dialog-description;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: shared.$spacing-md;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-md;
+
+  @include shared.respond-to("sm") {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.size-field {
+  flex: 1;
+  max-width: 125px;
+
+  @include shared.respond-to("sm") {
+    max-width: none;
+  }
+
+  // Hide all borders
+  ::ng-deep {
+    // Hide the outline border completely
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      background: shared.$background-light;
+      border-radius: shared.$border-radius-sm;
+    }
+
+    .mat-mdc-form-field-text-suffix {
+      border: none !important;
+      padding-left: shared.$spacing-sm;
+    }
+
+    .mdc-text-field--outlined .mat-mdc-form-field-infix {
+      border: none !important;
+    }
+
+    // For older Material versions
+    .mat-form-field-suffix {
+      border: none !important;
+    }
+
+    .mat-form-field-outline {
+      display: none !important;
+    }
+  }
+}
+
+.size-separator {
+  font-size: shared.$font-size-xl;
+  color: shared.$text-secondary;
+  margin-top: -20px;
+
+  @include shared.respond-to("sm") {
+    display: none;
+  }
+}
+
+.preview-info {
+  @include shared.info-box(
+    rgba(shared.$info-color, 0.1),
+    shared.$primary-color
+  );
+}
+
+mat-dialog-actions {
+  @include dialog.dialog-actions;
+}

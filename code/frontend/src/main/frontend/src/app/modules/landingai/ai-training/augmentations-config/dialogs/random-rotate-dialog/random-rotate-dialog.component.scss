@@ -1,0 +1,18 @@
+/**
+ * Random Rotate Dialog Styles
+ * Uses shared dialog styles for consistent Material Design
+ */
+
+@use "app/styles/dialog-shared" as dialog;
+
+.limit-slider {
+  flex: 1;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}

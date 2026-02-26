@@ -1,0 +1,61 @@
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 500px;
+  padding: 0;
+
+  .form-section {
+    margin-bottom: 1rem;
+
+    .half-width {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Make input background white with !important to override Material defaults
+::ng-deep .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: white !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    background-color: white !important;
+  }
+
+  .mdc-text-field--filled {
+    background-color: white !important;
+  }
+}
+
+mat-dialog-content {
+  overflow: visible;
+  min-height: 200px;
+  padding: 1.5rem;
+}
+
+mat-dialog-actions {
+  padding: 1rem 1.5rem;
+  margin: 0;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  padding: 1.5rem 1.5rem 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+// Additional global override to ensure white background
+::ng-deep mat-dialog-container {
+  .mat-mdc-form-field {
+    .mdc-text-field {
+      background-color: white !important;
+    }
+
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: white !important;
+    }
+  }
+}

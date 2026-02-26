@@ -1,0 +1,27 @@
+/**
+ * Random Augment Dialog Styles
+ * Uses shared dialog styles for consistent Material Design
+ */
+
+@use "app/styles/training-shared" as shared;
+@use "app/styles/dialog-shared" as dialog;
+
+.form-field {
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.magnitude-slider {
+  flex: 1;
+}
+
+.value-display {
+  min-width: 30px;
+  text-align: center;
+  font-size: shared.$font-size-md;
+  font-weight: shared.$font-weight-medium;
+  color: shared.$text-primary;
+}

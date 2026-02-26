@@ -1,0 +1,345 @@
+// Dynamic Confusion Matrix Styles (與 Performance Report 完全相同)
+.confusion-matrix-container {
+  position: relative;
+  width: 100%;
+  min-height: 216px; // 從 270px 再縮小 20% = 216px
+
+  // Loading Overlay
+  .loading-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 216px; // 從 270px 再縮小 20% = 216px
+    gap: 16px;
+
+    p {
+      color: #666;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  // Matrix Section (與 Performance Report 相同)
+  .matrix-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  // Matrix Header (與 Performance Report 相同)
+  .matrix-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    width: 100%; // 確保寬度為 100%
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+      line-height: 40px;
+      text-align: center; // 確保文字置中
+    }
+  }
+
+  // Confusion Matrix Grid (與 Performance Report 相同的 Grid 佈局)
+  .confusion-matrix-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .main-container {
+    display: flex;
+    max-width: 50%;
+    gap: 0;
+    transform: scale(0.8); // 縮小 20%
+    transform-origin: top center; // 從上方中心縮放
+  }
+
+  // Left Section: GT labels and Precision label
+  .left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .ground-truth-label {
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 40px;
+  }
+
+  .gt-class-label {
+    min-width: 80px;
+    max-width: 100px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    background-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-height: 40px;
+
+    .class-name {
+      display: block;
+    }
+  }
+
+  .precision-label {
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #f5f5f5;
+    min-height: 32px;
+  }
+
+  // Middle Section: Matrix cells and Prediction labels
+  .middle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+  }
+
+  .top-empty {
+    min-height: 40px;
+  }
+
+  .matrix-cells-row {
+    display: flex;
+    gap: 2px;
+    min-height: 40px;
+  }
+
+  .matrix-cell {
+    flex: 1;
+    min-width: 65px;
+    max-width: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+
+    &.diagonal {
+      // Removed blue border (與 Performance Report 相同)
+    }
+
+    &.clickable {
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1;
+      }
+    }
+
+    &:not(.clickable) {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+
+  .bottom-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 80px; // 增加高度以容納 Precision row 和 Prediction labels
+  }
+
+  .precision-row {
+    display: flex;
+    gap: 2px;
+    min-height: 40px; // 增加高度從 32px 到 40px
+    align-items: center;
+    margin-top: 0;
+    background-color: #f5f5f5;
+    padding: 4px 0; // 增加上下 padding
+  }
+
+  .precision-cell {
+    flex: 1;
+    min-width: 65px;
+    max-width: 104px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    min-height: 40px; // 增加高度從 32px 到 40px
+    padding: 4px 2px; // 增加內部 padding
+
+    &:empty {
+      background-color: transparent;
+    }
+  }
+
+  .prediction-class-labels {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+  }
+
+  .prediction-class-label {
+    flex: 1;
+    min-width: 65px;
+    max-width: 104px;
+    padding: 6px 4px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 40px;
+    position: relative;
+
+    .class-name {
+      display: block;
+      transform: rotate(-45deg);
+      transform-origin: center;
+      white-space: nowrap;
+    }
+  }
+
+  // Right Section: Recall label, value and Prediction label
+  .right-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 60px;
+  }
+
+  .recall-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    background-color: #f5f5f5;
+  }
+
+  .recall-label {
+    padding: 8px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .recall-value-row {
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+
+    &:empty,
+    &:has(:empty) {
+      background-color: transparent;
+    }
+  }
+
+  .right-empty {
+    flex: 1;
+  }
+
+  .prediction-label-bottom {
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 60px;
+  }
+
+  // No Data State
+  .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 216px; // 從 270px 再縮小 20% = 216px
+    gap: 8px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #999;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .confusion-matrix-container {
+    .matrix-cell {
+      min-width: 65px;
+      font-size: 12px;
+    }
+
+    .gt-class-label {
+      min-width: 80px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .confusion-matrix-container {
+    .confusion-matrix-grid {
+      padding: 0;
+    }
+
+    .matrix-cell {
+      min-width: 58.5px;
+      font-size: 11px;
+    }
+  }
+}

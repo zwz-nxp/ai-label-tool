@@ -1,0 +1,256 @@
+mat-dialog-content {
+  min-width: 700px;
+  min-height: 300px;
+  padding: 20px;
+}
+
+.loading-container,
+.error-container,
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-container {
+  mat-spinner {
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.error-container {
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: #f44336;
+    font-weight: 500;
+  }
+}
+
+.empty-container {
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: rgba(0, 0, 0, 0.3);
+  }
+
+  p {
+    margin: 8px 0;
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .hint {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.snapshots-table {
+  width: 100%;
+
+  th {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  td {
+    padding: 12px 8px;
+  }
+
+  strong {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 20px;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  mat-dialog-content {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 16px;
+    min-height: 250px;
+  }
+
+  .loading-container,
+  .error-container,
+  .empty-container {
+    padding: 30px 16px;
+  }
+
+  .error-container {
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+
+  .empty-container {
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+
+    .hint {
+      font-size: 12px;
+    }
+  }
+
+  .snapshots-table {
+    font-size: 14px;
+
+    th {
+      font-size: 13px;
+      padding: 10px 6px;
+    }
+
+    td {
+      padding: 10px 6px;
+      font-size: 13px;
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 12px 16px;
+
+    button {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  mat-dialog-content {
+    padding: 12px;
+    min-height: 200px;
+  }
+
+  .loading-container,
+  .error-container,
+  .empty-container {
+    padding: 20px 12px;
+  }
+
+  .loading-container {
+    mat-spinner {
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+  }
+
+  .error-container {
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 13px;
+    }
+  }
+
+  .empty-container {
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 13px;
+      margin: 6px 0;
+    }
+
+    .hint {
+      font-size: 11px;
+    }
+  }
+
+  .snapshots-table {
+    font-size: 12px;
+
+    th {
+      font-size: 11px;
+      padding: 8px 4px;
+    }
+
+    td {
+      padding: 8px 4px;
+      font-size: 12px;
+    }
+
+    // Stack table cells on very small screens
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 8px;
+    }
+
+    td {
+      display: block;
+      text-align: left;
+      padding: 4px 0;
+      border: none;
+
+      &:before {
+        content: attr(data-label);
+        font-weight: 600;
+        display: inline-block;
+        width: 100px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 10px 12px;
+
+    button {
+      width: 100%;
+      font-size: 13px;
+    }
+  }
+}

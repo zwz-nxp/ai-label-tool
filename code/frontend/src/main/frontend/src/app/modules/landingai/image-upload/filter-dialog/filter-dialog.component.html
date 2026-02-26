@@ -1,0 +1,13 @@
+<div class="filter-dialog">
+  <app-filter-panel
+    [activeFilters]="data.activeFilters"
+    [availableClasses]="data.availableClasses"
+    [availableTags]="data.availableTags"
+    [availableMetadata]="data.availableMetadata"
+    [selectedModelId]="data.selectedModelId"
+    [hidePredictionLabels]="data.hidePredictionLabels || false"
+    (filterChange)="onFilterChange($event)"
+    (filterClear)="onFilterClear()"
+    (closePanel)="onClosePanel()"
+  ></app-filter-panel>
+</div>

@@ -1,0 +1,323 @@
+/**
+ * HyperparametersConfigComponent Styles
+ *
+ * Styles for the hyperparameters configuration component.
+ * Uses Material Design styling with consistent spacing and colors.
+ *
+ * Requirements 5, 6: Hyperparameters configuration UI
+ * Requirement 27.5: Display tooltips on hover for all configurable items
+ * Requirement 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/training-shared" as *;
+
+.hyperparameters-config-container {
+  @include section-container;
+}
+
+// Section Header
+.section-header {
+  @include section-header;
+}
+
+// Inline Configuration Row - Epoch and Model Size on same line
+.config-row-inline {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+// Config Item (individual config block)
+.config-item {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  &.model-size-config {
+    @include card-item;
+    width: fit-content;
+    min-width: 380px;
+  }
+}
+
+// Config Label
+.config-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+
+  .label-text {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+
+  .info-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $text-secondary;
+    cursor: help;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+}
+
+// Config Controls
+.config-controls {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+// Epoch Input Field
+.epoch-input-field {
+  width: 120px;
+
+  input {
+    text-align: center;
+    font-weight: $font-weight-medium;
+  }
+
+  .error-hint {
+    color: $error-color;
+  }
+
+  // Remove outline/border
+  ::ng-deep {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      background: $background-light;
+      border-radius: $border-radius-sm;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+  }
+}
+
+// Slider Wrapper - takes 2/3 of Epoch area
+.slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  width: 66.67%;
+
+  .slider-min,
+  .slider-max {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .epoch-slider {
+    flex: 1;
+    @include slider-color($primary-color, rgba($primary-color, 0.3));
+  }
+}
+
+// Value Display
+.value-display {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background-color: $primary-light;
+  border-radius: $border-radius-sm;
+  width: fit-content;
+
+  .value-number {
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+    color: $primary-color;
+
+    &.invalid {
+      color: $error-color;
+    }
+  }
+
+  .value-unit {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+}
+
+// Model Size Select
+.model-size-select {
+  width: 100%;
+  max-width: 280px;
+
+  mat-icon {
+    margin-right: $spacing-sm;
+    font-size: 20px;
+    vertical-align: middle;
+    color: $text-secondary;
+  }
+
+  // Remove outline/border
+  ::ng-deep {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      background: $background-light;
+      border-radius: $border-radius-sm;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled)
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(
+        .mdc-text-field--focused
+      ):hover
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__leading,
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__notch,
+    .mdc-text-field--outlined.mdc-text-field--focused
+      .mdc-notched-outline
+      .mdc-notched-outline__trailing {
+      border-color: transparent !important;
+    }
+  }
+}
+
+// Model Size Info
+.model-size-info {
+  display: flex;
+  align-items: center;
+
+  .size-description {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm $spacing-md;
+    background: rgba($primary-color, 0.05);
+    border-radius: $border-radius-sm;
+    color: $primary-color;
+    font-size: $font-size-sm;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Configuration Summary
+.config-summary {
+  @include config-summary;
+}
+
+// Responsive adjustments
+@include respond-to("md") {
+  .config-row-inline {
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+
+  .config-item {
+    width: 100%;
+  }
+
+  .model-size-select {
+    max-width: 100%;
+  }
+
+  .config-summary {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+// Model Size Loading Spinner
+.model-size-spinner {
+  display: inline-block;
+  margin-left: $spacing-sm;
+}

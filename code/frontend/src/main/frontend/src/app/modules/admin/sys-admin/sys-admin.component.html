@@ -1,0 +1,58 @@
+<div class="flex max-h-full gap-4 p-2">
+  <mat-card>
+    <div class="flex items-center justify-between gap-4 p-4">
+      <h1 class="text-2xl">NXP Production Years</h1>
+      <button
+        (click)="openAddProdYear()"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Add production year"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    <mat-card-content class="overflow-auto">
+      <div *ngFor="let nxpYear of nxpProdWeeks" class="flex gap-2">
+        <mat-form-field>
+          <mat-label>Year</mat-label>
+          <input [(ngModel)]="nxpYear.year" matInput readonly />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Start date</mat-label>
+          <input
+            [(ngModel)]="nxpYear.startDate"
+            [disabled]="isPastProductionYear(nxpYear)"
+            [matDatepickerFilter]="du.isMonday"
+            [matDatepicker]="picker"
+            matInput
+          />
+          <mat-hint>YYYY-MM-DD</mat-hint>
+          <mat-datepicker-toggle
+            [for]="picker"
+            matSuffix
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <button
+          (click)="submitNewYear(nxpYear)"
+          *ngIf="
+            authorizationService.doesCurrentUserHaveRoleForCurrentLocation(
+              location.id,
+              'Manager_Planning_Site'
+            )
+          "
+          [disabled]="isPastProductionYear(nxpYear)"
+          class="mt-2"
+          mat-mini-fab
+          matTooltip="Save"
+        >
+          <mat-icon>save</mat-icon>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<app-spinner *ngIf="isLoadingResults"></app-spinner>

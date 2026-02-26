@@ -1,0 +1,75 @@
+<div class="prediction-panel">
+  <!-- Confidence Threshold Control -->
+  <div class="threshold-control">
+    <label>Confidence Threshold</label>
+    <div class="threshold-inputs">
+      <mat-slider min="0" max="1" step="0.01" class="threshold-slider">
+        <input
+          matSliderThumb
+          [value]="confidenceThreshold"
+          (input)="onSliderChange($any($event.target).value)"
+        />
+      </mat-slider>
+      <input
+        type="number"
+        min="0"
+        max="1"
+        step="0.01"
+        [value]="confidenceThreshold"
+        (blur)="onInputChange($any($event.target).value)"
+        class="threshold-input"
+      />
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <mat-tab-group
+    [selectedIndex]="selectedTabIndex"
+    (selectedIndexChange)="onTabChange($event)"
+    [dynamicHeight]="false"
+    mat-stretch-tabs="false"
+    class="fixed-width-tabs"
+  >
+    <!-- Prediction Tab -->
+    <mat-tab label="Prediction">
+      <div class="tab-content">
+        <mat-accordion *ngIf="groupedPredictions.length > 0">
+          <mat-expansion-panel *ngFor="let group of groupedPredictions">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <span
+                  class="class-marker"
+                  [style.background-color]="group.color"
+                ></span>
+                {{ group.className }} ({{ group.count }})
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="instance-list">
+              <div
+                *ngFor="let instance of group.instances"
+                class="instance-item"
+              >
+                {{ instance.index }} - x {{ instance.x }}, y {{ instance.y }},
+                {{ instance.width }} x {{ instance.height }}, ({{
+                  (instance.confidence * 100).toFixed(0)
+                }}%)
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+
+        <p *ngIf="groupedPredictions.length === 0" class="no-predictions">
+          No predictions available
+        </p>
+      </div>
+    </mat-tab>
+
+    <!-- JSON Tab -->
+    <mat-tab label="JSON output">
+      <div class="tab-content">
+        <pre class="json-output">{{ jsonOutput }}</pre>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

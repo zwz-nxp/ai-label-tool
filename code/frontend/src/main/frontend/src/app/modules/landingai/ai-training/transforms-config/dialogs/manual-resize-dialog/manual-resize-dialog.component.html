@@ -1,0 +1,93 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">photo_size_select_large</mat-icon>
+  Manual Resize
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Resize images to exact dimensions. Enable "Keep aspect ratio" to
+    automatically calculate one dimension based on the other.
+  </p>
+
+  <div class="form-container">
+    <!-- Width and Height inputs -->
+    <!-- Requirement 8.1: Display Width and Height number inputs -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="size-field">
+        <mat-label>Width</mat-label>
+        <input
+          (ngModelChange)="onWidthChange()"
+          [(ngModel)]="width"
+          data-testid="manual-resize-dialog-width-input"
+          matInput
+          min="1"
+          type="number"
+        />
+        <span matSuffix>px</span>
+        <mat-error *ngIf="widthError">{{ widthError }}</mat-error>
+      </mat-form-field>
+
+      <span class="size-separator">×</span>
+
+      <mat-form-field appearance="outline" class="size-field">
+        <mat-label>Height</mat-label>
+        <input
+          (ngModelChange)="onHeightChange()"
+          [(ngModel)]="height"
+          data-testid="manual-resize-dialog-height-input"
+          matInput
+          min="1"
+          type="number"
+        />
+        <span matSuffix>px</span>
+        <mat-error *ngIf="heightError">{{ heightError }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <!-- Keep aspect ratio checkbox -->
+    <!-- Requirement 8.2: Provide "Keep aspect ratio" checkbox -->
+    <div class="checkbox-row">
+      <mat-checkbox
+        (ngModelChange)="onKeepAspectRatioChange()"
+        [(ngModel)]="keepAspectRatio"
+        color="primary"
+        data-testid="manual-resize-dialog-keep-aspect-ratio"
+      >
+        Keep aspect ratio
+      </mat-checkbox>
+    </div>
+
+    <!-- Aspect ratio info -->
+    <div *ngIf="keepAspectRatio" class="aspect-ratio-info">
+      <mat-icon>link</mat-icon>
+      <span>Current aspect ratio: {{ aspectRatioDisplay }}</span>
+    </div>
+
+    <!-- Preview info -->
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>Output size: {{ width }} × {{ height }} pixels</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <!-- Requirement 8.6: Cancel button closes dialog without saving -->
+  <button
+    (click)="onCancel()"
+    data-testid="manual-resize-dialog-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <!-- Requirement 8.5: Save button validates and closes with configuration -->
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="manual-resize-dialog-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

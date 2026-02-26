@@ -1,0 +1,127 @@
+.batch-set-metadata-dialog {
+  min-width: 500px;
+  max-width: 600px;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+
+    mat-icon {
+      color: #1976d2;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 20px 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .info-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: #e3f2fd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    color: #1976d2;
+    font-size: 14px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .metadata-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .metadata-field {
+      .full-width {
+        width: 100%;
+      }
+
+      // Fix the vertical line (notch) issue in Material outlined form fields
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        .mdc-notched-outline__notch {
+          border-left: none !important;
+          border-right: none !important;
+        }
+      }
+
+      // Ensure consistent border styling
+      ::ng-deep .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(0, 0, 0, 0.38);
+        }
+      }
+
+      // Hover state
+      ::ng-deep mat-form-field:hover .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(0, 0, 0, 0.87);
+        }
+      }
+
+      // Focused state
+      ::ng-deep mat-form-field.mat-focused .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #1976d2;
+          border-width: 2px;
+        }
+      }
+    }
+  }
+
+  .no-metadata-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: #666;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      color: #ff9800;
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 8px 0;
+      font-size: 14px;
+
+      &.hint {
+        color: #999;
+        font-size: 13px;
+      }
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    margin: 0;
+
+    button {
+      margin-left: 8px;
+    }
+  }
+}

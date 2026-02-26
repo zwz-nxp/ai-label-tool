@@ -1,0 +1,214 @@
+<div class="performance-report-tab">
+  <!-- Loading State -->
+  <div *ngIf="isLoadingImages$ | async" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading performance report...</p>
+  </div>
+
+  <!-- Loaded State -->
+  <div
+    *ngIf="(confidentialReport$ | async) && !(isLoadingImages$ | async)"
+    class="content-loaded"
+  >
+    <!-- Top Section: Evaluation Set and Performance Summary -->
+    <div class="evaluation-set-and-performance-summary">
+      <!-- First Row: Controls -->
+      <div class="evaluation-set-and-performance-row">
+        <!-- Evaluation Set Selector -->
+        <div class="evaluation-set-section">
+          <div class="label-text">
+            <p>Evaluation set:</p>
+          </div>
+          <mat-form-field appearance="outline" class="evaluation-set-select">
+            <mat-select
+              [value]="selectedEvaluationSet$ | async"
+              (selectionChange)="onEvaluationSetChange($event.value)"
+            >
+              <mat-option value="train">Train set</mat-option>
+              <mat-option value="dev">Dev set</mat-option>
+              <mat-option value="test">Test set</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Labeled Data Info -->
+        <div class="labeled-data-info">
+          <p>
+            Labeled Data:
+            <span
+              >({{ imageCount$ | async }} images,
+              {{ instanceCount$ | async }} instances labeled)</span
+            >
+          </p>
+        </div>
+
+        <!-- Confidence Threshold Section -->
+        <div class="confidence-threshold-section">
+          <span
+            >Confidence Threshold:
+            <span class="threshold-value">
+              <p class="inline-text">
+                {{
+                  ((confidentialReport$ | async)?.confidenceThreshold ?? 0) /
+                    100 | number: "1.2-2"
+                }}
+              </p>
+            </span>
+          </span>
+          <div class="adjust-button-container">
+            <button
+              mat-button
+              color="primary"
+              class="adjust-threshold"
+              (click)="openAdjustThresholdDialog()"
+            >
+              Adjust
+            </button>
+          </div>
+        </div>
+
+        <!-- CSV Export Button -->
+        <div class="csv-export-section">
+          <button
+            mat-stroked-button
+            (click)="onExportCsv()"
+            [disabled]="(imageCount$ | async) === 0"
+            class="download-model-evaluation-report-csv"
+          >
+            <mat-icon>download</mat-icon>
+            Download CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Second Row: Performance Metrics with Circular Progress -->
+      <div class="performance-metrics-row">
+        <!-- F1 Metric -->
+        <div class="metric-container">
+          <div class="circular-progress-container">
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="100"
+              diameter="48"
+              strokeWidth="6"
+              class="background-circle"
+            ></mat-progress-spinner>
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="((currentMetrics$ | async)?.f1 ?? 0) * 100"
+              diameter="48"
+              strokeWidth="6"
+              class="foreground-circle"
+            ></mat-progress-spinner>
+          </div>
+          <div class="metric-info">
+            <div class="metric-value-container">
+              <h2>
+                {{ formatMetric((currentMetrics$ | async)?.f1) }}
+              </h2>
+              <div class="metric-label-with-icon">
+                <p>F1</p>
+                <div class="spacer"></div>
+                <mat-icon
+                  class="info-icon"
+                  fontSize="small"
+                  matTooltip="The F1 score combines precision and recall into a single score, creating a unified measure that assesses the model's effectiveness in minimizing false positives and false negatives. A higher F1 score indicates the model is balancing the two factors well. We calculate F1 using micro-averaging."
+                  matTooltipPosition="above"
+                  >info</mat-icon
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Precision Metric -->
+        <div class="metric-container">
+          <div class="circular-progress-container">
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="100"
+              diameter="48"
+              strokeWidth="6"
+              class="background-circle"
+            ></mat-progress-spinner>
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="((currentMetrics$ | async)?.precision ?? 0) * 100"
+              diameter="48"
+              strokeWidth="6"
+              class="foreground-circle"
+            ></mat-progress-spinner>
+          </div>
+          <div class="metric-info">
+            <div class="metric-value-container">
+              <h2>
+                {{ formatMetric((currentMetrics$ | async)?.precision) }}
+              </h2>
+              <div class="metric-label-with-icon">
+                <p>Precision</p>
+                <div class="spacer"></div>
+                <mat-icon
+                  class="info-icon"
+                  fontSize="small"
+                  matTooltip="Precision"
+                  matTooltipPosition="above"
+                  >info</mat-icon
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recall Metric -->
+        <div class="metric-container">
+          <div class="circular-progress-container">
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="100"
+              diameter="48"
+              strokeWidth="6"
+              class="background-circle"
+            ></mat-progress-spinner>
+            <mat-progress-spinner
+              mode="determinate"
+              [value]="((currentMetrics$ | async)?.recall ?? 0) * 100"
+              diameter="48"
+              strokeWidth="6"
+              class="foreground-circle"
+            ></mat-progress-spinner>
+          </div>
+          <div class="metric-info">
+            <div class="metric-value-container">
+              <h2>
+                {{ formatMetric((currentMetrics$ | async)?.recall) }}
+              </h2>
+              <div class="metric-label-with-icon">
+                <p>Recall</p>
+                <div class="spacer"></div>
+                <mat-icon
+                  class="info-icon"
+                  fontSize="small"
+                  matTooltip="Recall"
+                  matTooltipPosition="above"
+                  >info</mat-icon
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Analysis Tabs -->
+    <app-performance-analysis-tabs></app-performance-analysis-tabs>
+  </div>
+
+  <!-- No Data State -->
+  <div
+    *ngIf="!(confidentialReport$ | async) && !(isLoadingImages$ | async)"
+    class="no-data"
+  >
+    <mat-icon>info</mat-icon>
+    <p>Performance report unavailable</p>
+  </div>
+</div>

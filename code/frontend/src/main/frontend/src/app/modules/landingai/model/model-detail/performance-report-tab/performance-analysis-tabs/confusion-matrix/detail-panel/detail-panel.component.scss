@@ -1,0 +1,374 @@
+.detail-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+
+// Panel Header
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f5f5f5;
+
+  .back-button {
+    flex-shrink: 0;
+  }
+
+  .header-content {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .cell-info {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+
+      strong {
+        color: #333;
+      }
+    }
+  }
+}
+
+// Loading State
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Error State
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    color: #d32f2f;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  gap: 16px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #999;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Panel Content
+.panel-content {
+  flex: 1;
+  overflow: visible; // 移除 scrollbar
+  padding: 16px;
+}
+
+// Image Gallery: Two Columns Layout (GT + Prediction side by side)
+.image-gallery-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.column-headers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #666;
+  }
+}
+
+.image-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-row-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+// Image Card
+.image-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fff;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+
+    .image-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 75%; // 4:3 aspect ratio
+  background: #f5f5f5;
+  overflow: hidden;
+
+  .thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  // Label Overlay (Ground Truth or Prediction)
+  .label-overlay {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .label-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 6px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+    .label-text {
+      color: #333;
+    }
+
+    .confidence-badge {
+      padding: 1px 4px;
+      background: #2196f3;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+  }
+
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    mat-icon {
+      color: #fff;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.image-info {
+  padding: 6px 8px;
+  background: #fafafa;
+  border-top: 1px solid #e0e0e0;
+
+  .image-name {
+    margin: 0;
+    font-size: 11px;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Enlarged Image View
+.enlarged-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.enlarged-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: default;
+
+  .close-enlarged-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+
+    &:hover {
+      background: #fff;
+    }
+  }
+
+  .enlarged-image {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .enlarged-info {
+    padding: 16px;
+    background: #fff;
+
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .metadata {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .metadata-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #666;
+
+      strong {
+        color: #333;
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+
+        &.correct {
+          color: #4caf50;
+        }
+
+        &.incorrect {
+          color: #f44336;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .image-row-pair {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .column-headers {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .enlarged-content {
+    max-width: 95vw;
+    max-height: 95vh;
+
+    .enlarged-image {
+      max-height: 60vh;
+    }
+  }
+}

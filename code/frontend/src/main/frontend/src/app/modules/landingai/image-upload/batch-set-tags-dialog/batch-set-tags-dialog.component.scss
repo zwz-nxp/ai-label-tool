@@ -1,0 +1,79 @@
+.dialog-container {
+  width: 600px;
+  max-width: 90vw;
+}
+
+.info-text {
+  margin-bottom: 16px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+}
+
+.search-field {
+  width: 100%;
+  margin-bottom: 16px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.tags-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.tag-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s;
+  background-color: white;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.24);
+  }
+
+  &.selected {
+    background-color: rgba(63, 81, 181, 0.08);
+    border-color: #3f51b5;
+  }
+
+  mat-checkbox {
+    width: 100%;
+    pointer-events: none;
+
+    ::ng-deep .mat-checkbox-inner-container {
+      pointer-events: auto;
+    }
+
+    ::ng-deep .mat-checkbox-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.no-results {
+  padding: 24px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.38);
+  grid-column: 1 / -1;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}

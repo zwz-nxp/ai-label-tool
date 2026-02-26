@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Model Parameter Details</h2>
+
+<mat-dialog-content>
+  <div class="dialog-content">
+    <div class="detail-section">
+      <div class="detail-row">
+        <span class="label">ID:</span>
+        <span class="value">{{ data.modelParam.id }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Location:</span>
+        <span class="value">{{
+          data.modelParam.locationName || data.modelParam.locationId
+        }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Model Name:</span>
+        <span class="value">{{ data.modelParam.modelName }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Model Type:</span>
+        <span class="value">{{ data.modelParam.modelType }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Created At:</span>
+        <span class="value">{{ formatDate(data.modelParam.createdAt) }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Created By:</span>
+        <span class="value">{{ data.modelParam.createdBy }}</span>
+      </div>
+    </div>
+
+    <div class="parameters-section">
+      <div class="section-title">Parameters (JSON)</div>
+      <pre class="json-display">{{ formattedParameters }}</pre>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onClose()" color="primary" mat-raised-button>Close</button>
+</mat-dialog-actions>

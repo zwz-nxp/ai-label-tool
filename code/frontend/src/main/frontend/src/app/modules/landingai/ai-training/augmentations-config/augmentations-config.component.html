@@ -1,0 +1,201 @@
+<div class="augmentations-config-container">
+  <!-- Section Header -->
+  <div class="section-header">
+    <h3>Data Augmentations</h3>
+    <p class="section-description">
+      Configure data augmentation options to increase training data diversity.
+    </p>
+  </div>
+
+  <!-- Active Augmentations List -->
+  <!--
+    Validates: Requirement 10.1 - Display "Horizontal Flip" as default augmentation
+    Validates: Requirement 10.2 - Display "Random Augment" as default augmentation
+    Validates: Requirement 10.3 - Display Edit button on hover
+  -->
+  <div class="augmentations-list">
+    <div
+      (mouseenter)="hoveredAugmentation = type"
+      (mouseleave)="hoveredAugmentation = null"
+      *ngFor="let type of activeAugmentations; trackBy: trackByType"
+      [attr.data-testid]="'augmentation-item-' + type"
+      [matTooltip]="augmentationItems[type].tooltip"
+      class="augmentation-item"
+      matTooltipPosition="above"
+    >
+      <div class="augmentation-header">
+        <div class="augmentation-info">
+          <mat-icon class="augmentation-icon"
+            >{{ augmentationItems[type].icon }}
+          </mat-icon>
+          <div class="augmentation-details">
+            <span class="augmentation-name">{{
+              augmentationItems[type].label
+            }}</span>
+            <span class="augmentation-value">{{
+              getAugmentationDisplayValue(type)
+            }}</span>
+          </div>
+        </div>
+
+        <div class="augmentation-actions">
+          <!-- Edit Button - shown on hover -->
+          <!-- Requirement 10.3: Display Edit button on hover -->
+          <button
+            (click)="openAugmentationDialog(type)"
+            [attr.data-testid]="'augmentation-edit-' + type"
+            [class.visible]="hoveredAugmentation === type"
+            class="edit-button"
+            mat-icon-button
+            matTooltip="Edit settings"
+            matTooltipPosition="above"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <!-- Remove Button - shown on hover for non-default augmentations -->
+          <!-- Requirement 11.5: Allow removing added augmentation items -->
+          <button
+            (click)="removeAugmentation(type)"
+            *ngIf="!isDefaultAugmentation(type)"
+            [attr.data-testid]="'augmentation-remove-' + type"
+            [class.visible]="hoveredAugmentation === type"
+            class="remove-button"
+            mat-icon-button
+            matTooltip="Remove augmentation"
+            matTooltipPosition="above"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Augmentation Button -->
+  <!--
+    Validates: Requirement 11.1 - Provide add button to add new augmentation options
+    Validates: Requirement 11.2 - Display menu with available augmentation types
+    Validates: Requirement 11.3 - Support adding various augmentation types
+  -->
+  <div class="add-augmentation-section">
+    <button
+      [disabled]="availableAugmentations.length === 0"
+      [matMenuTriggerFor]="addAugmentationMenu"
+      class="add-augmentation-button"
+      data-testid="add-augmentation-button"
+      mat-stroked-button
+      matTooltip="Add a new data augmentation"
+      matTooltipPosition="above"
+    >
+      <mat-icon>add</mat-icon>
+      Add Augmentation
+    </button>
+
+    <mat-menu #addAugmentationMenu="matMenu">
+      <!-- Random Brightness -->
+      <button
+        (click)="addAugmentation('randomBrightness')"
+        [disabled]="!canAddAugmentation('randomBrightness')"
+        data-testid="add-random-brightness-option"
+        mat-menu-item
+      >
+        <mat-icon>brightness_6</mat-icon>
+        <span>Random Brightness</span>
+      </button>
+
+      <!-- Blur -->
+      <button
+        (click)="addAugmentation('blur')"
+        [disabled]="!canAddAugmentation('blur')"
+        data-testid="add-blur-option"
+        mat-menu-item
+      >
+        <mat-icon>blur_on</mat-icon>
+        <span>Blur</span>
+      </button>
+
+      <!-- Motion Blur -->
+      <button
+        (click)="addAugmentation('motionBlur')"
+        [disabled]="!canAddAugmentation('motionBlur')"
+        data-testid="add-motion-blur-option"
+        mat-menu-item
+      >
+        <mat-icon>motion_photos_on</mat-icon>
+        <span>Motion Blur</span>
+      </button>
+
+      <!-- Gaussian Blur -->
+      <button
+        (click)="addAugmentation('gaussianBlur')"
+        [disabled]="!canAddAugmentation('gaussianBlur')"
+        data-testid="add-gaussian-blur-option"
+        mat-menu-item
+      >
+        <mat-icon>blur_circular</mat-icon>
+        <span>Gaussian Blur</span>
+      </button>
+
+      <!-- Hue Saturation Value -->
+      <button
+        (click)="addAugmentation('hueSaturationValue')"
+        [disabled]="!canAddAugmentation('hueSaturationValue')"
+        data-testid="add-hue-saturation-option"
+        mat-menu-item
+      >
+        <mat-icon>palette</mat-icon>
+        <span>Hue Saturation Value</span>
+      </button>
+
+      <!-- Random Contrast -->
+      <button
+        (click)="addAugmentation('randomContrast')"
+        [disabled]="!canAddAugmentation('randomContrast')"
+        data-testid="add-random-contrast-option"
+        mat-menu-item
+      >
+        <mat-icon>contrast</mat-icon>
+        <span>Random Contrast</span>
+      </button>
+
+      <!-- Vertical Flip -->
+      <button
+        (click)="addAugmentation('verticalFlip')"
+        [disabled]="!canAddAugmentation('verticalFlip')"
+        data-testid="add-vertical-flip-option"
+        mat-menu-item
+      >
+        <mat-icon>flip_camera_android</mat-icon>
+        <span>Vertical Flip</span>
+      </button>
+
+      <!-- Random Rotate -->
+      <button
+        (click)="addAugmentation('randomRotate')"
+        [disabled]="!canAddAugmentation('randomRotate')"
+        data-testid="add-random-rotate-option"
+        mat-menu-item
+      >
+        <mat-icon>rotate_right</mat-icon>
+        <span>Random Rotate</span>
+      </button>
+    </mat-menu>
+  </div>
+
+  <!-- Configuration Summary -->
+  <div class="config-summary">
+    <div class="summary-title">
+      Active Augmentations ({{ activeAugmentations.length }})
+    </div>
+    <div class="summary-items">
+      <div *ngFor="let type of activeAugmentations" class="summary-item">
+        <mat-icon>{{ augmentationItems[type].icon }}</mat-icon>
+        <span
+          >{{ augmentationItems[type].label }}:
+          {{ getAugmentationDisplayValue(type) }}</span
+        >
+      </div>
+    </div>
+  </div>
+</div>

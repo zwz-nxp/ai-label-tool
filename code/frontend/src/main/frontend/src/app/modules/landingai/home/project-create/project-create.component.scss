@@ -1,0 +1,530 @@
+// Apply background to the entire component host
+:host {
+  display: block;
+  background-color: #e5f5e0; // Light green background to match upload image page
+  min-height: 100vh; // Ensure background covers full viewport height
+}
+
+.project-create-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.5rem 2rem;
+  position: relative;
+
+  .header {
+    margin-bottom: 0.5rem;
+    text-align: center;
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 0;
+      color: #333;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    p {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #666;
+    }
+  }
+
+  .error-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #ffebee;
+    border-left: 4px solid #f44336;
+    border-radius: 4px;
+
+    mat-icon {
+      color: #f44336;
+      flex-shrink: 0;
+    }
+
+    .error-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .error-text {
+        color: #c62828;
+        font-weight: 500;
+      }
+
+      .retry-button {
+        align-self: flex-start;
+        margin-top: 0.25rem;
+
+        mat-icon {
+          margin-right: 0.25rem;
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+        }
+      }
+    }
+  }
+
+  .project-form {
+    .form-section {
+      margin-bottom: 1rem;
+
+      h2 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .section-description {
+        color: #666;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .full-width {
+        width: 100%;
+        max-width: 600px;
+        margin-bottom: 0.5rem;
+      }
+
+      // Make input background white with !important to override Material defaults
+      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background-color: white !important;
+        }
+
+        .mat-mdc-form-field-flex {
+          background-color: white !important;
+        }
+
+        .mdc-text-field--filled {
+          background-color: white !important;
+        }
+      }
+
+      .form-row {
+        display: flex;
+        gap: 1rem;
+        max-width: 100%;
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
+      }
+
+      .half-width {
+        flex: 1;
+        min-width: 0;
+        margin-bottom: 0.5rem;
+      }
+
+      // Make input background white with !important to override Material defaults
+      ::ng-deep .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background-color: white !important;
+        }
+
+        .mat-mdc-form-field-flex {
+          background-color: white !important;
+        }
+
+        .mdc-text-field--filled {
+          background-color: white !important;
+        }
+      }
+
+      .validation-error {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        color: #f44336;
+        font-size: 0.875rem;
+
+        mat-icon {
+          font-size: 1.2rem;
+          width: 1.2rem;
+          height: 1.2rem;
+        }
+      }
+
+      .file-validation-error {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        background-color: #fff3e0;
+        border-left: 4px solid #ff9800;
+        border-radius: 4px;
+        color: #e65100;
+
+        mat-icon {
+          color: #ff9800;
+        }
+      }
+    }
+
+    // Project Type Selection
+    .project-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+
+      .type-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        border: 2px solid transparent;
+        min-height: 120px;
+        background-color: white !important; // White background for type cards
+
+        // Override Material card background
+        ::ng-deep .mat-mdc-card {
+          background-color: white !important;
+        }
+
+        &:hover:not(.disabled) {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        &.selected {
+          border-color: #1976d2;
+          background-color: #e3f2fd !important;
+
+          ::ng-deep .mat-mdc-card {
+            background-color: #e3f2fd !important;
+          }
+        }
+
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+          background-color: #f5f5f5 !important;
+
+          ::ng-deep .mat-mdc-card {
+            background-color: #f5f5f5 !important;
+          }
+
+          .disabled-icon {
+            color: #999;
+          }
+        }
+
+        mat-card-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+
+          mat-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            color: #1976d2;
+          }
+
+          mat-card-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+          }
+        }
+
+        mat-card-content {
+          p {
+            color: #666;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.5;
+          }
+
+          .coming-soon {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: #ff9800;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+          }
+        }
+
+        .selected-indicator {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+
+          mat-icon {
+            color: #1976d2;
+            font-size: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+        }
+      }
+    }
+
+    // File Upload Drop Zone
+    .drop-zone {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 1rem 1rem;
+      text-align: center;
+      background-color: white; // White background for drop zone
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+
+      &:hover {
+        border-color: #1976d2;
+        background-color: #f5f5f5;
+      }
+
+      &.has-files {
+        border-color: #4caf50;
+        background-color: #f1f8f4;
+      }
+
+      .upload-icon {
+        font-size: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: #1976d2;
+        margin-bottom: 0.25rem;
+      }
+
+      .drop-text {
+        font-size: 0.875rem;
+        color: #666;
+        margin: 0.25rem 0;
+      }
+
+      .drop-text-or {
+        font-size: 0.75rem;
+        color: #999;
+        margin: 0.25rem 0;
+      }
+
+      .file-input-label {
+        display: inline-block;
+        margin: 0.25rem 0;
+
+        button {
+          mat-icon {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .file-format-hint {
+        font-size: 0.7rem;
+        color: #999;
+        margin-top: 0.25rem;
+      }
+    }
+
+    // Selected Files List
+    .selected-files {
+      h3 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .files-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 300px;
+        overflow-y: auto;
+
+        .file-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.5rem 0.75rem;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+
+          .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 0;
+
+            .file-icon {
+              color: #1976d2;
+              flex-shrink: 0;
+            }
+
+            .file-details {
+              display: flex;
+              flex-direction: column;
+              min-width: 0;
+
+              .file-name {
+                font-weight: 500;
+                color: #333;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+              }
+
+              .file-size {
+                font-size: 0.875rem;
+                color: #666;
+              }
+            }
+          }
+
+          .remove-button {
+            flex-shrink: 0;
+            color: #f44336;
+
+            &:hover {
+              background-color: #ffebee;
+            }
+          }
+        }
+      }
+    }
+
+    // Action Buttons
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e0e0e0;
+
+      button {
+        min-width: 140px;
+
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .cancel-btn {
+        background-color: #ff9800 !important; // Light orange background
+        color: white !important; // White text
+        border: none;
+
+        &:hover:not([disabled]) {
+          background-color: #fb8c00 !important; // Darker orange on hover
+        }
+
+        &[disabled] {
+          background-color: #ffcc80 !important; // Lighter orange when disabled
+          color: rgba(255, 255, 255, 0.6) !important;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .project-create-container {
+    padding: 1rem;
+
+    .header {
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .project-form {
+      .project-types {
+        grid-template-columns: 1fr;
+      }
+
+      .drop-zone {
+        padding: 2rem 1rem;
+
+        .upload-icon {
+          font-size: 3rem;
+          width: 3rem;
+          height: 3rem;
+        }
+      }
+
+      .form-actions {
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+// Global override for Material form fields to ensure white background
+::ng-deep .project-create-container {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: white !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      background-color: white !important;
+    }
+
+    .mdc-text-field {
+      background-color: white !important;
+    }
+
+    .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+      background-color: white !important;
+    }
+  }
+
+  // Override Material card background
+  .mat-mdc-card {
+    background-color: white !important;
+  }
+
+  mat-card {
+    background-color: white !important;
+  }
+
+  .type-card mat-card {
+    background-color: white !important;
+  }
+}

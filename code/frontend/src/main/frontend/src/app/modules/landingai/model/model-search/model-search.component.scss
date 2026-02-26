@@ -1,0 +1,158 @@
+// Models Search Component Styles
+// Implementation requirements 2.1, 2.2, 2.5: Search input and debouncing functionality styles
+
+.models-search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+}
+
+.search-container {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+.search-field {
+  width: 100%;
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none; // Hide bottom helper text area
+  }
+
+  // Search icon styling - Requirements 8.1, 8.3: Magnifying glass icon on left, clean and simple appearance
+  .mat-icon[matPrefix] {
+    color: #666;
+    margin-right: 8px;
+
+    &:hover {
+      color: #333;
+    }
+  }
+
+  // Accessibility: Input field focus styling
+  .mat-mdc-input-element:focus {
+    outline: none; // Material Design already handles focus styling
+  }
+
+  // Accessibility: Form field focus styling
+  &.mat-focused {
+    .mat-mdc-form-field-outline-thick {
+      border-color: #1976d2;
+      border-width: 2px;
+    }
+  }
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  margin-top: 8px; // Align with search field
+
+  @media (max-width: 768px) {
+    margin-top: 0;
+  }
+}
+
+.favorites-filter {
+  white-space: nowrap;
+  font-size: 14px;
+
+  .mdc-checkbox {
+    margin-right: 8px;
+  }
+
+  // Checkbox label styling
+  .mdc-form-field {
+    color: #333;
+  }
+
+  // Checkbox checked state
+  &.mat-mdc-checkbox-checked {
+    .mdc-form-field {
+      color: #1976d2;
+      font-weight: 500;
+    }
+  }
+
+  // Accessibility: Focus styling
+  &:focus-within {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+// Screen Reader Only Content - Accessibility: Screen reader only content
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Responsive design
+@media (max-width: 480px) {
+  .models-search-container {
+    gap: 12px;
+  }
+
+  .search-field {
+    .mat-mdc-form-field-label {
+      font-size: 13px;
+    }
+
+    .mat-mdc-input-element {
+      font-size: 14px;
+    }
+  }
+
+  .favorites-filter {
+    font-size: 13px;
+  }
+}
+
+// Accessibility: High contrast mode support
+@media (prefers-contrast: high) {
+  .search-field {
+    .mat-icon[matSuffix] {
+      color: #000000;
+    }
+
+    button[matSuffix] .mat-icon {
+      color: #000000;
+    }
+  }
+
+  .favorites-filter .mdc-form-field {
+    color: #000000;
+  }
+}
+
+// Accessibility: Reduced motion preference
+@media (prefers-reduced-motion: reduce) {
+  .search-field,
+  .favorites-filter {
+    * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+}

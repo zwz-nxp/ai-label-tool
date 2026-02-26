@@ -1,0 +1,92 @@
+<div class="flex">
+  <div class="inline-block columns-1 p-4">
+    <mat-card class="mb-4">
+      <div class="flex justify-between p-3">
+        <p>
+          <b>{{ currentUser.name }}</b> Your previous log on was at
+          {{ currentUser.lastLogin | date: "yyyy-MM-dd hh:mm" }}
+        </p>
+        <p>
+          Your primary site is
+          <b>{{ currentUser.primaryLocation.acronym }}</b>
+        </p>
+      </div>
+    </mat-card>
+    <div class="flex gap-4">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>My Rights</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table [dataSource]="rolesDataSource" mat-table>
+            <ng-container matColumnDef="roleName">
+              <th *matHeaderCellDef mat-header-cell>Role name</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ element.role.roleName }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="forSites">
+              <th *matHeaderCellDef mat-header-cell>For Site(s)</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ element.site }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="forSapCodes">
+              <th *matHeaderCellDef mat-header-cell>For SapCode(s)</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ forSapCodes(element) }}
+              </td>
+            </ng-container>
+
+            <tr
+              *matHeaderRowDef="displayColumns; sticky: true"
+              mat-header-row
+            ></tr>
+            <tr
+              *matRowDef="let row; columns: displayColumns"
+              class="hover:!bg-table-row-hover"
+              mat-row
+            ></tr>
+          </table>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title> User settings</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="my-4 flex flex-col gap-4">
+            <mat-form-field class="w-full !min-w-80" subscriptSizing="dynamic">
+              <mat-label>
+                Would you like to receive notification e-mails?
+              </mat-label>
+              <mat-select
+                (selectionChange)="setNotificationMail()"
+                [(value)]="notificationMailReceive"
+              >
+                <mat-option value="true">Yes</mat-option>
+                <mat-option value="false">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="w-full !min-w-80" subscriptSizing="dynamic">
+              <mat-label>How is your internet connection?</mat-label>
+              <mat-select
+                (selectionChange)="setDebounceTime()"
+                [(value)]="debounceTime"
+              >
+                <mat-option value="400">Bad</mat-option>
+                <mat-option value="200">Fair</mat-option>
+                <mat-option value="100">Good</mat-option>
+                <mat-option value="50">Excellent</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

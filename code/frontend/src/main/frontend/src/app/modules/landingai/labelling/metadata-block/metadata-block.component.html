@@ -1,0 +1,148 @@
+<div class="metadata-block">
+  <div *ngIf="currentImage && project" class="metadata-content">
+    <!-- Header with Add Button -->
+    <div class="metadata-header">
+      <h4>Metadata</h4>
+      <button
+        (click)="onAddMetadata()"
+        [disabled]="isLoadingFields || !hasAvailableFields"
+        color="primary"
+        mat-icon-button
+        matTooltip="Add metadata field"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div *ngIf="isLoadingFields || isLoadingValues" class="loading-indicator">
+      <mat-spinner diameter="30"></mat-spinner>
+      <span>Loading metadata...</span>
+    </div>
+
+    <!-- Metadata Fields -->
+    <div
+      *ngIf="
+        !isLoadingFields &&
+        !isLoadingValues &&
+        displayedMetadataFields.length > 0
+      "
+      class="metadata-fields"
+    >
+      <div *ngFor="let field of displayedMetadataFields" class="metadata-field">
+        <div class="field-content">
+          <div class="field-header">
+            <span class="field-label">{{ field.name }}</span>
+            <button
+              (click)="onRemoveMetadata(field)"
+              mat-icon-button
+              matTooltip="Remove this metadata"
+              class="remove-button"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <!-- Text Input (default fallback for non-predefined) -->
+          <mat-form-field
+            *ngIf="field.showTextInput"
+            appearance="fill"
+            class="metadata-input"
+          >
+            <input
+              (blur)="onMetadataValueChange(field, $any($event.target).value)"
+              (keydown.enter)="
+                onMetadataValueChange(field, $any($event.target).value)
+              "
+              [disabled]="isSaving"
+              [value]="field.cachedValue"
+              matInput
+              type="text"
+              placeholder="Enter value"
+            />
+          </mat-form-field>
+
+          <!-- Number Input -->
+          <mat-form-field
+            *ngIf="field.showNumberInput"
+            appearance="fill"
+            class="metadata-input"
+          >
+            <input
+              (blur)="onMetadataValueChange(field, $any($event.target).value)"
+              (keydown.enter)="
+                onMetadataValueChange(field, $any($event.target).value)
+              "
+              [disabled]="isSaving"
+              [value]="field.cachedValue"
+              matInput
+              type="number"
+              placeholder="Enter value"
+            />
+          </mat-form-field>
+
+          <!-- Dropdown Input - Single Select -->
+          <mat-form-field
+            *ngIf="field.showDropdown && !field.isMultiple"
+            appearance="fill"
+            class="metadata-input"
+          >
+            <mat-select
+              (selectionChange)="onMetadataValueChange(field, $event.value)"
+              [disabled]="isSaving"
+              [value]="field.cachedValue"
+              placeholder="Select value"
+            >
+              <mat-option
+                *ngFor="let option of field.cachedPredefinedValues"
+                [value]="option"
+              >
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Dropdown Input - Multiple Select -->
+          <mat-form-field
+            *ngIf="field.showDropdown && field.isMultiple"
+            appearance="fill"
+            class="metadata-input"
+          >
+            <mat-select
+              (selectionChange)="
+                onMetadataValueChange(field, $event.value.join(', '))
+              "
+              [disabled]="isSaving"
+              [value]="field.cachedValueArray"
+              placeholder="Select values"
+              multiple
+            >
+              <mat-option
+                *ngFor="let option of field.cachedPredefinedValues"
+                [value]="option"
+              >
+                {{ option }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Metadata Added Message -->
+    <div
+      *ngIf="
+        !isLoadingFields &&
+        !isLoadingValues &&
+        displayedMetadataFields.length === 0
+      "
+      class="no-metadata-message"
+    >
+      <p>No metadata added yet. Click the + button to add metadata fields.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!currentImage || !project" class="no-image-message">
+    <p>No image selected</p>
+  </div>
+</div>

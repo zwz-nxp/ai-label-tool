@@ -1,0 +1,56 @@
+<!-- Snapshot Toolbar Component Template -->
+<!-- Requirements: 4.1, 5.1, 6.1, 7.1 -->
+
+<div class="snapshot-toolbar">
+  <!-- Combined Manage button with dropdown -->
+  <!-- Requirements: 4.1, 5.1, 6.1, 7.1 - All snapshot operations in one menu -->
+  <button
+    mat-raised-button
+    class="manage-btn"
+    [matMenuTriggerFor]="manageMenu"
+    [disabled]="isDisabled()"
+    matTooltip="Manage this snapshot"
+    [matTooltipDisabled]="!isDisabled()"
+  >
+    <mat-icon>settings</mat-icon>
+    <span class="btn-text">Manage</span>
+  </button>
+
+  <!-- Combined Manage Menu -->
+  <mat-menu #manageMenu="matMenu">
+    <!-- Use section -->
+    <button mat-menu-item (click)="onUseSnapshot('create_project')">
+      <mat-icon>add_box</mat-icon>
+      <span>Create new project with this snapshot data</span>
+    </button>
+    <button mat-menu-item (click)="onUseSnapshot('revert')">
+      <mat-icon>restore</mat-icon>
+      <span>Revert to this snapshot</span>
+    </button>
+    <mat-divider></mat-divider>
+    <!-- Manage section -->
+    <button mat-menu-item (click)="onManageSnapshot('download')">
+      <mat-icon>download</mat-icon>
+      <span>Download snapshot</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button
+      mat-menu-item
+      (click)="onManageSnapshot('delete')"
+      class="delete-action"
+    >
+      <mat-icon>delete</mat-icon>
+      <span>Delete snapshot</span>
+    </button>
+  </mat-menu>
+
+  <!-- Loading indicator -->
+  <div class="loading-indicator" *ngIf="loading">
+    <mat-spinner diameter="24"></mat-spinner>
+  </div>
+
+  <!-- No snapshot selected hint -->
+  <span class="no-selection-hint" *ngIf="!hasSelectedSnapshot() && !loading">
+    Select a snapshot to enable actions
+  </span>
+</div>

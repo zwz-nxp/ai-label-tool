@@ -1,0 +1,515 @@
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100vh;
+  background: white;
+  width: 100%;
+  overflow: hidden;
+  font-size: 14px;
+
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .clear-button {
+      color: #666;
+
+      &:disabled {
+        color: #ccc;
+      }
+    }
+
+    .close-button {
+      color: #666;
+
+      &:hover {
+        color: #333;
+      }
+    }
+  }
+
+  .filter-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 16px;
+    min-height: 0;
+    box-sizing: border-box;
+
+    .filter-section {
+      margin-bottom: 16px;
+      max-width: 100%;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      h4 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: flex-start;
+        max-width: 100%;
+
+        mat-checkbox {
+          display: inline-flex;
+          align-items: center;
+          flex: 0 0 auto;
+          min-width: 0;
+
+          ::ng-deep {
+            .mdc-form-field {
+              font-size: 14px;
+              display: inline-flex;
+              align-items: center;
+              vertical-align: middle;
+            }
+
+            .mdc-checkbox {
+              padding: 0;
+              flex-shrink: 0;
+              margin: 0;
+              width: 18px;
+              height: 18px;
+            }
+
+            .mdc-checkbox__ripple {
+              display: none;
+            }
+
+            .mat-mdc-checkbox-touch-target {
+              width: 18px;
+              height: 18px;
+            }
+
+            .mdc-checkbox__background {
+              top: 0;
+              left: 0;
+              width: 18px;
+              height: 18px;
+            }
+
+            .mdc-label {
+              font-size: 14px;
+              display: inline-flex;
+              align-items: center;
+              padding-left: 6px;
+              line-height: 1;
+              vertical-align: middle;
+            }
+          }
+
+          .checkbox-label-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            line-height: 1;
+
+            .label-text {
+              line-height: 1;
+            }
+          }
+
+          .class-indicator {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            flex-shrink: 0;
+
+            &.no-class-indicator {
+              background:
+                linear-gradient(135deg, #9e9e9e 25%, transparent 25%),
+                linear-gradient(-135deg, #9e9e9e 25%, transparent 25%),
+                linear-gradient(45deg, #9e9e9e 25%, transparent 25%),
+                linear-gradient(-45deg, #9e9e9e 25%, transparent 25%);
+              background-size: 6px 6px;
+              background-color: #e0e0e0;
+              border: 1px solid #9e9e9e;
+            }
+          }
+        }
+      }
+
+      .full-width {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0;
+        box-sizing: border-box;
+
+        ::ng-deep {
+          .mat-mdc-form-field-flex {
+            align-items: center;
+            max-width: 100%;
+          }
+
+          .mat-mdc-text-field-wrapper {
+            background: white;
+            padding: 0 12px;
+            max-width: 100%;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 0, 0, 0.38);
+            border-radius: 4px;
+
+            &:hover {
+              border-color: rgba(0, 0, 0, 0.87);
+            }
+          }
+
+          &.mat-focused .mat-mdc-text-field-wrapper {
+            border-color: #3f51b5;
+            border-width: 2px;
+            padding: 0 11px;
+          }
+
+          .mdc-notched-outline {
+            display: none !important;
+          }
+
+          .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+          }
+
+          .mat-mdc-form-field-infix {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            min-height: 44px;
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            align-items: center;
+            box-sizing: border-box;
+          }
+
+          .mat-mdc-select {
+            font-size: 14px;
+          }
+
+          input {
+            font-size: 14px;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: normal;
+            box-sizing: border-box;
+          }
+
+          .mat-mdc-input-element {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+
+          .mat-mdc-form-field-text-prefix,
+          .mat-mdc-form-field-text-suffix {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+          }
+        }
+      }
+
+      .metadata-filters {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      &.inline-input {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+        padding-right: 8px;
+
+        > label {
+          font-size: 14px;
+          font-weight: 500;
+          color: #333;
+          min-width: 80px;
+          flex-shrink: 0;
+        }
+
+        mat-form-field {
+          flex: 1;
+          min-width: 0;
+
+          ::ng-deep {
+            .mat-mdc-form-field-flex {
+              align-items: center;
+            }
+
+            .mat-mdc-text-field-wrapper {
+              background: transparent;
+              padding: 0 12px;
+            }
+
+            .mdc-notched-outline__notch {
+              border-right: none;
+            }
+
+            .mat-mdc-form-field-subscript-wrapper {
+              display: none;
+            }
+
+            .mat-mdc-form-field-infix {
+              padding-top: 12px;
+              padding-bottom: 12px;
+              min-height: 44px;
+              width: 100%;
+              display: flex;
+              align-items: center;
+            }
+
+            input {
+              font-size: 14px;
+              width: 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              line-height: normal;
+            }
+
+            .mat-mdc-input-element {
+              width: 100%;
+            }
+
+            .mat-mdc-form-field-text-prefix,
+            .mat-mdc-form-field-text-suffix {
+              display: flex;
+              align-items: center;
+            }
+          }
+        }
+      }
+    }
+
+    .inline-input {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      padding-right: 8px;
+
+      > label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        min-width: 80px;
+        flex-shrink: 0;
+      }
+
+      mat-form-field {
+        flex: 1;
+        min-width: 0;
+
+        ::ng-deep {
+          .mat-mdc-form-field-flex {
+            align-items: center;
+          }
+
+          .mat-mdc-text-field-wrapper {
+            background: transparent;
+            padding: 0 12px;
+          }
+
+          .mdc-notched-outline__notch {
+            border-right: none;
+          }
+
+          .mat-mdc-form-field-subscript-wrapper {
+            display: none;
+          }
+
+          .mat-mdc-form-field-infix {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            min-height: 44px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+          }
+
+          input {
+            font-size: 14px;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: normal;
+          }
+
+          .mat-mdc-input-element {
+            width: 100%;
+          }
+
+          .mat-mdc-form-field-text-prefix,
+          .mat-mdc-form-field-text-suffix {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+  }
+
+  .filter-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+
+    .clear-filters-btn {
+      flex: 0 0 auto;
+      font-size: 14px;
+    }
+
+    .apply-filters-btn {
+      flex: 1;
+      font-size: 14px;
+
+      .filter-count {
+        margin-left: 6px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Scrollbar styling
+.filter-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filter-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.filter-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+
+  &:hover {
+    background: #555;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .filter-panel {
+    width: 380px;
+
+    .filter-header {
+      padding: 12px;
+
+      h3 {
+        font-size: 16px;
+      }
+    }
+
+    .filter-content {
+      padding: 12px;
+
+      .filter-section {
+        margin-bottom: 20px;
+
+        h4 {
+          font-size: 13px;
+        }
+      }
+    }
+
+    .filter-footer {
+      padding: 12px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-panel {
+    width: 100%;
+    max-width: 520px;
+
+    .filter-header {
+      padding: 12px 16px;
+    }
+
+    .filter-content {
+      padding: 12px 16px;
+    }
+
+    .filter-footer {
+      padding: 12px 16px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-panel {
+    width: 100%;
+    max-width: 100%;
+
+    .filter-header {
+      padding: 10px 12px;
+
+      h3 {
+        font-size: 14px;
+      }
+    }
+
+    .filter-content {
+      padding: 10px 12px;
+
+      .filter-section {
+        margin-bottom: 16px;
+
+        h4 {
+          font-size: 12px;
+          margin-bottom: 8px;
+        }
+
+        .filter-options {
+          gap: 6px;
+
+          mat-checkbox {
+            font-size: 13px;
+
+            .class-indicator {
+              width: 10px;
+              height: 10px;
+              margin-right: 6px;
+            }
+          }
+        }
+      }
+    }
+
+    .filter-footer {
+      padding: 10px 12px;
+
+      button {
+        font-size: 13px;
+        padding: 8px 16px;
+      }
+    }
+  }
+}

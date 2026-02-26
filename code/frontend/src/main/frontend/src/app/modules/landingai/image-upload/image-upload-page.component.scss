@@ -1,0 +1,154 @@
+.image-upload-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  background-color: #e5f5e0; // Light green background
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    mat-spinner {
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #666;
+      font-size: 16px;
+    }
+  }
+
+  .content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      gap: 0;
+      position: relative;
+
+      app-image-grid {
+        flex: 1;
+      }
+
+      app-filter-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+    }
+
+    .toolbar-placeholder,
+    .image-grid-placeholder,
+    .pagination-placeholder {
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      color: #666;
+
+      p {
+        margin: 10px 0;
+      }
+    }
+
+    .image-grid-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+// Responsive Design - Tablet and below
+@media (max-width: 1024px) {
+  .image-upload-page {
+    padding: 16px;
+
+    .content-area {
+      gap: 16px;
+    }
+  }
+}
+
+// Responsive Design - Mobile landscape and below
+@media (max-width: 768px) {
+  .image-upload-page {
+    padding: 12px;
+
+    .loading-container {
+      padding: 40px 16px;
+
+      p {
+        font-size: 14px;
+      }
+    }
+
+    .content-area {
+      gap: 12px;
+
+      .main-content {
+        app-filter-panel {
+          width: 100%;
+          max-width: 320px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design - Mobile portrait
+@media (max-width: 480px) {
+  .image-upload-page {
+    padding: 8px;
+
+    .loading-container {
+      padding: 30px 12px;
+      border-radius: 4px;
+    }
+
+    .content-area {
+      gap: 8px;
+
+      .main-content {
+        app-filter-panel {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+
+      .toolbar-placeholder,
+      .image-grid-placeholder,
+      .pagination-placeholder {
+        padding: 12px;
+        border-radius: 4px;
+      }
+    }
+  }
+}

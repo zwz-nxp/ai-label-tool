@@ -1,0 +1,173 @@
+<div
+  (click)="onCardClick()"
+  [class.instance-card]="isInstanceView()"
+  [class.select-mode]="selectMode"
+  [class.selected]="isSelected"
+  class="image-card"
+>
+  <div
+    [class.instance-view-container]="isInstanceView()"
+    class="image-container"
+  >
+    <!-- Selection Checkbox (visible only in select mode) -->
+    <div
+      (click)="$event.stopPropagation()"
+      *ngIf="selectMode"
+      class="selection-checkbox"
+    >
+      <mat-checkbox
+        (change)="onCheckboxToggle()"
+        [checked]="isSelected"
+        color="primary"
+      ></mat-checkbox>
+    </div>
+
+    <!-- Image and Labels Wrapper (for instance view transformation) -->
+    <div
+      [ngStyle]="isInstanceView() ? getInstanceViewStyles() : {}"
+      class="image-labels-wrapper"
+    >
+      <!-- Image Thumbnail -->
+      <img
+        [alt]="image.fileName"
+        [src]="getImageUrl()"
+        class="thumbnail-image"
+        loading="lazy"
+      />
+
+      <!-- Label Overlays (boxes only, no text in instance view) -->
+      <div
+        *ngIf="hasLabels()"
+        [ngStyle]="getOverlayStyles()"
+        class="labels-overlay"
+      >
+        <div
+          *ngFor="let label of getDisplayLabels()"
+          [class.label-box]="true"
+          [class.prediction]="isPredictionLabel(label)"
+          [style.border-color]="getLabelColor(label)"
+          [style.height.%]="getLabelPosition(label).height"
+          [style.left.%]="getLabelPosition(label).x"
+          [style.top.%]="getLabelPosition(label).y"
+          [style.width.%]="getLabelPosition(label).width"
+        >
+          <!-- Class Name with Confidence (when Label Details is enabled) - hidden in instance view -->
+          <!-- Hidden for Classification projects as class is shown in dropdown -->
+          <span
+            *ngIf="
+              showLabelDetails &&
+              !isInstanceView() &&
+              projectType !== 'Classification'
+            "
+            [class.position-bottom]="shouldShowLabelTextBottom(label)"
+            [class.position-top]="!shouldShowLabelTextBottom(label)"
+            [style.background-color]="getLabelColor(label)"
+            [style.color]="'white'"
+            class="label-text"
+          >
+            {{ getLabelClassName(label)
+            }}<span
+              *ngIf="isPredictionLabel(label) && label.confidenceRate != null"
+              >({{ formatConfidence(label.confidenceRate) }})</span
+            >
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instance View Label Text (outside transform, normal size) -->
+    <!-- Hidden for Classification projects as class is shown in dropdown -->
+    <div
+      *ngIf="
+        isInstanceView() &&
+        hasLabels() &&
+        showLabelDetails &&
+        projectType !== 'Classification'
+      "
+      [class.position-bottom]="shouldPositionLabelBadgeAtBottom()"
+      class="instance-label-text"
+    >
+      <span
+        *ngFor="let label of getDisplayLabels()"
+        [style.background-color]="getLabelColor(label)"
+        class="label-badge-text"
+      >
+        {{ getLabelClassName(label) }}
+      </span>
+    </div>
+
+    <!-- Label Count Badge (only for Segmentation) -->
+    <div
+      *ngIf="hasLabels() && projectType === 'Segmentation'"
+      class="label-badge"
+    >
+      <mat-icon>label</mat-icon>
+      <span>{{ getLabelCount() }}</span>
+    </div>
+  </div>
+
+  <!-- Image Info -->
+  <div class="image-info">
+    <div [title]="image.fileName" class="file-name">
+      {{ image.fileName }}
+    </div>
+    <div class="image-meta">
+      <span *ngIf="image.split" class="split-badge">{{ image.split }}</span>
+      <span class="dimensions">{{ image.width }} × {{ image.height }}</span>
+      <!-- No Class Indicator (for all project types) -->
+      <span
+        *ngIf="image.isNoClass"
+        class="no-class-badge"
+        matTooltip="No Class"
+      >
+        <mat-icon>block</mat-icon>
+        No Class
+      </span>
+      <!-- Classification Class Dropdown (only for Classification projects when not no-class) -->
+      <div
+        (click)="onDropdownClick($event)"
+        *ngIf="shouldShowClassDropdown()"
+        class="class-dropdown-container"
+      >
+        <mat-select
+          (selectionChange)="onMatClassChange($event.value)"
+          [value]="getCurrentClassId()"
+          class="class-mat-select"
+          panelClass="image-card-class-panel"
+        >
+          <mat-select-trigger>
+            <span
+              *ngIf="getCurrentClassId(); else noClassTpl"
+              class="class-option-item"
+            >
+              <span
+                [style.background-color]="getClassColor(getCurrentClassId()!)"
+                class="class-color-swatch"
+              ></span>
+              <span class="class-option-name">{{
+                getClassName(getCurrentClassId()!)
+              }}</span>
+            </span>
+            <ng-template #noClassTpl>
+              <span class="class-placeholder">Select class...</span>
+            </ng-template>
+          </mat-select-trigger>
+          <mat-option [value]="null">Select class...</mat-option>
+          <mat-option
+            *ngFor="let cls of availableClasses"
+            [value]="cls.id"
+            class="class-colored-option"
+          >
+            <span class="class-option-item">
+              <span
+                [style.background-color]="cls.colorCode"
+                class="class-color-swatch"
+              ></span>
+              <span class="class-option-name">{{ cls.className }}</span>
+            </span>
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,179 @@
+<div class="manage-metadata-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Manage Metadata</h2>
+    <div class="header-actions">
+      <button
+        (click)="onAddNewMetadata()"
+        class="create-metadata-btn"
+        color="primary"
+        mat-raised-button
+      >
+        Create Metadata
+      </button>
+      <button (click)="onClose()" class="close-button" mat-icon-button>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Search -->
+    <div class="search-section">
+      <mat-form-field appearance="fill" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          (input)="onSearchChange()"
+          [(ngModel)]="searchQuery"
+          matInput
+          placeholder="Search"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Metadata Table -->
+    <div *ngIf="!loading" class="metadata-table">
+      <div class="table-header">
+        <div class="col-id">ID</div>
+        <div class="col-name">Name</div>
+        <div class="col-type">Type</div>
+        <div class="col-value">Value From</div>
+        <div class="col-multiple">Allow Multiple</div>
+        <div class="col-actions">Actions</div>
+      </div>
+
+      <div class="table-body">
+        <div *ngFor="let meta of filteredMetadata" class="table-row">
+          <div class="col-id">{{ meta.id }}</div>
+          <div class="col-name">{{ meta.name }}</div>
+          <div class="col-type">{{ meta.type }}</div>
+          <div class="col-value">{{ meta.valueFrom }}</div>
+          <div class="col-multiple">
+            <mat-icon *ngIf="meta.multipleValues" class="check-icon"
+              >check
+            </mat-icon>
+            <span *ngIf="!meta.multipleValues">-</span>
+          </div>
+          <div class="col-actions">
+            <button
+              (click)="onEditMetadata(meta)"
+              mat-icon-button
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              (click)="onDeleteMetadata(meta)"
+              color="warn"
+              mat-icon-button
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="filteredMetadata.length === 0" class="empty-state">
+          <p *ngIf="searchQuery">
+            No metadata found matching "{{ searchQuery }}"
+          </p>
+          <p *ngIf="!searchQuery">
+            No metadata fields yet. Create your first field to get started.
+          </p>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>
+
+<!-- Create/Edit Metadata Dialog -->
+<ng-template #metadataDialog>
+  <div class="metadata-dialog">
+    <h2 mat-dialog-title>
+      {{ isEditMode ? "Edit Metadata Field" : "Add/Edit Metadata Field" }}
+    </h2>
+    <button class="close-button" mat-dialog-close mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <mat-dialog-content>
+      <!-- Name -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Name</mat-label>
+        <input
+          [(ngModel)]="metadataName"
+          matInput
+          maxlength="100"
+          placeholder="Name"
+        />
+      </mat-form-field>
+
+      <!-- Type -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="metadataType">
+          <mat-option *ngFor="let type of typeOptions" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Value From -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Value From</mat-label>
+        <mat-select [(ngModel)]="metadataValueFrom">
+          <mat-option *ngFor="let option of valueFromOptions" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Predefined Values (only show if PREDEFINED is selected) -->
+      <mat-form-field
+        *ngIf="metadataValueFrom === 'PREDEFINED'"
+        appearance="fill"
+        class="full-width"
+      >
+        <mat-label>Predefined Values (comma-separated)</mat-label>
+        <input
+          [(ngModel)]="metadataPredefinedValues"
+          matInput
+          maxlength="100"
+          placeholder="value1, value2, value3"
+          required
+        />
+        <mat-error
+          *ngIf="
+            metadataValueFrom === 'PREDEFINED' &&
+            !metadataPredefinedValues.trim()
+          "
+        >
+          Predefined values are required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Allow Multiple Selection (only show if PREDEFINED is selected) -->
+      <div *ngIf="metadataValueFrom === 'PREDEFINED'" class="checkbox-field">
+        <mat-checkbox [(ngModel)]="metadataMultipleValues">
+          Allow Multiple Selection
+        </mat-checkbox>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button color="primary" mat-button mat-dialog-close>Cancel</button>
+      <button
+        (click)="onSaveMetadata()"
+        [disabled]="!isFormValid()"
+        color="primary"
+        mat-raised-button
+      >
+        Save
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

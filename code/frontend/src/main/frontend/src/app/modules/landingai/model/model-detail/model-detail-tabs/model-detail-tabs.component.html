@@ -1,0 +1,12 @@
+<div class="model-detail-tabs">
+  <mat-tab-group
+    [selectedIndex]="(activeTab$ | async) === 'training' ? 0 : 1"
+    (selectedIndexChange)="
+      $event === 0 ? switchToTrainingTab() : switchToPerformanceTab()
+    "
+    animationDuration="300ms"
+  >
+    <mat-tab label="Training Information"></mat-tab>
+    <mat-tab label="Performance Report"></mat-tab>
+  </mat-tab-group>
+</div>

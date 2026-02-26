@@ -1,0 +1,231 @@
+<div class="flex max-h-full flex-col">
+  <div class="absolute right-2 top-1 z-40 flex items-center gap-2">
+    <button
+      (click)="openGuidelinesPopup()"
+      mat-button
+      matTooltip="Click to open the help guidelines for scheduling jobs"
+    >
+      Guidelines
+    </button>
+
+    <button
+      (click)="addTrigger()"
+      *ngIf="tabIndex === 0"
+      color="accent"
+      mat-mini-fab
+      matTooltip="Add new Job to schedule"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="flex min-h-0 flex-col">
+    <mat-tab-group
+      [(selectedIndex)]="tabIndex"
+      class="overflow-auto"
+      mat-stretch-tabs="false"
+    >
+      <mat-tab label="Scheduled Triggers">
+        <table
+          #scheduledJobsTable="matSort"
+          [dataSource]="scheduledJobsOverviewDataSource"
+          mat-table
+          matSort
+        >
+          <ng-container matColumnDef="jobDescription" sticky>
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Job Description
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.jobDescription }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="triggerName">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Trigger Name
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.triggerName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="triggerDescription">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Trigger Description
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.triggerDescription }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="triggerState">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Scheduled Status
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ parseJobStatus(element.triggerState) | titlecase }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="cronExpression">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Schedule</th>
+            <td
+              *matCellDef="let element"
+              [matTooltip]="element.displayCronDescription"
+              mat-cell
+            >
+              {{ parseCron(element.cronExpression) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="timeZone">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Schedule Time Zone
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.timeZone | translateTimezone }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="previousFireTime">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Last Trigger (NL)
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.previousFireTime | date: "yyyy-MM-dd HH:mm" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nextFireTime">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Next Trigger (NL)
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.nextFireTime | date: "yyyy-MM-dd HH:mm" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions" stickyEnd>
+            <th *matHeaderCellDef mat-header-cell></th>
+            <td *matCellDef="let element" mat-cell>
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="editTrigger(element)"
+                  matIcon="edit"
+                  matTooltip="Edit job schedule"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="pauseTrigger(element)"
+                  *ngIf="!isPaused(element)"
+                  matIcon="pause"
+                  matTooltip="Pause triggering on schedule"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="resumeTrigger(element)"
+                  *ngIf="isPaused(element)"
+                  matIcon="refresh"
+                  matTooltip="Resume triggering on schedule"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="runJob(element)"
+                  matIcon="play_circle_filled"
+                  matTooltip="Trigger job execution"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="showJobExecutionLogs(element)"
+                  matIcon="history"
+                  matTooltip="Show job execution logs"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="deleteTrigger(element)"
+                  matIcon="delete"
+                  matTooltip="Delete trigger"
+                  table-icon-button
+                ></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="scheduledTableColumns; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: scheduledTableColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </mat-tab>
+
+      <mat-tab label="All Jobs">
+        <table
+          #allJobsTable="matSort"
+          [dataSource]="allJobsOverviewDataSource"
+          mat-table
+          matSort
+        >
+          <ng-container matColumnDef="jobName" sticky>
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Job Name</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.jobName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="jobDescription">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Job Description
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.jobDescription }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions" stickyEnd>
+            <th *matHeaderCellDef mat-header-cell></th>
+            <td *matCellDef="let element" mat-cell>
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="editJob(element)"
+                  matIcon="edit"
+                  matTooltip="Edit job schedule"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="runJob(element)"
+                  matIcon="play_circle_filled"
+                  matTooltip="Trigger job execution"
+                  table-icon-button
+                ></button>
+                <button
+                  (click)="showJobExecutionLogs(element)"
+                  matIcon="history"
+                  matTooltip="Show job execution logs"
+                  table-icon-button
+                ></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="allJobsTableColumns; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: allJobsTableColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </mat-tab>
+    </mat-tab-group>
+
+    <app-spinner *ngIf="loading"></app-spinner>
+  </div>
+</div>

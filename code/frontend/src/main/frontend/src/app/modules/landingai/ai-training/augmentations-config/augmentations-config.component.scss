@@ -1,0 +1,201 @@
+/**
+ * AugmentationsConfigComponent Styles
+ *
+ * Styles for the data augmentations configuration component.
+ * Uses Material Design styling with consistent spacing and colors.
+ *
+ * Requirements 10, 11: Data augmentations configuration UI
+ * Requirement 27.4: Use mat-icon-button for icon-only buttons (Edit, Remove)
+ * Requirement 27.5: Display tooltips on hover for all configurable items
+ * Requirement 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/training-shared" as *;
+
+.augmentations-config-container {
+  @include section-container;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.section-header {
+  @include section-header;
+  margin-bottom: $spacing-sm;
+}
+
+.augmentations-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.augmentation-item {
+  @include card-item;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-sm $spacing-md;
+}
+
+.augmentation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.augmentation-info {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.augmentation-icon {
+  color: $text-secondary;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.augmentation-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.augmentation-name {
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+}
+
+.augmentation-value {
+  font-size: $font-size-sm;
+  color: $text-secondary;
+  font-family: "Roboto Mono", monospace;
+}
+
+.augmentation-actions {
+  display: flex;
+  gap: $spacing-xs;
+}
+
+// Requirement 27.4: mat-icon-button for icon-only buttons
+.edit-button,
+.remove-button {
+  @include hover-reveal-button;
+}
+
+.edit-button {
+  color: $text-secondary;
+
+  &:hover {
+    color: $primary-color;
+    background-color: $primary-light;
+  }
+}
+
+.remove-button {
+  color: $text-secondary;
+
+  &:hover {
+    color: $error-color;
+    background-color: rgba($error-color, 0.1);
+  }
+}
+
+.add-augmentation-section {
+  margin-top: $spacing-sm;
+}
+
+.add-augmentation-button {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  color: $primary-color;
+  border-color: $primary-color;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgba($primary-color, 0.05);
+  }
+
+  &:disabled {
+    color: $text-secondary;
+    border-color: $border-color;
+  }
+}
+
+.config-summary {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($info-color, 0.08);
+  border-radius: $border-radius-md;
+  border-left: 4px solid $primary-color;
+}
+
+.summary-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-size: 13px;
+  color: $text-secondary;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: $text-hint;
+  }
+}
+
+// Responsive adjustments
+@include respond-to("md") {
+  .augmentation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  .augmentation-actions {
+    align-self: flex-end;
+  }
+}
+
+// Menu styling
+::ng-deep .mat-mdc-menu-panel {
+  min-width: 200px;
+
+  .mat-mdc-menu-item {
+    mat-icon {
+      margin-right: $spacing-sm;
+      color: $text-secondary;
+    }
+
+    &:hover mat-icon {
+      color: $primary-color;
+    }
+
+    &:disabled {
+      mat-icon {
+        color: $text-disabled;
+      }
+    }
+  }
+}

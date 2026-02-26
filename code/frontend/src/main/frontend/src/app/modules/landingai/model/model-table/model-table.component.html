@@ -1,0 +1,322 @@
+<!-- Models Table Component -->
+<!-- Implementation requirements 1.1, 1.5, 7.5: Data table structure and accessibility features -->
+<div class="models-table-container">
+  <!-- Loading State -->
+  <div
+    *ngIf="loading"
+    class="loading-overlay"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading models data"
+  >
+    <mat-spinner diameter="32" aria-hidden="true"></mat-spinner>
+    <span class="loading-text">Loading models...</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper" [class.loading]="loading">
+    <!-- Empty State - Requirement 2.4: Display "No models found." message when search or favorites filter returns no results -->
+    <div
+      *ngIf="models.length === 0 && !loading"
+      class="empty-state"
+      role="status"
+      aria-live="polite"
+    >
+      <mat-icon class="empty-icon" aria-hidden="true">inbox</mat-icon>
+      <p class="empty-message">No models found.</p>
+      <p class="empty-subtitle">
+        Try adjusting your search criteria or filters.
+      </p>
+    </div>
+
+    <!-- Data Table -->
+    <table
+      *ngIf="models.length > 0"
+      mat-table
+      [dataSource]="dataSource"
+      class="models-table"
+      role="table"
+      aria-label="Models data table"
+      [attr.aria-rowcount]="models.length + 1"
+      [attr.aria-colcount]="displayedColumns.length"
+    >
+      <!-- Model Name Column - Requirements 7.1, 7.6: Model name as primary text, do not display creator -->
+      <ng-container matColumnDef="modelName">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[0])"
+          class="header-cell"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[0].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[0])"
+          class="model-name-cell clickable"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          (click)="onModelNameClick(model.id)"
+          tabindex="0"
+          (keydown.enter)="onModelNameClick(model.id)"
+          (keydown.space)="onModelNameClick(model.id)"
+        >
+          <span
+            class="model-name"
+            [title]="model.modelName"
+            [attr.aria-label]="
+              'Model name: ' +
+              model.modelName +
+              ', click to view training information'
+            "
+          >
+            {{ model.modelName }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Train Metric Column - Requirement 7.2: Consistent percentage format -->
+      <ng-container matColumnDef="trainMetric">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[1])"
+          class="header-cell metric-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[1].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[1])"
+          class="metric-cell clickable"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          (click)="onMetricClick(model.id, 'trainMetric')"
+          tabindex="0"
+          (keydown.enter)="onMetricClick(model.id, 'trainMetric')"
+          (keydown.space)="onMetricClick(model.id, 'trainMetric')"
+        >
+          <span
+            class="metric-value"
+            [attr.aria-label]="
+              'Training metric: ' +
+              formatMetricAsPercentage(model.trainMetric) +
+              ', click to view performance report'
+            "
+          >
+            {{ formatMetricAsPercentage(model.trainMetric) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Dev Metric Column - Requirement 7.2: Consistent percentage format -->
+      <ng-container matColumnDef="devMetric">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[2])"
+          class="header-cell metric-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[2].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[2])"
+          class="metric-cell clickable"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          (click)="onMetricClick(model.id, 'devMetric')"
+          tabindex="0"
+          (keydown.enter)="onMetricClick(model.id, 'devMetric')"
+          (keydown.space)="onMetricClick(model.id, 'devMetric')"
+        >
+          <span
+            class="metric-value"
+            [attr.aria-label]="
+              'Development metric: ' +
+              formatMetricAsPercentage(model.devMetric) +
+              ', click to view performance report'
+            "
+          >
+            {{ formatMetricAsPercentage(model.devMetric) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Test Metric Column - Requirement 7.3: Display "--" when Test_Metric data is not available -->
+      <ng-container matColumnDef="testMetric">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[3])"
+          class="header-cell metric-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[3].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[3])"
+          class="metric-cell clickable"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          (click)="onMetricClick(model.id, 'testMetric')"
+          tabindex="0"
+          (keydown.enter)="onMetricClick(model.id, 'testMetric')"
+          (keydown.space)="onMetricClick(model.id, 'testMetric')"
+        >
+          <span
+            class="metric-value"
+            [class.unavailable]="model.testMetric === null"
+            [attr.aria-label]="
+              model.testMetric === null
+                ? 'Test metric: Not available'
+                : 'Test metric: ' +
+                  formatMetricAsPercentage(model.testMetric) +
+                  ', click to view performance report'
+            "
+          >
+            {{ formatMetricAsPercentage(model.testMetric) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- More Evaluation Set Column (暫時隱藏) -->
+      <ng-container matColumnDef="moreEvaluationSet" *ngIf="false">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[4])"
+          class="header-cell more-eval-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[4].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[4])"
+          class="more-eval-cell"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          [attr.rowspan]="i === 0 ? models.length : null"
+          [style.display]="i === 0 ? 'table-cell' : 'none'"
+        >
+          <a
+            href="javascript:void(0)"
+            class="add-link"
+            (click)="onAddEvaluationSet($event)"
+            [attr.aria-label]="'Add more evaluation set'"
+          >
+            + Add
+          </a>
+        </td>
+      </ng-container>
+
+      <!-- Confidence Threshold Column - Requirements 7.4, 7.7, 7.8: Confidence threshold value accurate to two decimal places, center-aligned -->
+      <ng-container matColumnDef="confidenceThreshold">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[4])"
+          class="header-cell threshold-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[4].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[4])"
+          class="threshold-cell clickable"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+          (click)="onConfidenceThresholdClick(model.id)"
+          tabindex="0"
+          (keydown.enter)="onConfidenceThresholdClick(model.id)"
+          (keydown.space)="onConfidenceThresholdClick(model.id)"
+        >
+          <span
+            class="threshold-value"
+            [attr.aria-label]="
+              'Confidence threshold: ' +
+              formatConfidenceThreshold(model.confidenceThreshold) +
+              ', click to view performance report'
+            "
+          >
+            {{ formatConfidenceThreshold(model.confidenceThreshold) }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column - Requirement 5.1: Actions column includes favorite star icon and kebab menu -->
+      <ng-container matColumnDef="actions">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [style]="getColumnStyle(tableColumns[5])"
+          class="header-cell actions-header"
+          role="columnheader"
+          scope="col"
+        >
+          <strong>{{ tableColumns[5].label }}</strong>
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let model; let i = index"
+          [style]="getColumnStyle(tableColumns[5])"
+          [style.padding]="'8px'"
+          [style.overflow]="'visible'"
+          class="actions-cell"
+          role="gridcell"
+          [attr.aria-rowindex]="i + 2"
+        >
+          <!-- Use ModelActionsComponent -->
+          <app-model-actions
+            [model]="model"
+            (favoriteToggle)="onFavoriteToggle($event)"
+            (actionMenuClick)="onActionMenuClick($event)"
+          >
+          </app-model-actions>
+        </td>
+      </ng-container>
+
+      <!-- Table Header and Rows -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedColumns"
+        class="header-row"
+        role="row"
+        aria-rowindex="1"
+      ></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns; let i = index"
+        class="data-row"
+        role="row"
+        [attr.aria-rowindex]="i + 2"
+        [attr.aria-label]="
+          'Model: ' +
+          row.modelName +
+          ', row ' +
+          (i + 1) +
+          ' of ' +
+          models.length
+        "
+      ></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,125 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <span>{{ title }}</span>
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <form [formGroup]="triggerInputForm">
+      <div class="grid grid-cols-3 gap-4">
+        <mat-form-field>
+          <mat-label>Trigger Name</mat-label>
+          <input
+            formControlName="triggerName"
+            matInput
+            matTooltip="Name of the Cron Trigger that is to be scheduled"
+            type="text"
+          />
+          <mat-error
+            *ngIf="triggerInputForm.controls.triggerName.hasError('required')"
+          >
+            This field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-2">
+          <mat-label>Trigger Description</mat-label>
+          <input
+            formControlName="triggerDescription"
+            matInput
+            matTooltip="Description to add to this trigger"
+            type="text"
+          />
+          <mat-error
+            *ngIf="
+              triggerInputForm.controls.triggerDescription.hasError('required')
+            "
+          >
+            This field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-span-3">
+          <mat-label>Job Name and Description</mat-label>
+          <mat-select [compareWith]="compareJob" formControlName="job">
+            <mat-option class="bg-white">
+              <ngx-mat-select-search
+                formControlName="jobFilter"
+                noEntriesFoundLabel="No matching Job found"
+                placeholderLabel="Job"
+              ></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let job of filteredAvailableJobs" [value]="job">
+              {{ displayJobNameAndDescription(job) }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="triggerInputForm.controls.job.hasError('required')">
+            This field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <div class="col-span-3 flex items-center gap-4">
+          <mat-form-field class="grow">
+            <mat-label>Cron Expression</mat-label>
+            <input
+              formControlName="cronExpression"
+              matInput
+              maxLength="60"
+              type="text"
+            />
+            <mat-error
+              *ngIf="
+                triggerInputForm.controls.cronExpression.hasError('required')
+              "
+            >
+              This field is <strong>required</strong>
+            </mat-error>
+            <mat-hint>
+              {{ parseCron(triggerInputForm.controls.cronExpression.value) }}
+            </mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Time Zone</mat-label>
+            <mat-select
+              formControlName="timeZone"
+              matTooltip="Either UTC or NL time"
+            >
+              <mat-option value="Europe/Amsterdam">NL</mat-option>
+              <mat-option value="UTC">UTC</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="triggerInputForm.controls.timeZone.hasError('required')"
+            >
+              This field is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <a
+            class="mb-5"
+            href="https://www.freeformatter.com/cron-expression-generator-quartz.html"
+            mat-stroked-button
+            target="_blank"
+          >
+            Cron Helper
+          </a>
+        </div>
+      </div>
+      <mat-dialog-actions align="end">
+        <button
+          (click)="updateSchedule()"
+          class="mr-2"
+          color="accent"
+          mat-flat-button
+        >
+          Save
+        </button>
+        <button (click)="close()" mat-stroked-button>Close</button>
+      </mat-dialog-actions>
+    </form>
+
+    <app-spinner *ngIf="isLoading"></app-spinner>
+  </mat-dialog-content>
+</div>

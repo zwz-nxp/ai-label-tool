@@ -1,0 +1,88 @@
+<div class="model-detail-header">
+  <!-- Loading State -->
+  <div *ngIf="!(modelData$ | async)" class="header-skeleton">
+    <div class="skeleton-line skeleton-title"></div>
+    <div class="skeleton-metadata">
+      <div class="skeleton-line skeleton-text"></div>
+      <div class="skeleton-line skeleton-text"></div>
+      <div class="skeleton-line skeleton-text"></div>
+    </div>
+  </div>
+
+  <!-- Loaded State -->
+  <div *ngIf="modelData$ | async as model" class="header-content">
+    <!-- Model Name Section -->
+    <div class="model-name-section">
+      <!-- Display Mode -->
+      <div *ngIf="!isEditingName" class="model-name-display">
+        <h2 class="model-alias">{{ model.modelAlias }}</h2>
+        <button
+          mat-icon-button
+          (click)="startEditingName(model.modelAlias || '')"
+          matTooltip="Rename model"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <!-- Edit Mode -->
+      <div *ngIf="isEditingName" class="model-name-edit">
+        <mat-form-field appearance="outline">
+          <mat-label>Model Name</mat-label>
+          <input
+            matInput
+            [formControl]="modelAliasControl"
+            (keyup.enter)="saveModelName(model.id)"
+            (keyup.escape)="cancelEditingName()"
+          />
+          <mat-error *ngIf="modelAliasControl.invalid">
+            {{ getErrorMessage() }}
+          </mat-error>
+        </mat-form-field>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="saveModelName(model.id)"
+          [disabled]="modelAliasControl.invalid"
+          matTooltip="Save"
+        >
+          <mat-icon>check</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          (click)="cancelEditingName()"
+          matTooltip="Cancel"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Rename Error -->
+      <div *ngIf="renameError$ | async as error" class="rename-error">
+        <mat-icon>error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    </div>
+
+    <!-- Model Metadata -->
+    <!-- Metadata section removed as per requirements -->
+  </div>
+
+  <!-- Header Actions -->
+  <div class="header-actions">
+    <button
+      mat-icon-button
+      (click)="onToggleWidth()"
+      [matTooltip]="
+        (panelWidth$ | async) === 'normal' ? 'Expand panel' : 'Collapse panel'
+      "
+    >
+      <mat-icon>{{
+        (panelWidth$ | async) === "normal" ? "fullscreen" : "fullscreen_exit"
+      }}</mat-icon>
+    </button>
+    <button mat-icon-button (click)="onClose()" matTooltip="Close panel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

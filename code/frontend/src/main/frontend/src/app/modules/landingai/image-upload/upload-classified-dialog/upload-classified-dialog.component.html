@@ -1,0 +1,162 @@
+<div class="upload-classified-dialog">
+  <h2 mat-dialog-title>Upload Classified Images</h2>
+
+  <mat-dialog-content>
+    <!-- Instructions -->
+    <div class="instructions">
+      <mat-icon class="info-icon">info</mat-icon>
+      <div class="instruction-text">
+        <p>Upload a ZIP file containing folders organized by class name.</p>
+        <p class="example">
+          Example structure:<br />
+          <code>
+            ├── airplane/<br />
+            │ ├── image1.jpg<br />
+            │ └── image2.png<br />
+            ├── automobile/<br />
+            │ ├── car1.jpg<br />
+            │ └── car2.jpg<br />
+            └── bird/<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;└── bird1.png
+          </code>
+        </p>
+        <p class="note">
+          Each folder name becomes a class. New classes will be created
+          automatically with random colors.
+        </p>
+      </div>
+    </div>
+
+    <!-- Drag and Drop Zone -->
+    <div
+      *ngIf="!selectedFile && !uploadResult"
+      (click)="fileInput.click()"
+      (dragleave)="onDragLeave($event)"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+      [class.dragging]="isDragging"
+      class="drop-zone"
+    >
+      <mat-icon class="upload-icon">folder_zip</mat-icon>
+      <p class="drop-text">Drag and drop a ZIP file here</p>
+      <p class="or-text">or</p>
+      <button color="primary" mat-raised-button type="button">
+        <mat-icon>folder_open</mat-icon>
+        Browse Files
+      </button>
+      <p class="format-text">Supported format: ZIP</p>
+      <input
+        #fileInput
+        (change)="onFileSelect($event)"
+        accept=".zip"
+        style="display: none"
+        type="file"
+      />
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Selected File -->
+    <div *ngIf="selectedFile && !uploadResult" class="selected-file">
+      <div class="file-info">
+        <mat-icon class="file-icon">folder_zip</mat-icon>
+        <div class="file-details">
+          <div class="file-name">{{ selectedFile.name }}</div>
+          <div class="file-size">{{ formatFileSize(selectedFile.size) }}</div>
+        </div>
+        <button
+          (click)="removeFile()"
+          *ngIf="!isUploading"
+          class="remove-btn"
+          mat-icon-button
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div *ngIf="isUploading" class="upload-progress">
+        <mat-progress-bar
+          [value]="uploadProgress"
+          mode="determinate"
+        ></mat-progress-bar>
+        <span class="progress-text">{{ uploadProgress }}%</span>
+      </div>
+    </div>
+
+    <!-- Upload Result -->
+    <div *ngIf="uploadResult" class="upload-result">
+      <div
+        [class.error]="!uploadResult.success"
+        [class.success]="uploadResult.success"
+        class="result-header"
+      >
+        <mat-icon>{{
+          uploadResult.success ? "check_circle" : "error"
+        }}</mat-icon>
+        <span>{{
+          uploadResult.success ? "Upload Complete" : "Upload Failed"
+        }}</span>
+      </div>
+
+      <div class="result-details">
+        <div class="result-item">
+          <mat-icon>image</mat-icon>
+          <span>{{ uploadResult.totalImages }} images uploaded</span>
+        </div>
+        <div *ngIf="uploadResult.classesCreated > 0" class="result-item">
+          <mat-icon>add_circle</mat-icon>
+          <span>{{ uploadResult.classesCreated }} new classes created</span>
+        </div>
+        <div *ngIf="uploadResult.classesReused > 0" class="result-item">
+          <mat-icon>check</mat-icon>
+          <span>{{ uploadResult.classesReused }} existing classes used</span>
+        </div>
+      </div>
+
+      <!-- Errors -->
+      <div *ngIf="uploadResult.errors.length > 0" class="result-errors">
+        <div class="errors-header">
+          <mat-icon>warning</mat-icon>
+          <span>{{ uploadResult.errors.length }} errors occurred:</span>
+        </div>
+        <ul class="error-list">
+          <li *ngFor="let error of uploadResult.errors">{{ error }}</li>
+        </ul>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      (click)="cancel()"
+      *ngIf="!uploadResult"
+      [disabled]="isUploading"
+      mat-button
+    >
+      Cancel
+    </button>
+    <button
+      (click)="uploadFile()"
+      *ngIf="!uploadResult"
+      [disabled]="isUploadDisabled"
+      color="primary"
+      mat-raised-button
+    >
+      <mat-icon>cloud_upload</mat-icon>
+      Upload
+    </button>
+    <button
+      (click)="close()"
+      *ngIf="uploadResult"
+      color="primary"
+      mat-raised-button
+    >
+      Close
+    </button>
+  </mat-dialog-actions>
+</div>

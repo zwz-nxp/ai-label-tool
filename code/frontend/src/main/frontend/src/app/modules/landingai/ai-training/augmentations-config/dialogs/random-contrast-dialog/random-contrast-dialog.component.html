@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">contrast</mat-icon>
+  Random Contrast
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the contrast adjustment limit. The contrast will be randomly
+    adjusted within the range [1-limit, 1+limit].
+  </p>
+
+  <div class="form-container">
+    <!-- Limit Slider -->
+    <!-- Requirement 17.1: Display Limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Limit</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatLimit"
+          class="limit-slider"
+          data-testid="random-contrast-limit-slider"
+          discrete
+          max="1"
+          min="0"
+          step="0.01"
+        >
+          <input
+            (valueChange)="onSliderChange($event)"
+            [(ngModel)]="limit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onInputChange($event)"
+            [value]="limit"
+            data-testid="random-contrast-limit-input"
+            matInput
+            max="1"
+            min="0"
+            step="0.01"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>0 (No change)</span>
+        <span>1 (Max)</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>Contrast will be adjusted by ±{{ (limit * 100).toFixed(0) }}%</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="random-contrast-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="random-contrast-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

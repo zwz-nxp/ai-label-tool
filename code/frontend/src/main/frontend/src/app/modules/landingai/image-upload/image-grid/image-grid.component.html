@@ -1,0 +1,52 @@
+<div class="image-grid-container">
+  <!-- Image Grid -->
+  <div class="image-grid" [class.instance-view-grid]="viewMode === 'instances'">
+    <app-image-card
+      (cardClick)="onImageClick($event)"
+      (classChange)="onClassChange($event)"
+      (selectionToggle)="
+        onImageSelectionToggle($event.imageId, $event.selected)
+      "
+      *ngFor="let image of images"
+      [image]="image"
+      [viewMode]="viewMode"
+      [projectType]="projectType"
+      [availableClasses]="availableClasses"
+      [showLabelDetails]="showLabelDetails"
+      [selectMode]="selectMode"
+      [isSelected]="isImageSelected(image.id)"
+    ></app-image-card>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!images || images.length === 0" class="empty-state">
+    <mat-icon>image_not_supported</mat-icon>
+    <p>No images found</p>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div *ngIf="images && images.length > 0" class="pagination-controls">
+    <button
+      (click)="previousPage()"
+      [disabled]="isPreviousDisabled()"
+      aria-label="Previous page"
+      mat-icon-button
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <span class="page-info">
+      {{ getImageRange() }} of {{ totalElements }} images | Page
+      {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="isNextDisabled()"
+      aria-label="Next page"
+      mat-icon-button
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

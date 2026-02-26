@@ -1,0 +1,55 @@
+<div class="training-information-tab">
+  <!-- Loading State -->
+  <div *ngIf="isLoadingChartData$ | async" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading training information...</p>
+  </div>
+
+  <!-- Loaded State -->
+  <div
+    *ngIf="(trainingRecord$ | async) && !(isLoadingChartData$ | async)"
+    class="content-loaded"
+  >
+    <ng-container *ngIf="trainingRecord$ | async as trainingRecord">
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <app-loss-chart [chartData]="lossChartData$ | async"></app-loss-chart>
+        <app-validation-chart
+          [chartData]="validationChartData$ | async"
+        ></app-validation-chart>
+      </div>
+
+      <!-- Training Information Sections -->
+      <div class="info-sections">
+        <app-trained-from
+          [transformParam]="trainingRecord.transformParam"
+        ></app-trained-from>
+        <app-split-distribution
+          [trainingRecord]="trainingRecord"
+          [totalImageCount]="(modelData$ | async)?.imageCount ?? 0"
+        >
+        </app-split-distribution>
+        <app-trained-at
+          [startedAt]="trainingRecord.startedAt"
+          [completedAt]="trainingRecord.completedAt"
+        >
+        </app-trained-at>
+        <app-trained-by [createdBy]="trainingRecord.createdBy"></app-trained-by>
+        <app-hyperparameters
+          [epochs]="trainingRecord.epochs"
+          [modelSize]="trainingRecord.modelSize"
+        >
+        </app-hyperparameters>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- No Data State -->
+  <div
+    *ngIf="!(trainingRecord$ | async) && !(isLoadingChartData$ | async)"
+    class="no-data"
+  >
+    <mat-icon>info</mat-icon>
+    <p>Training information unavailable</p>
+  </div>
+</div>

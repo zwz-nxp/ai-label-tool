@@ -1,0 +1,47 @@
+<div class="project-name-dialog">
+  <div class="dialog-header">
+    <h2>Create New Project from Snapshot</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <p class="dialog-description">
+      Enter a name for the new project. All data from the selected snapshot will
+      be copied to the new project.
+    </p>
+
+    <form [formGroup]="projectForm">
+      <div class="form-field">
+        <label>Project Name</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input
+            formControlName="projectName"
+            matInput
+            maxlength="100"
+            placeholder="e.g., MyProject-20260211_143025"
+            autofocus
+          />
+          <mat-error *ngIf="projectForm.get('projectName')?.invalid">
+            {{ getProjectNameError() }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button (click)="onCancel()" mat-button class="cancel-btn">Cancel</button>
+    <button
+      (click)="onSubmit()"
+      [disabled]="!projectForm.valid"
+      color="primary"
+      mat-raised-button
+      class="create-btn"
+    >
+      <mat-icon>add</mat-icon>
+      Create Project
+    </button>
+  </mat-dialog-actions>
+</div>

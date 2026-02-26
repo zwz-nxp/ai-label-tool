@@ -1,0 +1,39 @@
+.dialog-content {
+  min-width: 400px;
+  padding: 16px 0;
+  text-align: center;
+
+  .warning-icon {
+    margin-bottom: 16px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .warning-message {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.87);
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+
+    strong {
+      font-weight: 600;
+      color: #d32f2f;
+    }
+  }
+
+  .warning-note {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  margin: 0;
+}

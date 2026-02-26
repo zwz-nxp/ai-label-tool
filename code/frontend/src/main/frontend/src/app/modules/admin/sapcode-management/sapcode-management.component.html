@@ -1,0 +1,166 @@
+<div class="flex max-h-full flex-col">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-2">
+    <app-page-title>SAP Plant Code Management</app-page-title>
+    <button
+      (click)="openAddSapCode()"
+      *ngIf="
+        authorizationService.doesCurrentUserHaveRoleForCurrentLocation(
+          0,
+          'Manager_PlanningGroups_Global'
+        )
+      "
+      color="accent"
+      mat-mini-fab
+      matTooltip="Add new SAP Plant Code"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div class="flex min-h-0 flex-col">
+    <mat-tab-group
+      (selectedTabChange)="attachPaginator($event)"
+      class="overflow-auto"
+      mat-stretch-tabs="false"
+    >
+      <mat-tab label="SAP Plant Codes">
+        <table
+          #SapCodeTable="matSort"
+          [dataSource]="sapCodeDataSource"
+          mat-table
+          matSort
+        >
+          <ng-container matColumnDef="plantCode" sticky>
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              SAP Plant Code
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.plantCode }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="city">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>City</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.city }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="country">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Country</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.country }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="managedBy">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Managed by
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ locationAcronym(element) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="lastUpdated">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Last updated
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.lastUpdated | date: "yyyy-MM-dd" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="updatedBy">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>
+              Updated by
+            </th>
+            <td *matCellDef="let element" mat-cell>
+              {{ getUsernameByWbi(element.updatedBy) | async }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions" stickyEnd>
+            <th *matHeaderCellDef class="w-0" mat-header-cell></th>
+            <td *matCellDef="let element" class="w-0" mat-cell>
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="selectForEdit(element)"
+                  [disabled]="!isAuthorized()"
+                  matIcon="edit"
+                  matTooltip="Edit this SAP Plant code"
+                  table-icon-button
+                ></button>
+
+                <button
+                  (click)="deleteSapCode(element)"
+                  [disabled]="!isAuthorized()"
+                  matIcon="delete"
+                  matTooltip="Delete this SAP Plant code"
+                  table-icon-button
+                ></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="displaySapCodeColumns; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: displaySapCodeColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </mat-tab>
+
+      <mat-tab label="Site Manages">
+        <table #SiteTable [dataSource]="siteDataSource" mat-table>
+          <ng-container matColumnDef="location.acronym" sticky>
+            <th *matHeaderCellDef mat-header-cell>Acronym</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.location.acronym }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="location.city">
+            <th *matHeaderCellDef mat-header-cell>City</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.location.city }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="location.country">
+            <th *matHeaderCellDef mat-header-cell>Country</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.location.country }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="manages">
+            <th *matHeaderCellDef mat-header-cell>Manages</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.manages }}
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="displaySiteColumns; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: displaySiteColumns"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <mat-paginator
+    [pageSizeOptions]="[25, 50, 100, 250]"
+    showFirstLastButtons
+  ></mat-paginator>
+</div>

@@ -1,0 +1,87 @@
+<div class="image-upload-page">
+  <!-- Error State -->
+  <div *ngIf="error$ | async as error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading images...</p>
+  </div>
+
+  <!-- Main Content Area -->
+  <div *ngIf="!(loading$ | async) && !(error$ | async)" class="content-area">
+    <!-- Toolbar with Project Name and Controls -->
+    <app-toolbar
+      [viewMode]="(viewMode$ | async) || 'images'"
+      [activeFilters]="(filters$ | async) || {}"
+      [sortMethod]="(sortMethod$ | async) || 'upload_time_desc'"
+      [zoomLevel]="(zoomLevel$ | async) || 3"
+      [annotationType]="(filters$ | async)?.annotationType"
+      [selectedModelId]="selectedModelId"
+      [availableModels]="availableModels"
+      [availableClasses]="availableClasses"
+      [availableTags]="availableTags"
+      [availableMetadata]="availableMetadata"
+      [showLabelDetails]="showLabelDetails"
+      [projectType]="(project$ | async)?.type || 'Object Detection'"
+      [projectName]="(project$ | async)?.name || 'Loading...'"
+      [selectMode]="selectMode"
+      [selectedCount]="getSelectedCount()"
+      [currentPageImageCount]="currentPageImageIds.length"
+      [totalImageCount]="(totalElements$ | async) || 0"
+      [lastSelectAction]="lastSelectAction"
+      (viewModeChange)="onViewModeChange($event)"
+      (actionSelect)="onActionSelect($event)"
+      (annotationTypeChange)="onAnnotationTypeChange($event)"
+      (modelChange)="onModelChange($event)"
+      (filterChange)="onFilterChange($event)"
+      (filterClear)="onFilterClear()"
+      (snapshotAction)="onSnapshotAction($event)"
+      (sortChange)="onSortChange($event)"
+      (trainingAction)="onTrainingAction($event)"
+      (uploadClick)="onUploadClick()"
+      (uploadClassifiedClick)="onUploadClassifiedClick()"
+      (uploadBatchZipClick)="onUploadBatchZipClick()"
+      (zoomChange)="onZoomChange($event)"
+      (modelPageClick)="onModelPageClick()"
+      (showLabelDetailsChange)="onShowLabelDetailsChange($event)"
+      (selectModeToggle)="onSelectModeToggle($event)"
+      (selectPage)="onSelectPage()"
+      (selectAll)="onSelectAll()"
+      (deselectAll)="onDeselectAll()"
+      (batchSetClass)="onBatchSetClass()"
+      (batchSetTags)="onBatchSetTags()"
+      (batchSetMetadata)="onBatchSetMetadata()"
+      (batchDelete)="onBatchDelete()"
+      (exportDataset)="onExportDataset()"
+      (exportAllDataset)="onExportAllDataset()"
+    ></app-toolbar>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Image Grid -->
+      <app-image-grid
+        (imageClick)="onImageClick($event)"
+        (pageChange)="onPageChange($event)"
+        (classChange)="onClassChange($event)"
+        (imageSelectionToggle)="
+          onImageSelectionToggle($event.imageId, $event.selected)
+        "
+        [currentPage]="(currentPage$ | async) || 1"
+        [images]="(images$ | async) || []"
+        [totalPages]="(totalPages$ | async) || 1"
+        [totalElements]="(totalElements$ | async) || 0"
+        [viewMode]="(viewMode$ | async) || 'images'"
+        [zoomLevel]="(zoomLevel$ | async) || 3"
+        [projectType]="(project$ | async)?.type || 'Object Detection'"
+        [availableClasses]="availableClasses"
+        [showLabelDetails]="showLabelDetails"
+        [selectMode]="selectMode"
+        [selectedImageIds]="selectedImageIds"
+      ></app-image-grid>
+    </div>
+  </div>
+</div>

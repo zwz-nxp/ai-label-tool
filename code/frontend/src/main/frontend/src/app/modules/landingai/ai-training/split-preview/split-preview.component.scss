@@ -1,0 +1,292 @@
+/**
+ * SplitPreviewComponent Styles
+ *
+ * Styles for the data split preview visualization component.
+ * Uses Material Design color scheme with distinct colors for Train/Dev/Test.
+ *
+ * Requirement 28.1: Render horizontal color bars for split distribution
+ * Requirement 28.2: Use distinct colors for Train (green), Dev (blue), Test (orange)
+ * Requirement 28.3: Dynamically assign colors to different classes
+ * Requirement 28.4: Display segment width proportional to percentage value
+ * Requirement 28.5: Display legend mapping colors to their meanings
+ */
+
+@use "app/styles/training-shared" as *;
+
+// Container
+.split-preview-container {
+  @include section-container;
+}
+
+// Section Header
+.section-header {
+  @include section-header;
+
+  .preview-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+
+    .image-count {
+      font-weight: $font-weight-regular;
+      color: $text-secondary;
+      font-size: $font-size-md;
+    }
+  }
+}
+
+// View Toggle (Requirement 27.5: Display tooltips on hover)
+.view-toggle {
+  margin-bottom: $spacing-lg;
+
+  mat-button-toggle-group {
+    border-radius: $border-radius-md;
+    overflow: hidden;
+  }
+
+  mat-button-toggle {
+    mat-icon {
+      margin-right: $spacing-sm;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // Style for selected toggle
+  ::ng-deep .mat-button-toggle-checked {
+    background-color: $primary-light;
+
+    .mat-button-toggle-label-content {
+      color: $primary-color;
+    }
+  }
+}
+
+// Preview Content
+.preview-content {
+  margin-bottom: $spacing-lg;
+}
+
+// Class/Split Row Styles
+.class-row,
+.split-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Row Label
+.row-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  min-width: 150px;
+  width: 150px;
+  flex-shrink: 0;
+
+  .color-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: $border-radius-round;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .label-text {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
+
+  .label-count {
+    font-size: $font-size-sm;
+    color: $text-hint;
+    flex-shrink: 0;
+  }
+}
+
+// Color Bar Container
+.color-bar-container {
+  flex: 1;
+  min-width: 0;
+}
+
+// Color Bar (Requirement 28.1: Render horizontal color bars)
+.color-bar {
+  display: flex;
+  height: 28px;
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+  background-color: $border-color;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+// Bar Segment (Requirement 28.4: Segment width proportional to percentage)
+.bar-segment {
+  @include color-bar-segment;
+}
+
+// No Data Message
+.no-data-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-xl $spacing-md;
+  background-color: $background-light;
+  border-radius: $border-radius-md;
+  color: $text-secondary;
+  font-size: $font-size-base;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: $text-hint;
+  }
+}
+
+// Legend Section (Requirement 28.5: Display legend mapping colors to meanings)
+.legend-section {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1px solid $border-color;
+
+  .legend-title {
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+}
+
+.legend-group {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .legend-subtitle {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    margin-bottom: $spacing-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.legend-item {
+  @include legend-item;
+}
+
+// Summary Section
+.summary-section {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1px solid $border-color;
+}
+
+.summary-stats {
+  display: flex;
+  gap: $spacing-xl;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+
+  .stat-value {
+    font-size: $font-size-xxl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+
+    &.warning {
+      color: $test-color;
+    }
+  }
+
+  .stat-label {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Responsive adjustments
+@include respond-to("md") {
+  .class-row,
+  .split-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+
+  .row-label {
+    width: 100%;
+    max-width: none;
+
+    .label-text {
+      max-width: none;
+    }
+  }
+
+  .color-bar-container {
+    width: 100%;
+  }
+
+  .legend-items {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  .summary-stats {
+    justify-content: space-around;
+  }
+}
+
+@include respond-to("sm") {
+  .split-preview-container {
+    padding: $spacing-sm;
+  }
+
+  .view-toggle {
+    mat-button-toggle-group {
+      width: 100%;
+    }
+
+    mat-button-toggle {
+      flex: 1;
+    }
+  }
+
+  .color-bar {
+    height: 24px;
+  }
+
+  .bar-segment .segment-label {
+    font-size: 10px;
+  }
+}

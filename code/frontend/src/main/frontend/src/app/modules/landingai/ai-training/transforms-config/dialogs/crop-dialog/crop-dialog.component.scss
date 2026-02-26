@@ -1,0 +1,80 @@
+/**
+ * CropDialogComponent Styles
+ *
+ * Requirements:
+ * - 27.2: Use mat-raised-button with primary color for primary actions (Save)
+ * - 27.3: Use mat-stroked-button for secondary actions (Cancel)
+ * - 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/dialog-shared" as *;
+
+:host {
+  display: block;
+}
+
+h2[mat-dialog-title] {
+  @include dialog-title;
+}
+
+mat-dialog-content {
+  @include dialog-content;
+}
+
+.dialog-description {
+  @include dialog-description;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.form-section {
+  .section-title {
+    margin: 0 0 $spacing-sm 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $text-secondary;
+  }
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  @include respond-to("sm") {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.offset-field,
+.size-field {
+  flex: 1;
+  max-width: 150px;
+
+  @include respond-to("sm") {
+    max-width: none;
+  }
+}
+
+.size-separator {
+  font-size: $font-size-xl;
+  color: $text-secondary;
+  margin-top: -20px;
+
+  @include respond-to("sm") {
+    display: none;
+  }
+}
+
+.preview-info {
+  @include info-box(rgba($info-color, 0.1), $primary-color);
+}
+
+mat-dialog-actions {
+  @include dialog-actions;
+}

@@ -1,0 +1,732 @@
+.image-labelling-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Use 100% to fit within parent container
+  width: 100%;
+  overflow: hidden; // Prevent page-level scrolling
+}
+
+.top-toolbar {
+  flex-shrink: 0;
+  z-index: 2;
+
+  .toolbar-title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+
+  .toolbar-buttons {
+    display: flex;
+    gap: 4px;
+
+    .toolbar-button {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+}
+
+.main-container {
+  flex: 1;
+  min-height: 0; // Important for flex children to shrink properly
+  overflow: hidden; // Prevent container-level scrolling
+
+  .left-sidebar {
+    width: 280px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #e5f5e0; // Light green background
+
+    .sidebar-content {
+      padding: 16px;
+      height: 100%;
+      overflow-y: auto;
+      background-color: #e5f5e0; // Light green background
+
+      h3 {
+        margin: 16px 0 8px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      .project-status {
+        padding: 8px;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        margin-bottom: 16px;
+
+        p {
+          margin: 4px 0;
+          font-size: 14px;
+        }
+      }
+
+      .image-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 16px;
+
+        mat-list {
+          padding: 0;
+        }
+
+        mat-list-item {
+          cursor: pointer;
+          border-bottom: 1px solid #f0f0f0;
+          padding: 8px 16px;
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+
+          &.selected {
+            background-color: #e3f2fd;
+          }
+
+          .image-checkbox {
+            margin-right: 8px;
+          }
+
+          .image-name {
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+
+      .batch-operations {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        button {
+          width: 100%;
+        }
+      }
+
+      .loading-indicator {
+        padding: 16px;
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Right sidebar with doubled width (280px * 2 = 560px)
+  .right-sidebar {
+    width: 560px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #e5f5e0; // Light green background
+
+    .sidebar-content {
+      padding: 16px;
+      height: 100%;
+      overflow-y: auto;
+      background-color: #e5f5e0; // Light green background
+
+      h3 {
+        margin: 16px 0 8px 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+      }
+
+      mat-expansion-panel {
+        margin-bottom: 8px;
+        box-shadow: none;
+        border: 1px solid #e0e0e0;
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        // Override disabled panel title color to black for General block
+        &[disabled] {
+          ::ng-deep .mat-expansion-panel-header-title {
+            color: #000000 !important;
+          }
+        }
+
+        // Make expansion panel header more visible
+        ::ng-deep .mat-expansion-panel-header {
+          background-color: #f5f5f5; // Very light grey background
+          border-bottom: 2px solid #bdbdbd; // Medium grey border
+          padding: 12px 16px;
+          height: auto;
+          min-height: 48px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #eeeeee; // Slightly lighter on hover
+          }
+
+          .mat-expansion-panel-header-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #424242; // Dark grey text color for better contrast
+          }
+
+          // Highlight the arrow icon with blue color
+          .mat-expansion-indicator {
+            // Add a circular background to make arrow stand out
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2196f3; // Blue background
+            border-radius: 50%;
+            transition: all 0.3s ease;
+
+            &::after {
+              color: #ffffff !important;
+              border-color: #ffffff !important;
+              border-width: 0 2px 2px 0;
+              padding: 3px;
+              margin-top: -2px;
+            }
+          }
+
+          &:hover .mat-expansion-indicator {
+            background-color: #1976d2; // Darker blue on hover
+            transform: scale(1.1);
+          }
+        }
+
+        // Expanded state styling
+        &.mat-expanded {
+          ::ng-deep .mat-expansion-panel-header {
+            background-color: #eeeeee; // Very light grey when expanded
+            border-bottom-color: #bdbdbd;
+
+            .mat-expansion-indicator {
+              background-color: #1976d2; // Darker blue when expanded
+            }
+          }
+        }
+      }
+
+      .general-block,
+      .tags-block,
+      .metadata-block,
+      .labels-block,
+      .classes-block {
+        padding: 8px 0;
+
+        p {
+          margin: 8px 0;
+          font-size: 14px;
+        }
+
+        button {
+          margin: 4px 0;
+          width: 100%;
+        }
+
+        mat-form-field {
+          width: 100%;
+          margin: 8px 0;
+        }
+
+        mat-checkbox {
+          margin: 8px 0;
+        }
+
+        .info-text {
+          color: #666;
+          font-size: 13px;
+          font-style: italic;
+        }
+
+        .color-indicator {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          margin-right: 8px;
+          vertical-align: middle;
+          border: 1px solid #ccc;
+        }
+      }
+    }
+  }
+
+  .center-content {
+    background-color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .sidebar-toggle-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: linear-gradient(
+        180deg,
+        #fffde7 0%,
+        #fff9c4 50%,
+        #fff59d 100%
+      );
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      width: 32px;
+      height: 72px; // 48px * 1.5 = 72px
+      border-radius: 0 4px 4px 0;
+
+      &.left-toggle {
+        left: 0;
+      }
+
+      &.right-toggle {
+        right: 0;
+        border-radius: 4px 0 0 4px;
+      }
+
+      &:hover {
+        background: linear-gradient(
+          180deg,
+          #fff9c4 0%,
+          #fff59d 50%,
+          #ffee58 100%
+        );
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .save-status-indicator {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+      animation: fadeIn 0.3s ease-in;
+
+      .status-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+
+        &.saving {
+          color: #2196f3;
+          animation: rotate 1s linear infinite;
+        }
+
+        &.saved {
+          color: #4caf50;
+        }
+
+        &.error {
+          color: #f44336;
+        }
+      }
+
+      .status-message {
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+
+    .loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 100;
+
+      span {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+
+    .image-preview-area {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      position: relative;
+
+      app-annotation-canvas,
+      app-object-detection-canvas,
+      app-segmentation-canvas,
+      app-classification-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .no-image-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #666;
+        font-size: 16px;
+        background-color: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Pre-annotation specific styles
+// Requirements: 9.2, 9.4 - Visual distinction for pre-annotations
+.annotation {
+  &.prediction {
+    // Dashed border for pre-annotations
+    border-style: dashed !important;
+    border-width: 2px !important;
+
+    // Reduced opacity to distinguish from manual annotations
+    opacity: 0.7;
+
+    // Add a subtle glow effect
+    filter: drop-shadow(0 0 4px rgba(33, 150, 243, 0.5));
+  }
+
+  &.ground-truth {
+    // Solid border for manual annotations
+    border-style: solid !important;
+    border-width: 2px !important;
+    opacity: 1;
+  }
+}
+
+// Pre-annotation controls
+.pre-annotation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  border: 1px solid #2196f3;
+
+  .control-header {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1976d2;
+    margin-bottom: 4px;
+  }
+
+  .control-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  .control-buttons {
+    display: flex;
+    gap: 8px;
+
+    button {
+      flex: 1;
+      font-size: 13px;
+    }
+  }
+
+  .confidence-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    background-color: #2196f3;
+    color: white;
+    margin-left: 8px;
+  }
+}
+
+// Annotation list item styling for predictions
+.annotation-list-item {
+  &.prediction {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+
+    .annotation-label {
+      font-style: italic;
+    }
+  }
+
+  .accept-reject-buttons {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+
+    button {
+      font-size: 12px;
+      padding: 4px 8px;
+      min-width: auto;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1400px) {
+  .main-container {
+    .right-sidebar {
+      width: 480px;
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-container {
+    .left-sidebar {
+      width: 240px;
+    }
+
+    .right-sidebar {
+      width: 400px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    .left-sidebar,
+    .right-sidebar {
+      width: 200px;
+    }
+  }
+
+  .top-toolbar {
+    .toolbar-title {
+      font-size: 14px;
+    }
+
+    .toolbar-buttons {
+      .toolbar-button {
+        mat-icon {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+
+  .main-container {
+    // Remove fixed height, use flex to fill available space
+
+    .center-content {
+      .save-status-indicator {
+        top: 8px;
+        right: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+
+        .status-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      .image-preview-area {
+        padding: 8px;
+
+        .image-container {
+          padding: 16px;
+
+          .placeholder-text {
+            font-size: 16px;
+          }
+
+          .info-text {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+
+  .right-sidebar {
+    .sidebar-content {
+      padding: 12px;
+
+      h3 {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .image-labelling-container {
+    height: 100%; // Use 100% to fit within parent container
+  }
+
+  .main-container {
+    // Remove fixed height, use flex to fill available space
+
+    .left-sidebar,
+    .right-sidebar {
+      width: 100%;
+      max-width: 180px;
+    }
+
+    .center-content {
+      .save-status-indicator {
+        top: 4px;
+        right: 4px;
+        padding: 4px 8px;
+        font-size: 11px;
+
+        .status-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+
+        .status-message {
+          display: none; // Hide text on very small screens
+        }
+      }
+
+      .loading-indicator {
+        padding: 16px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+
+      .image-preview-area {
+        padding: 4px;
+
+        .image-container {
+          padding: 12px;
+
+          .placeholder-text {
+            font-size: 14px;
+          }
+
+          .info-text {
+            font-size: 12px;
+          }
+        }
+
+        .no-image-message {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .right-sidebar {
+    .sidebar-content {
+      padding: 8px;
+
+      h3 {
+        font-size: 13px;
+        margin: 12px 0 6px 0;
+      }
+
+      mat-expansion-panel {
+        margin-bottom: 6px;
+      }
+    }
+  }
+
+  .pre-annotation-controls {
+    padding: 8px;
+
+    .control-header {
+      font-size: 13px;
+    }
+
+    .control-info {
+      font-size: 11px;
+    }
+
+    .control-buttons {
+      button {
+        font-size: 12px;
+        padding: 4px 8px;
+      }
+    }
+  }
+}
+
+// Landscape orientation on mobile
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-container {
+    .left-sidebar,
+    .right-sidebar {
+      width: 180px;
+    }
+  }
+
+  .view-mode-switcher {
+    padding: 4px 8px;
+
+    mat-button-toggle {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+  }
+}

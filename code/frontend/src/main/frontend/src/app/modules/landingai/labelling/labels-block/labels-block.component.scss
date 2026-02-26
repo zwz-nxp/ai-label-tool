@@ -1,0 +1,162 @@
+@use "../colors" as colors;
+@use "../mixins" as mixins;
+
+.labels-block {
+  padding: colors.$spacing-md;
+
+  .labels-header {
+    display: flex;
+    align-items: center;
+    padding: colors.$spacing-sm colors.$spacing-md;
+    background-color: #e3f2fd;
+    border-left: 3px solid #1976d2;
+    border-radius: colors.$border-radius-small;
+    margin-bottom: colors.$spacing-sm;
+
+    .labels-title {
+      font-weight: 600;
+      font-size: colors.$font-size-base;
+      color: colors.$text-primary;
+    }
+
+    .labels-count {
+      color: colors.$text-hint;
+      font-size: colors.$font-size-sm;
+      margin-left: colors.$spacing-sm;
+    }
+
+    .labels-toggle {
+      margin-left: auto;
+      transform: scale(0.8);
+    }
+  }
+
+  .no-annotations-message {
+    text-align: center;
+    color: colors.$text-hint;
+    padding: colors.$spacing-md;
+    font-size: colors.$font-size-base;
+  }
+
+  .hidden-labels {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .selection-count {
+    text-align: center;
+    color: #1976d2;
+    padding: colors.$spacing-sm colors.$spacing-md;
+    font-size: colors.$font-size-sm;
+    font-weight: 500;
+    background-color: #e3f2fd;
+    border-radius: colors.$border-radius-small;
+    margin-top: colors.$spacing-sm;
+  }
+
+  .annotation-groups {
+    mat-accordion {
+      display: flex;
+      flex-direction: column;
+      gap: colors.$spacing-sm;
+    }
+
+    .annotation-group {
+      @include mixins.smooth-transition(all);
+      border-left: 3px solid #1976d2;
+
+      &:hover {
+        @include mixins.elevation(1);
+      }
+
+      .group-title {
+        display: flex;
+        align-items: center;
+        gap: colors.$spacing-sm;
+
+        .color-indicator {
+          width: 16px;
+          height: 16px;
+          border-radius: colors.$border-radius-small;
+          flex-shrink: 0;
+          border: 1px solid colors.$border-light;
+          @include mixins.smooth-transition(transform);
+
+          &:hover {
+            transform: scale(1.1);
+          }
+        }
+
+        .class-name {
+          font-weight: 500;
+          flex: 1;
+        }
+
+        .annotation-count {
+          color: colors.$text-hint;
+          font-size: colors.$font-size-sm;
+          @include mixins.badge(
+            colors.$background-tertiary,
+            colors.$text-secondary
+          );
+        }
+      }
+
+      .annotations-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: colors.$spacing-sm;
+
+        .annotation-item {
+          padding: colors.$spacing-sm;
+          border-radius: colors.$border-radius-medium;
+          cursor: pointer;
+          border: 1px solid colors.$border-light;
+          background-color: #fafafa;
+          @include mixins.hover-effect;
+          @include mixins.click-feedback;
+          @include mixins.smooth-transition(all);
+
+          &:hover {
+            @include mixins.elevation(1);
+            transform: translateX(4px);
+          }
+
+          &.selected {
+            @include mixins.selected-state;
+            @include mixins.highlight-animation;
+          }
+
+          .annotation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+            gap: 4px;
+
+            .annotation-label {
+              font-weight: 500;
+              font-size: colors.$font-size-base;
+              color: colors.$text-primary;
+            }
+
+            .annotation-type {
+              @include mixins.badge(
+                colors.$background-tertiary,
+                colors.$text-secondary
+              );
+            }
+          }
+
+          .annotation-coordinates {
+            font-size: colors.$font-size-sm;
+            color: colors.$text-hint;
+            font-family: monospace;
+          }
+        }
+      }
+    }
+  }
+}

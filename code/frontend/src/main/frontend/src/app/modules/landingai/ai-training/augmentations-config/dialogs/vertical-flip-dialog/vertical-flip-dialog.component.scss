@@ -1,0 +1,10 @@
+/**
+ * Vertical Flip Dialog Styles
+ * Uses shared dialog styles for consistent Material Design
+ */
+
+@use "app/styles/dialog-shared" as dialog;
+
+.probability-slider {
+  flex: 1;
+}

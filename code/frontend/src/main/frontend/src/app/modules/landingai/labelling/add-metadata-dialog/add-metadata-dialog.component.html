@@ -1,0 +1,127 @@
+<h2 mat-dialog-title>Add Metadata</h2>
+
+<mat-dialog-content>
+  <div class="dialog-content">
+    <!-- Metadata Selection -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Select Metadata Field</mat-label>
+      <mat-select
+        [(ngModel)]="selectedMetadata"
+        (selectionChange)="onMetadataChange()"
+        required
+      >
+        <mat-option
+          *ngFor="let metadata of data.availableMetadata"
+          [value]="metadata"
+        >
+          {{ metadata.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Metadata Details -->
+    <div *ngIf="selectedMetadata" class="metadata-details">
+      <div class="detail-row">
+        <span class="label">Type:</span>
+        <span class="value">{{ selectedMetadata.type || "TEXT" }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Value From:</span>
+        <span class="value">{{
+          usesPredefinedValues() ? "Predefined (Dropdown)" : "Input"
+        }}</span>
+      </div>
+      <div *ngIf="selectedMetadata.multipleValues" class="detail-row">
+        <span class="label">Multiple Values:</span>
+        <span class="value">Yes</span>
+      </div>
+    </div>
+
+    <!-- Value Input Section -->
+    <div *ngIf="selectedMetadata" class="value-section">
+      <h3>Enter Value</h3>
+
+      <!-- Boolean Type -->
+      <mat-form-field
+        *ngIf="isBooleanType() && !usesPredefinedValues()"
+        appearance="fill"
+        class="full-width"
+      >
+        <mat-label>Value</mat-label>
+        <mat-select [(ngModel)]="metadataValue" required>
+          <mat-option value="true">True</mat-option>
+          <mat-option value="false">False</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Predefined Values - Multiple Select -->
+      <mat-form-field
+        *ngIf="usesPredefinedValues() && allowsMultipleValues()"
+        appearance="fill"
+        class="full-width"
+      >
+        <mat-label>Select Values (Multiple)</mat-label>
+        <mat-select [(ngModel)]="selectedValues" multiple required>
+          <mat-option
+            *ngFor="let option of getPredefinedValues()"
+            [value]="option"
+          >
+            {{ option }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>You can select multiple values</mat-hint>
+      </mat-form-field>
+
+      <!-- Predefined Values - Single Select -->
+      <mat-form-field
+        *ngIf="usesPredefinedValues() && !allowsMultipleValues()"
+        appearance="fill"
+        class="full-width"
+      >
+        <mat-label>Select Value</mat-label>
+        <mat-select [(ngModel)]="metadataValue" required>
+          <mat-option
+            *ngFor="let option of getPredefinedValues()"
+            [value]="option"
+          >
+            {{ option }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Text/Number Input -->
+      <mat-form-field
+        *ngIf="!usesPredefinedValues() && !isBooleanType()"
+        appearance="fill"
+        class="full-width"
+      >
+        <mat-label>Value</mat-label>
+        <input
+          matInput
+          [(ngModel)]="metadataValue"
+          [type]="getInputType()"
+          required
+          placeholder="Enter value"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- No Metadata Available Message -->
+    <div *ngIf="data.availableMetadata.length === 0" class="no-metadata">
+      <mat-icon>info</mat-icon>
+      <p>All available metadata fields have been added.</p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="onSave()"
+    [disabled]="!isValid()"
+  >
+    Add
+  </button>
+</mat-dialog-actions>

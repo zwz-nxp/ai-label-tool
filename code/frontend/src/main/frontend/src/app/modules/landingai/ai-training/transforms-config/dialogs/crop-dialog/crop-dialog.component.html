@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">crop</mat-icon>
+  Crop
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Extract a rectangular region from the image. Specify the offset from the
+    top-left corner and the dimensions of the crop area.
+  </p>
+
+  <div class="form-container">
+    <!-- Offset inputs -->
+    <!-- Requirement 9.1: Display X offset, Y offset inputs -->
+    <div class="form-section">
+      <h4 class="section-title">Position</h4>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="offset-field">
+          <mat-label>X Offset</mat-label>
+          <input
+            (ngModelChange)="validateXOffset()"
+            [(ngModel)]="xOffset"
+            data-testid="crop-dialog-x-offset-input"
+            matInput
+            min="0"
+            type="number"
+          />
+          <span matSuffix>px</span>
+          <mat-error *ngIf="xOffsetError">{{ xOffsetError }}</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="offset-field">
+          <mat-label>Y Offset</mat-label>
+          <input
+            (ngModelChange)="validateYOffset()"
+            [(ngModel)]="yOffset"
+            data-testid="crop-dialog-y-offset-input"
+            matInput
+            min="0"
+            type="number"
+          />
+          <span matSuffix>px</span>
+          <mat-error *ngIf="yOffsetError">{{ yOffsetError }}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Size inputs -->
+    <!-- Requirement 9.1: Display Width and Height inputs -->
+    <div class="form-section">
+      <h4 class="section-title">Size</h4>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="size-field">
+          <mat-label>Width</mat-label>
+          <input
+            (ngModelChange)="validateWidth()"
+            [(ngModel)]="width"
+            data-testid="crop-dialog-width-input"
+            matInput
+            min="1"
+            type="number"
+          />
+          <span matSuffix>px</span>
+          <mat-error *ngIf="widthError">{{ widthError }}</mat-error>
+        </mat-form-field>
+
+        <span class="size-separator">×</span>
+
+        <mat-form-field appearance="outline" class="size-field">
+          <mat-label>Height</mat-label>
+          <input
+            (ngModelChange)="validateHeight()"
+            [(ngModel)]="height"
+            data-testid="crop-dialog-height-input"
+            matInput
+            min="1"
+            type="number"
+          />
+          <span matSuffix>px</span>
+          <mat-error *ngIf="heightError">{{ heightError }}</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Preview info -->
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span>Crop area: {{ cropAreaDisplay }}</span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <!-- Requirement 9.4: Cancel button closes dialog without saving -->
+  <button
+    (click)="onCancel()"
+    data-testid="crop-dialog-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <!-- Requirement 9.3: Save button validates and closes with configuration -->
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="crop-dialog-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

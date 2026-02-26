@@ -1,0 +1,101 @@
+<h2 mat-dialog-title>{{ isEditMode ? "Edit" : "Create" }} Model Parameter</h2>
+
+<mat-dialog-content>
+  <div class="dialog-content">
+    <!-- Location Display -->
+    <div
+      *ngIf="data.modelParam?.locationName || hasLocation"
+      class="location-info"
+    >
+      <mat-icon>location_on</mat-icon>
+      <span
+        >Location:
+        {{ data.modelParam?.locationName || "Current Location" }}</span
+      >
+    </div>
+
+    <form [formGroup]="form">
+      <!-- Model Name + Model Type Row -->
+      <div class="form-row">
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>Model Name</mat-label>
+          <input
+            formControlName="modelName"
+            matInput
+            maxlength="50"
+            placeholder="Enter model name"
+            required
+          />
+          <mat-hint align="end"
+            >{{ form.get("modelName")?.value?.length || 0 }}/50
+          </mat-hint>
+          <mat-error *ngIf="form.get('modelName')?.hasError('required')">
+            Model name is required
+          </mat-error>
+          <mat-error *ngIf="form.get('modelName')?.hasError('maxlength')">
+            Max 50 characters
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>Model Type</mat-label>
+          <mat-select formControlName="modelType" required>
+            <mat-option value="Object Detection">Object Detection</mat-option>
+            <mat-option value="Classification">Classification</mat-option>
+            <mat-option value="Segmentation">Segmentation</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('modelType')?.hasError('required')">
+            Model type is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Parameters Field -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Parameters (JSON)</mat-label>
+        <textarea
+          (input)="onParametersChange()"
+          formControlName="parameters"
+          matInput
+          placeholder='{"key": "value"}'
+          required
+          rows="16"
+        ></textarea>
+        <mat-hint
+          *ngIf="jsonValidationMessage"
+          [class.error-hint]="!isJsonValid"
+          [class.success-hint]="isJsonValid"
+        >
+          <mat-icon class="hint-icon"
+            >{{ isJsonValid ? "check_circle" : "error" }}
+          </mat-icon>
+          {{ jsonValidationMessage }}
+        </mat-hint>
+        <mat-error *ngIf="form.get('parameters')?.hasError('required')">
+          Parameters are required
+        </mat-error>
+        <mat-error *ngIf="form.get('parameters')?.hasError('invalidJson')">
+          Invalid JSON format
+        </mat-error>
+      </mat-form-field>
+    </form>
+
+    <!-- No Location Warning -->
+    <div *ngIf="!hasLocation" class="warning-message">
+      <mat-icon>warning</mat-icon>
+      <p>Please select a location before creating a model parameter.</p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onCancel()" mat-button>Cancel</button>
+  <button
+    (click)="onSave()"
+    [disabled]="!form.valid || !hasLocation"
+    color="primary"
+    mat-raised-button
+  >
+    {{ isEditMode ? "Update" : "Create" }}
+  </button>
+</mat-dialog-actions>

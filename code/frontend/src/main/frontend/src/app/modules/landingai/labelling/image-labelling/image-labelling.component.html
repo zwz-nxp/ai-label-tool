@@ -1,0 +1,432 @@
+<div class="image-labelling-container">
+  <!-- Top Toolbar -->
+  <app-top-toolbar
+    (buttonClick)="onToolbarButtonClick($event)"
+    (classCreated)="onClassCreated($event)"
+    (classSelected)="onClassSelected($event)"
+    (enhanceSettingsChanged)="onEnhanceSettingsChanged($event)"
+    (navigateImage)="onNavigateImage($event)"
+    (navigateToProject)="onNavigateToProject()"
+    (noObjectToLabelChanged)="onNoObjectToLabelChanged($event)"
+    (showLabelDetailsChanged)="onShowLabelDetailsChanged($event)"
+    [activeTool]="activeTool"
+    [buttons]="toolbarButtons"
+    [canRedo]="canRedo()"
+    [canUndo]="canUndo()"
+    [classes]="classes"
+    [currentImage]="currentImage"
+    [currentImageIndex]="getCurrentImageIndex()"
+    [enhanceSettings]="state.enhanceSettings"
+    [isNoClass]="currentImage.isNoClass || false"
+    [isPanMode]="isPanMode"
+    [projectId]="project?.id || 0"
+    [projectName]="project?.name || ''"
+    [selectedClass]="state.selectedClass"
+    [showLabelDetails]="state.showLabelDetails"
+    [totalImages]="images.length"
+    [zoomLevel]="zoomLevel"
+  ></app-top-toolbar>
+
+  <!-- Main content area with sidebars -->
+  <mat-sidenav-container class="main-container">
+    <!-- Left Sidebar - Project Info & Image List -->
+    <mat-sidenav
+      [fixedInViewport]="false"
+      [opened]="isLeftSidebarOpen"
+      class="left-sidebar"
+      mode="side"
+    >
+      <app-left-toolbar
+        (batchDelete)="onBatchDelete($event)"
+        (batchExport)="onBatchExport($event)"
+        (imageSelected)="onImageSelected($event)"
+        [currentImage]="currentImage"
+        [images]="images"
+        [isLoadingImages]="isLoadingImages"
+        [project]="project"
+      ></app-left-toolbar>
+    </mat-sidenav>
+
+    <!-- Center Area - Image Preview & Annotation Canvas -->
+    <mat-sidenav-content class="center-content">
+      <!-- Left Sidebar Toggle Button -->
+      <button
+        (click)="toggleLeftSidebar()"
+        class="sidebar-toggle-btn left-toggle"
+        mat-icon-button
+        matTooltip="{{
+          isLeftSidebarOpen ? 'Hide Image List' : 'Show Image List'
+        }}"
+      >
+        <mat-icon
+          >{{ isLeftSidebarOpen ? "chevron_left" : "chevron_right" }}
+        </mat-icon>
+      </button>
+
+      <!-- Right Sidebar Toggle Button -->
+      <button
+        (click)="toggleRightSidebar()"
+        class="sidebar-toggle-btn right-toggle"
+        mat-icon-button
+        matTooltip="{{
+          isRightSidebarOpen ? 'Hide Properties' : 'Show Properties'
+        }}"
+      >
+        <mat-icon
+          >{{ isRightSidebarOpen ? "chevron_right" : "chevron_left" }}
+        </mat-icon>
+      </button>
+
+      <!-- Save Status Indicator -->
+      <div *ngIf="saveStatus !== 'idle'" class="save-status-indicator">
+        <mat-icon *ngIf="saveStatus === 'saving'" class="status-icon saving"
+          >sync
+        </mat-icon>
+        <mat-icon *ngIf="saveStatus === 'saved'" class="status-icon saved"
+          >check_circle
+        </mat-icon>
+        <mat-icon *ngIf="saveStatus === 'error'" class="status-icon error"
+          >error
+        </mat-icon>
+        <span class="status-message">{{ saveStatusMessage }}</span>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoadingAnnotations" class="loading-indicator">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Loading annotations...</span>
+      </div>
+
+      <div [ngSwitch]="project?.type" class="image-preview-area">
+        <!-- Object Detection Canvas -->
+        <app-object-detection-canvas
+          (annotationCreated)="onAnnotationCreated($event)"
+          (annotationDeleted)="onAnnotationDeleted($event)"
+          (annotationSelected)="onAnnotationSelected($event)"
+          (annotationUpdated)="onAnnotationUpdated($event)"
+          (zoomLevelChanged)="onZoomLevelChanged($event)"
+          *ngSwitchCase="'Object Detection'"
+          [activeTool]="activeTool"
+          [annotations]="state.annotations"
+          [enhanceSettings]="state.enhanceSettings"
+          [hideAnnotations]="hideAnnotations"
+          [imageUrl]="currentImageUrl"
+          [image]="currentImage"
+          [isPanMode]="isPanMode"
+          [selectedAnnotation]="state.selectedAnnotation"
+          [selectedAnnotations]="state.selectedAnnotations"
+          [selectedClass]="state.selectedClass"
+          [showLabels]="state.showLabels"
+          [showLabelDetails]="state.showLabelDetails"
+          [showPredictions]="state.showPredictions"
+          [zoomLevel]="zoomLevel"
+        ></app-object-detection-canvas>
+
+        <!-- Segmentation Canvas -->
+        <app-segmentation-canvas
+          (annotationCreated)="onAnnotationCreated($event)"
+          (annotationDeleted)="onAnnotationDeleted($event)"
+          (annotationSelected)="onAnnotationSelected($event)"
+          (annotationUpdated)="onAnnotationUpdated($event)"
+          (zoomLevelChanged)="onZoomLevelChanged($event)"
+          *ngSwitchCase="'Segmentation'"
+          [activeTool]="activeTool"
+          [annotations]="state.annotations"
+          [enhanceSettings]="state.enhanceSettings"
+          [hideAnnotations]="hideAnnotations"
+          [imageUrl]="currentImageUrl"
+          [image]="currentImage"
+          [isPanMode]="isPanMode"
+          [selectedAnnotation]="state.selectedAnnotation"
+          [selectedAnnotations]="state.selectedAnnotations"
+          [selectedClass]="state.selectedClass"
+          [showLabels]="state.showLabels"
+          [showLabelDetails]="state.showLabelDetails"
+          [showPredictions]="state.showPredictions"
+          [zoomLevel]="zoomLevel"
+        ></app-segmentation-canvas>
+
+        <!-- Classification Canvas -->
+        <app-classification-canvas
+          (annotationCreated)="onAnnotationCreated($event)"
+          (annotationDeleted)="onAnnotationDeleted($event)"
+          (annotationSelected)="onAnnotationSelected($event)"
+          (annotationUpdated)="onAnnotationUpdated($event)"
+          (zoomLevelChanged)="onZoomLevelChanged($event)"
+          *ngSwitchCase="'Classification'"
+          [activeTool]="activeTool"
+          [annotations]="state.annotations"
+          [enhanceSettings]="state.enhanceSettings"
+          [hideAnnotations]="hideAnnotations"
+          [imageUrl]="currentImageUrl"
+          [image]="currentImage"
+          [isPanMode]="isPanMode"
+          [selectedAnnotation]="state.selectedAnnotation"
+          [selectedAnnotations]="state.selectedAnnotations"
+          [selectedClass]="state.selectedClass"
+          [showLabels]="state.showLabels"
+          [showLabelDetails]="state.showLabelDetails"
+          [showPredictions]="state.showPredictions"
+          [zoomLevel]="zoomLevel"
+        ></app-classification-canvas>
+
+        <!-- Default fallback (uses original annotation-canvas) -->
+        <app-annotation-canvas
+          (annotationCreated)="onAnnotationCreated($event)"
+          (annotationDeleted)="onAnnotationDeleted($event)"
+          (annotationSelected)="onAnnotationSelected($event)"
+          (annotationUpdated)="onAnnotationUpdated($event)"
+          (zoomLevelChanged)="onZoomLevelChanged($event)"
+          *ngSwitchDefault
+          [activeTool]="activeTool"
+          [annotations]="state.annotations"
+          [enhanceSettings]="state.enhanceSettings"
+          [hideAnnotations]="hideAnnotations"
+          [imageUrl]="currentImageUrl"
+          [image]="currentImage"
+          [isPanMode]="isPanMode"
+          [selectedAnnotation]="state.selectedAnnotation"
+          [selectedAnnotations]="state.selectedAnnotations"
+          [selectedClass]="state.selectedClass"
+          [showLabels]="state.showLabels"
+          [showLabelDetails]="state.showLabelDetails"
+          [showPredictions]="state.showPredictions"
+          [zoomLevel]="zoomLevel"
+        ></app-annotation-canvas>
+
+        <div *ngIf="!currentImage" class="no-image-message">
+          <p>No image selected. Please select an image from the list.</p>
+        </div>
+      </div>
+    </mat-sidenav-content>
+
+    <!-- Right Sidebar - General, Tags, Metadata, Labels -->
+    <mat-sidenav
+      [fixedInViewport]="false"
+      [opened]="isRightSidebarOpen"
+      class="right-sidebar"
+      mode="side"
+      position="end"
+    >
+      <div class="sidebar-content">
+        <!-- General Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('general')"
+          [expanded]="expandedPanel === 'general'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>General</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-general-block
+            (imageDeleted)="onImageDeleted($event)"
+            (imageExported)="onImageExported($event)"
+            (imageUpdated)="onImageUpdated($event)"
+            [currentImage]="currentImage"
+            [project]="project"
+          ></app-general-block>
+        </mat-expansion-panel>
+
+        <!-- Tags Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('tags')"
+          [expanded]="expandedPanel === 'tags'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Tags</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-tags-block
+            [currentImage]="currentImage"
+            [project]="project"
+          ></app-tags-block>
+        </mat-expansion-panel>
+
+        <!-- Metadata Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('metadata')"
+          [expanded]="expandedPanel === 'metadata'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Metadata</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-metadata-block
+            [currentImage]="currentImage"
+            [project]="project"
+          ></app-metadata-block>
+        </mat-expansion-panel>
+
+        <!-- Labels Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('labels')"
+          [expanded]="expandedPanel === 'labels'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Labels</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-labels-block
+            (annotationSelected)="onAnnotationSelected($event)"
+            (annotationsSelected)="onAnnotationsSelected($event)"
+            (showLabelsChanged)="onShowLabelsChanged($event)"
+            [annotations]="state.annotations"
+            [selectedAnnotation]="state.selectedAnnotation"
+            [selectedAnnotations]="state.selectedAnnotations"
+          ></app-labels-block>
+        </mat-expansion-panel>
+
+        <!-- Predictions Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('predictions')"
+          [expanded]="expandedPanel === 'predictions'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Predictions</mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-predictions-block
+            (annotationSelected)="onAnnotationSelected($event)"
+            (annotationsSelected)="onAnnotationsSelected($event)"
+            (labelAssistClicked)="onLabelAssistClicked()"
+            (showPredictionsChanged)="onShowPredictionsChanged($event)"
+            [annotations]="state.annotations"
+            [selectedAnnotation]="state.selectedAnnotation"
+            [selectedAnnotations]="state.selectedAnnotations"
+            [selectedModel]="selectedModelName"
+          ></app-predictions-block>
+        </mat-expansion-panel>
+
+        <!-- Pre-annotation Controls Block -->
+        <mat-expansion-panel
+          (opened)="onPanelOpened('preAnnotations')"
+          *ngIf="modelPredictionEnabled && currentImage"
+          [expanded]="expandedPanel === 'preAnnotations'"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>Pre-annotations</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="pre-annotation-controls">
+            <div class="control-header">Model Predictions</div>
+            <div class="control-info">
+              Generate and manage AI-powered pre-annotations
+            </div>
+
+            <!-- Generate Button -->
+            <button
+              (click)="generatePreAnnotations()"
+              [disabled]="isGeneratingPreAnnotations"
+              color="primary"
+              mat-raised-button
+              style="width: 100%"
+            >
+              <mat-icon>auto_fix_high</mat-icon>
+              {{
+                isGeneratingPreAnnotations
+                  ? "Generating..."
+                  : "Generate Pre-annotations"
+              }}
+            </button>
+
+            <!-- Pre-annotation Count -->
+            <div *ngIf="preAnnotations.length > 0" style="margin-top: 12px">
+              <p style="font-size: 13px; margin: 4px 0">
+                <strong>{{ preAnnotations.length }}</strong> pre-annotation(s)
+                available
+              </p>
+
+              <!-- Batch Accept/Reject Buttons -->
+              <div class="control-buttons">
+                <button
+                  (click)="acceptAllPreAnnotations()"
+                  color="accent"
+                  mat-raised-button
+                >
+                  <mat-icon>check</mat-icon>
+                  Accept All
+                </button>
+                <button
+                  (click)="rejectAllPreAnnotations()"
+                  color="warn"
+                  mat-raised-button
+                >
+                  <mat-icon>close</mat-icon>
+                  Reject All
+                </button>
+              </div>
+
+              <!-- Individual Pre-annotation List -->
+              <div
+                style="margin-top: 12px; max-height: 200px; overflow-y: auto"
+              >
+                <div
+                  (click)="onAnnotationSelected(annotation)"
+                  *ngFor="let annotation of preAnnotations; let i = index"
+                  class="annotation-list-item prediction"
+                  style="
+                    padding: 8px;
+                    margin-bottom: 4px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                    "
+                  >
+                    <span class="annotation-label">
+                      <span
+                        [style.background-color]="annotation.color"
+                        class="color-indicator"
+                      ></span>
+                      {{ annotation.className }}
+                      <span
+                        *ngIf="annotation.confidenceRate"
+                        class="confidence-badge"
+                      >
+                        {{ annotation.confidenceRate }}%
+                      </span>
+                    </span>
+                  </div>
+                  <div class="accept-reject-buttons">
+                    <button
+                      (click)="
+                        acceptPreAnnotation(annotation);
+                        $event.stopPropagation()
+                      "
+                      color="accent"
+                      mat-button
+                    >
+                      <mat-icon style="font-size: 16px">check</mat-icon>
+                      Accept
+                    </button>
+                    <button
+                      (click)="
+                        rejectPreAnnotation(annotation);
+                        $event.stopPropagation()
+                      "
+                      color="warn"
+                      mat-button
+                    >
+                      <mat-icon style="font-size: 16px">close</mat-icon>
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- No Pre-annotations Message -->
+            <div
+              *ngIf="preAnnotations.length === 0 && !isGeneratingPreAnnotations"
+              style="margin-top: 8px"
+            >
+              <p style="font-size: 12px; color: #666; font-style: italic">
+                No pre-annotations available. Click "Generate" to create
+                predictions.
+              </p>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </div>
+    </mat-sidenav>
+  </mat-sidenav-container>
+</div>

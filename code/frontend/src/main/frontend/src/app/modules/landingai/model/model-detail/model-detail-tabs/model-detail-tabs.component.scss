@@ -1,0 +1,51 @@
+/**
+ * Model Detail Tabs Styles
+ * Requirements: 5.1
+ */
+
+.model-detail-tabs {
+  background-color: #ffffff;
+
+  ::ng-deep .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .mat-mdc-tab-list {
+      justify-content: flex-start; // Align tabs to the left
+    }
+
+    .mat-mdc-tab-labels {
+      padding: 0 24px;
+      justify-content: flex-start; // Align tabs to the left
+      flex-grow: 0; // Prevent labels container from growing
+    }
+
+    .mdc-tab,
+    .mat-mdc-tab {
+      min-width: auto !important; // Remove minimum width
+      width: auto !important; // Auto width based on content
+      flex-grow: 0 !important; // Prevent tabs from growing to fill space
+      flex-basis: auto !important; // Use content-based width
+    }
+
+    .mat-mdc-tab-label {
+      min-width: auto; // Remove minimum width to prevent stretching
+      width: auto; // Auto width based on content
+      height: 48px;
+      padding: 0 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      flex-grow: 0; // Prevent tabs from growing to fill space
+
+      &.mat-mdc-tab-label-active {
+        color: #1976d2;
+      }
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      display: none; // Hide tab body wrapper as content is managed by parent
+    }
+  }
+}

@@ -1,0 +1,174 @@
+<div class="confusion-matrix-container">
+  <!-- Loading State -->
+  <div *ngIf="state.loading" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading confusion matrix...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="state.error && !state.loading" class="error-state">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ state.error }}</p>
+    <button mat-raised-button color="primary" (click)="onRetry()">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!state.loading && !state.error && !state.matrixData"
+    class="empty-state"
+  >
+    <mat-icon>info</mat-icon>
+    <p>No confusion matrix data available</p>
+    <p class="hint">
+      Please ensure the model has predictions for the selected evaluation set.
+    </p>
+  </div>
+
+  <!-- Main Content: Matrix + Analyze Section -->
+  <div
+    *ngIf="!state.loading && !state.error && state.matrixData"
+    class="main-content"
+  >
+    <!-- Confusion Matrix Section -->
+    <div class="matrix-section">
+      <div class="matrix-header">
+        <h3>Confusion Matrix</h3>
+      </div>
+
+      <app-confusion-matrix-grid
+        [matrixData]="state.matrixData"
+        (cellClick)="onCellClick($event)"
+      ></app-confusion-matrix-grid>
+    </div>
+
+    <!-- Analyze Section (shown when cell is selected) -->
+    <div *ngIf="state.selectedCell" class="analyze-section">
+      <!-- Search and Filter Controls -->
+      <div class="analyze-controls">
+        <mat-form-field appearance="outline" class="search-field">
+          <input matInput placeholder="Search by filename..." />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <div class="control-group">
+          <div class="center-group">
+            <span class="image-count">
+              {{ state.selectedCell.count }} images
+            </span>
+
+            <button mat-button class="clear-filter-button">
+              <span class="button-label">Clear filter</span>
+            </button>
+          </div>
+
+          <div class="sort-by-section">
+            <span class="sort-label">Sort by:</span>
+            <mat-form-field appearance="outline" class="sort-field">
+              <mat-select value="confidence">
+                <mat-option value="confidence">Confidence</mat-option>
+                <mat-option value="filename">Filename</mat-option>
+                <mat-option value="date">Date</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analyze Content: Left Stats + Right Images -->
+      <div class="analyze-content">
+        <!-- Left: Statistics Panel -->
+        <div class="stats-panel">
+          <!-- Column Headers: Ground Truth / Prediction / Count -->
+          <div class="column-headers">
+            <div class="header-item gt-header">
+              <p class="header-text"><strong>Ground Truth</strong></p>
+            </div>
+            <div class="header-item pred-header">
+              <p class="header-text"><strong>Prediction</strong></p>
+            </div>
+            <div class="header-item count-header">
+              <p class="header-text"><strong>Count</strong></p>
+            </div>
+          </div>
+
+          <!-- False Positive / False Negative / Correct Block -->
+          <div class="stat-table-container">
+            <table class="stat-table">
+              <thead>
+                <tr class="stat-table-header">
+                  <th class="stat-table-cell-header" colspan="3">
+                    <div class="stat-header-content">
+                      <p class="stat-title">
+                        {{
+                          state.selectedCell.gtClassId ===
+                          state.selectedCell.predClassId
+                            ? "Correct"
+                            : state.selectedCell.gtClassId !==
+                                  state.selectedCell.predClassId &&
+                                state.selectedCell.predClassId !== null
+                              ? "False Positive"
+                              : "False Negative"
+                        }}
+                      </p>
+                      <mat-icon class="info-icon" fontSize="small"
+                        >info</mat-icon
+                      >
+                      <span class="header-count">{{
+                        state.selectedCell.count
+                      }}</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="stat-table-row">
+                  <!-- Ground Truth Label (always show) -->
+                  <td class="stat-table-cell label-cell">
+                    <div class="label-box gt-label">
+                      <div class="label-color-box"></div>
+                      <p class="label-text">
+                        {{ state.selectedCell.gtClassName }}
+                      </p>
+                    </div>
+                  </td>
+
+                  <!-- Prediction Label (only show if incorrect) -->
+                  <td class="stat-table-cell label-cell">
+                    <div
+                      *ngIf="
+                        state.selectedCell.gtClassId !==
+                        state.selectedCell.predClassId
+                      "
+                      class="label-box pred-label"
+                    >
+                      <div class="label-color-box"></div>
+                      <p class="label-text">
+                        {{ state.selectedCell.predClassName }}
+                      </p>
+                    </div>
+                  </td>
+
+                  <!-- Count -->
+                  <td class="stat-table-cell count-cell">
+                    <p class="count-value">{{ state.selectedCell.count }}</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right: Images Panel -->
+        <div class="images-panel">
+          <app-detail-panel
+            [cellSelection]="state.selectedCell"
+            [modelId]="state.modelId!"
+            [evaluationSet]="state.evaluationSet"
+            [hideHeader]="true"
+            (close)="onCloseDetail()"
+          ></app-detail-panel>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,269 @@
+.project-card {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
+
+  // Hover effect
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.12);
+    border-color: #1976d2;
+  }
+
+  // Focus state for keyboard navigation
+  &:focus {
+    outline: 2px solid #1976d2;
+    outline-offset: 2px;
+  }
+}
+
+.project-thumbnail {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  background-color: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.project-info {
+  padding: 8px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.type-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #1976d2;
+  flex-shrink: 0;
+  cursor: help;
+}
+
+.project-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.5;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .image-count-badge {
+    font-size: 12px;
+    font-weight: 400;
+    color: #757575;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.menu-button {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .three-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+
+    .dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: #666;
+    }
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+
+    .dot {
+      background-color: #333;
+    }
+  }
+}
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.creator-name {
+  margin: 0;
+  font-size: 12px;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+
+  .creator-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    color: #999;
+    flex-shrink: 0;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.project-stats {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    color: #757575;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: #999;
+    }
+
+    span {
+      font-weight: 500;
+      color: #616161;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .project-thumbnail {
+    height: 140px;
+  }
+
+  .project-info {
+    padding: 10px 12px;
+  }
+
+  .project-name {
+    font-size: 14px;
+  }
+
+  .creator-name {
+    font-size: 12px;
+  }
+
+  .project-stats {
+    gap: 8px;
+
+    .stat-item {
+      font-size: 12px;
+
+      mat-icon {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .project-card {
+    border: 2px solid #000;
+
+    &:hover {
+      border-color: #1976d2;
+    }
+  }
+
+  .project-name,
+  .creator-name,
+  .stat-item {
+    color: #000;
+  }
+}
+
+// Dark mode support (if needed in future)
+@media (prefers-color-scheme: dark) {
+  .project-card {
+    background-color: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border-color: #444;
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+      border-color: #555;
+    }
+  }
+
+  .project-thumbnail {
+    background-color: #1a1a1a;
+  }
+
+  .project-name {
+    color: #e0e0e0;
+  }
+
+  .creator-name,
+  .stat-item {
+    color: #b0b0b0;
+  }
+
+  .project-stats {
+    border-top-color: #444;
+  }
+}

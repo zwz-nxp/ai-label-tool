@@ -1,0 +1,78 @@
+<!-- Model Page -->
+<!-- Implementation requirements 4.1, 4.2, 4.3: Page title, toolbar, and card container structure -->
+<div class="model-page" [class.panel-open]="isPanelOpen$ | async">
+  <div class="models-list-section">
+    <div class="model-container" role="main" aria-label="Model management page">
+      <!-- Page Title - Requirement 4.1: Display "Models" as main page title in top-left corner -->
+      <div class="page-header">
+        <h1 class="page-title" id="page-title" tabindex="-1">Models</h1>
+        <!-- Back to Project Link -->
+        <a
+          *ngIf="projectId"
+          [routerLink]="['/landingai/projects', projectId]"
+          class="back-to-project-link"
+          aria-label="Return to project page"
+        >
+          <mat-icon class="back-icon">arrow_back</mat-icon>
+          <span>Back to Project</span>
+        </a>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message" role="alert" aria-live="polite">
+        <mat-icon class="error-icon">error</mat-icon>
+        <span class="error-text">{{ error }}</span>
+        <button
+          mat-icon-button
+          (click)="clearError()"
+          aria-label="Close error message"
+          class="error-close"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <button mat-stroked-button (click)="onRefresh()" class="error-retry">
+          Retry
+        </button>
+      </div>
+
+      <!-- Search Component - Requirements 2.1, 2.2, 2.5: Search functionality with debouncing -->
+      <section class="search-section" aria-labelledby="search-section-label">
+        <h2 id="search-section-label" class="sr-only">
+          Search and filter models
+        </h2>
+        <app-model-search
+          [searchTerm]="searchFilters.searchTerm"
+          [showFavoritesOnly]="searchFilters.showFavoritesOnly"
+          (searchChange)="onSearchChange($event)"
+          (favoritesFilterChange)="onFavoritesFilterChange($event)"
+        >
+        </app-model-search>
+      </section>
+
+      <!-- Model Table Card - Requirement 4.4: Bordered card filling available width -->
+      <section class="table-section" aria-labelledby="table-section-label">
+        <h2 id="table-section-label" class="sr-only">Models data table</h2>
+        <mat-card
+          class="model-table-card"
+          role="region"
+          aria-label="Models data table container"
+        >
+          <mat-card-content>
+            <!-- Model Table Component -->
+            <app-model-table
+              [models]="filteredModels"
+              [loading]="loading"
+              (favoriteToggle)="onFavoriteToggle($event)"
+              (actionMenuClick)="onActionMenuClick($event)"
+              (rowClick)="onModelRowClick($event)"
+            >
+            </app-model-table>
+          </mat-card-content>
+        </mat-card>
+      </section>
+    </div>
+  </div>
+
+  <!-- Model Detail Panel -->
+  <app-model-detail-panel></app-model-detail-panel>
+</div>

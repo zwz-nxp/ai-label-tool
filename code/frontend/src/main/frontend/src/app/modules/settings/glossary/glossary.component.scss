@@ -1,0 +1,14 @@
+@use "app/styles/iemdm.scss";
+
+:host ::ng-deep {
+  .mat-mdc-table {
+    .mat-mdc-row:nth-child(4n + 1),
+    .mat-mdc-row:nth-child(4n + 2) {
+      background-color: iemdm.$table-row-odd;
+    }
+
+    .mat-mdc-row {
+      background-color: iemdm.$table-row-even;
+    }
+  }
+}

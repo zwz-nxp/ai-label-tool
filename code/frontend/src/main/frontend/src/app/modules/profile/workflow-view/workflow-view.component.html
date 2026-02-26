@@ -1,0 +1,89 @@
+<div class="flex max-h-full min-h-0 flex-col">
+  <mat-tab-group
+    #tabs
+    (selectedTabChange)="updateTableStickyStyles()"
+    [(selectedIndex)]="activeTab"
+    class="overflow-auto"
+    mat-stretch-tabs="false"
+  >
+    <mat-tab label="Notifications ({{ notifications.length }})">
+      <div class="flex max-h-full flex-col">
+        <div class="overflow-auto">
+          <table
+            #NotificationsTable
+            [dataSource]="notificationsDataSource"
+            mat-table
+            matSort
+          >
+            <ng-container matColumnDef="timestamp">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                Date Received
+              </th>
+              <td *matCellDef="let element" mat-cell nowrap>
+                {{ element.timestamp | date: "yyyy-MM-dd" }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="severityLevel">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ getLevel(element) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="message">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Title</th>
+              <td *matCellDef="let element" mat-cell nowrap>
+                {{ getTitle(element) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="read">
+              <th *matHeaderCellDef mat-header-cell mat-sort-header>Status</th>
+              <td *matCellDef="let element" mat-cell nowrap>
+                {{ isRead(element.read) }}
+              </td>
+            </ng-container>
+
+            <ng-container
+              *ngFor="let column of notificationSearchColumns"
+              [matColumnDef]="column"
+            >
+              <th *matHeaderCellDef mat-header-cell>
+                <app-generic-search
+                  (emitSearchTrigger)="notificationSearchFieldTriggered($event)"
+                  [searchField]="column"
+                >
+                </app-generic-search>
+              </th>
+            </ng-container>
+
+            <tr
+              *matHeaderRowDef="displayedColumnsNotifications; sticky: true"
+              mat-header-row
+            ></tr>
+            <tr
+              *matHeaderRowDef="notificationSearchColumns; sticky: true"
+              mat-header-row
+            ></tr>
+            <tr
+              (click)="openNotification(row.id)"
+              *matRowDef="let row; columns: displayedColumnsNotifications"
+              class="cursor-pointer hover:!bg-table-row-hover"
+              mat-row
+            ></tr>
+          </table>
+        </div>
+
+        <mat-paginator
+          #NotificationsPaginator
+          [pageSizeOptions]="[25, 50, 100]"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <app-spinner *ngIf="isLoading"></app-spinner>
+</div>

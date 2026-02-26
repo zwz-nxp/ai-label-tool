@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Delete Project</h2>
+
+<mat-dialog-content>
+  <div class="warning-container">
+    <mat-icon class="warning-icon" color="warn">warning</mat-icon>
+    <div class="warning-text">
+      <p>
+        Are you sure you want to delete the project
+        <strong>{{ data.project.name }}</strong
+        >?
+      </p>
+      <p class="warning-message">
+        This action cannot be undone. All images, labels, and associated data
+        will be permanently deleted.
+      </p>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onCancel()" mat-button>Cancel</button>
+  <button (click)="onConfirm()" color="warn" mat-raised-button>Delete</button>
+</mat-dialog-actions>

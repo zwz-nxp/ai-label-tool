@@ -1,0 +1,347 @@
+<div class="auto-split-dialog">
+  <!-- Stepper Header -->
+  <div class="stepper-header">
+    <div
+      *ngFor="let step of [0, 1, 2]"
+      [class.active]="isStepActive(step)"
+      [class.complete]="isStepComplete(step)"
+      class="step"
+    >
+      <div class="step-number">
+        <mat-icon *ngIf="isStepComplete(step)">check</mat-icon>
+        <span *ngIf="!isStepComplete(step)">{{ step + 1 }}</span>
+      </div>
+      <div class="step-label">{{ getStepLabel(step) }}</div>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Step 1: Select Images -->
+    <div *ngIf="currentStep === 0" class="step-content">
+      <h3>Image selection</h3>
+
+      <div class="info-box">
+        <mat-icon>info</mat-icon>
+        <p>
+          By default, all <strong>approved</strong> with
+          <strong>no split assigned</strong> images will be selected for auto
+          splitting.
+        </p>
+      </div>
+
+      <div class="checkbox-field">
+        <mat-checkbox
+          (change)="onIncludeAssignedChange()"
+          [(ngModel)]="includeAssigned"
+        >
+          Include assigned train/dev/test media to reassigned
+        </mat-checkbox>
+      </div>
+
+      <div class="stats-section">
+        <h4>Total number of images to split</h4>
+        <div class="total-count">{{ totalImagesToSplit }}</div>
+      </div>
+
+      <div class="stats-section">
+        <h4>Classes</h4>
+        <div class="class-stats">
+          <div *ngFor="let cls of classStats" class="class-stat-item">
+            <div class="class-info">
+              <div
+                [style.background-color]="cls.color"
+                class="class-color"
+              ></div>
+              <span class="class-name">{{ cls.className }}</span>
+            </div>
+            <div class="class-count">{{ cls.imageCount }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Set Distribution -->
+    <div *ngIf="currentStep === 1" class="step-content">
+      <h3>Set your target defect split distribution</h3>
+
+      <div class="checkbox-field">
+        <mat-checkbox
+          (change)="onAdjustAllTogetherChange()"
+          [(ngModel)]="adjustAllTogether"
+        >
+          Adjust value for all defect types together
+        </mat-checkbox>
+      </div>
+
+      <!-- Global Ratio Slider (when adjustAllTogether is true) -->
+      <div *ngIf="adjustAllTogether" class="ratio-section">
+        <div class="ratio-header-row">
+          <span></span>
+          <span class="header-label">train / dev / test (%)</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Global</span>
+          <div class="nouislider" id="global-slider"></div>
+          <span class="ratio-display"
+            >{{ trainRatio }}/{{ devRatio }}/{{ testRatio }}</span
+          >
+        </div>
+      </div>
+
+      <!-- Per-Class Ratio Sliders (when adjustAllTogether is false) -->
+      <div *ngIf="!adjustAllTogether" class="ratio-section">
+        <div class="ratio-header-row">
+          <span></span>
+          <span class="header-label">train / dev / test (%)</span>
+        </div>
+        <div *ngFor="let cls of classStats" class="slider-row">
+          <span class="slider-label">
+            <span
+              [style.background-color]="cls.color"
+              class="class-color-dot"
+            ></span>
+            {{ cls.className }}
+          </span>
+          <div [id]="'class-slider-' + cls.classId" class="nouislider"></div>
+          <span class="ratio-display">
+            {{ classRatios.get(cls.classId)?.train }}/{{
+              classRatios.get(cls.classId)?.dev
+            }}/{{ classRatios.get(cls.classId)?.test }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Result Preview Section -->
+      <div class="preview-section">
+        <h4>Result Preview</h4>
+
+        <div class="charts-container">
+          <!-- Donut Chart - Number of images in each split -->
+          <div class="chart-card donut-chart-card">
+            <div class="chart-header">
+              <span class="chart-title">number of images in each split</span>
+              <mat-icon
+                class="help-icon"
+                matTooltip="Shows the distribution of images across train, dev, and test splits"
+                >help_outline
+              </mat-icon>
+            </div>
+            <div class="donut-chart-container">
+              <div
+                [style.background]="
+                  'conic-gradient(#c8e6c9 0% ' +
+                  trainRatio +
+                  '%, #81c784 ' +
+                  trainRatio +
+                  '% ' +
+                  (trainRatio + devRatio) +
+                  '%, #4caf50 ' +
+                  (trainRatio + devRatio) +
+                  '% 100%)'
+                "
+                class="donut-chart"
+              >
+                <div class="donut-hole">
+                  <span class="total-count">{{ totalImagesToSplit }}</span>
+                  <span class="total-label">images</span>
+                </div>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span
+                  class="legend-color"
+                  style="background-color: #c8e6c9"
+                ></span>
+                <span class="legend-label">train</span>
+                <span class="legend-value"
+                  >{{ previewTrainCount }} ({{ trainRatio }}%)</span
+                >
+              </div>
+              <div class="legend-item">
+                <span
+                  class="legend-color"
+                  style="background-color: #81c784"
+                ></span>
+                <span class="legend-label">dev</span>
+                <span class="legend-value"
+                  >{{ previewDevCount }} ({{ devRatio }}%)</span
+                >
+              </div>
+              <div class="legend-item">
+                <span
+                  class="legend-color"
+                  style="background-color: #4caf50"
+                ></span>
+                <span class="legend-label">test</span>
+                <span class="legend-value"
+                  >{{ previewTestCount }} ({{ testRatio }}%)</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side charts -->
+          <div class="right-charts">
+            <!-- Defect/Split Distribution Chart -->
+            <div class="chart-card bar-chart-card">
+              <div class="chart-header">
+                <span class="chart-title">defect / split distribution</span>
+                <mat-icon
+                  class="help-icon"
+                  matTooltip="Shows how each defect class is distributed across splits"
+                  >help_outline
+                </mat-icon>
+              </div>
+              <div class="chart-subtitle">
+                average deviation from target:
+                <strong>{{ averageDeviation | number: "1.2-2" }}%</strong>
+              </div>
+              <div class="bar-chart-container">
+                <div *ngFor="let cls of classStats" class="bar-row">
+                  <span class="bar-label">{{ cls.className }}</span>
+                  <div class="stacked-bar">
+                    <div
+                      [style.width.%]="
+                        classRatios.get(cls.classId)?.train || trainRatio
+                      "
+                      class="bar-segment train"
+                    ></div>
+                    <div
+                      [style.width.%]="
+                        classRatios.get(cls.classId)?.dev || devRatio
+                      "
+                      class="bar-segment dev"
+                    ></div>
+                    <div
+                      [style.width.%]="
+                        classRatios.get(cls.classId)?.test || testRatio
+                      "
+                      class="bar-segment test"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item">
+                  <span
+                    class="legend-color"
+                    style="background-color: #4caf50"
+                  ></span>
+                  <span class="legend-label">train</span>
+                </div>
+                <div class="legend-item">
+                  <span
+                    class="legend-color"
+                    style="background-color: #81c784"
+                  ></span>
+                  <span class="legend-label">dev</span>
+                </div>
+                <div class="legend-item">
+                  <span
+                    class="legend-color"
+                    style="background-color: #c8e6c9"
+                  ></span>
+                  <span class="legend-label">test</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Split/Defect Distribution Chart -->
+            <div class="chart-card bar-chart-card">
+              <div class="chart-header">
+                <span class="chart-title">split / defect distribution</span>
+                <mat-icon
+                  class="help-icon"
+                  matTooltip="Shows the composition of each split by defect class"
+                  >help_outline
+                </mat-icon>
+              </div>
+              <div class="bar-chart-container">
+                <div class="bar-row">
+                  <span class="bar-label">train</span>
+                  <div class="stacked-bar">
+                    <ng-container *ngFor="let cls of classStats">
+                      <div
+                        [style.background-color]="cls.color"
+                        [style.width.%]="
+                          getClassPercentInSplit(cls.classId, 'train')
+                        "
+                        class="bar-segment"
+                      ></div>
+                    </ng-container>
+                  </div>
+                </div>
+
+                <div class="bar-row">
+                  <span class="bar-label">dev</span>
+                  <div class="stacked-bar">
+                    <ng-container *ngFor="let cls of classStats">
+                      <div
+                        [style.background-color]="cls.color"
+                        [style.width.%]="
+                          getClassPercentInSplit(cls.classId, 'dev')
+                        "
+                        class="bar-segment"
+                      ></div>
+                    </ng-container>
+                  </div>
+                </div>
+
+                <div class="bar-row">
+                  <span class="bar-label">test</span>
+                  <div class="stacked-bar">
+                    <ng-container *ngFor="let cls of classStats">
+                      <div
+                        [style.background-color]="cls.color"
+                        [style.width.%]="
+                          getClassPercentInSplit(cls.classId, 'test')
+                        "
+                        class="bar-segment"
+                      ></div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-legend">
+                <div *ngFor="let cls of classStats" class="legend-item">
+                  <span
+                    [style.background-color]="cls.color"
+                    class="legend-color"
+                  ></span>
+                  <span class="legend-label">{{ cls.className }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-overlay">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Dialog Actions -->
+  <mat-dialog-actions align="end">
+    <button
+      (click)="onBack()"
+      *ngIf="currentStep > 0"
+      [disabled]="loading"
+      mat-button
+    >
+      Back
+    </button>
+    <button (click)="onClose()" [disabled]="loading" mat-button>Cancel</button>
+    <button
+      (click)="onNext()"
+      [disabled]="loading"
+      color="primary"
+      mat-raised-button
+    >
+      {{ currentStep === 1 ? "Assign split" : "Next" }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,180 @@
+<div class="analyze-all-images">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading images...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="onRetry()">Retry</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error" class="panel-content">
+    <!-- Control Bar -->
+    <div class="analyze-controls">
+      <div class="control-group">
+        <div class="center-group">
+          <span class="image-count">{{ filteredImages.length }} images</span>
+          <button
+            mat-button
+            class="clear-filter-button"
+            (click)="onFilterChange(null)"
+            [style.visibility]="filterCorrect !== null ? 'visible' : 'hidden'"
+          >
+            <span class="button-label">Clear filter</span>
+          </button>
+        </div>
+
+        <div class="sort-by-section">
+          <span class="sort-label">Sort by:</span>
+          <mat-form-field appearance="outline" class="sort-field">
+            <mat-select value="confidence">
+              <mat-option value="confidence">Confidence</mat-option>
+              <mat-option value="filename">Filename</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredImages.length === 0" class="empty-state">
+      <mat-icon>image_not_supported</mat-icon>
+      <p>No images found</p>
+    </div>
+
+    <!-- Image Gallery: Two Columns (Ground Truth + Prediction) -->
+    <div *ngIf="filteredImages.length > 0" class="image-gallery-columns">
+      <!-- Column Headers -->
+      <div class="column-headers">
+        <div class="column-header">
+          <mat-icon>label</mat-icon>
+          <span>Ground Truth</span>
+        </div>
+        <div class="column-header">
+          <mat-icon>psychology</mat-icon>
+          <span>Prediction</span>
+        </div>
+      </div>
+
+      <!-- Image Rows -->
+      <div class="image-rows">
+        <div *ngFor="let image of filteredImages" class="image-row-pair">
+          <!-- Ground Truth Column -->
+          <div class="image-card" (click)="onImageClick(image)">
+            <div class="image-container">
+              <img
+                [src]="getImageUrl(image.imageId)"
+                [alt]="image.fileName"
+                class="thumbnail"
+              />
+              <!-- Ground Truth Label Overlay -->
+              <div class="label-overlay gt-overlay">
+                <div class="label-box" [style.border-color]="'#4caf50'">
+                  <span class="label-text">{{
+                    getGroundTruthClassName(image)
+                  }}</span>
+                </div>
+              </div>
+              <div class="image-overlay">
+                <mat-icon>zoom_in</mat-icon>
+              </div>
+            </div>
+            <div class="image-info">
+              <p class="image-name" [title]="image.fileName">
+                {{ image.fileName }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Prediction Column -->
+          <div class="image-card" (click)="onImageClick(image)">
+            <div class="image-container">
+              <img
+                [src]="getImageUrl(image.imageId)"
+                [alt]="image.fileName"
+                class="thumbnail"
+              />
+              <!-- Prediction Label Overlay -->
+              <div class="label-overlay pred-overlay">
+                <div class="label-box" [style.border-color]="'#2196f3'">
+                  <span class="label-text">{{
+                    getPredictionClassName(image)
+                  }}</span>
+                  <span
+                    *ngIf="
+                      image.predictionLabels.length > 0 &&
+                      image.predictionLabels[0].confidenceRate !== null
+                    "
+                    class="confidence-badge"
+                  >
+                    {{ image.predictionLabels[0].confidenceRate.toFixed(2) }}
+                  </span>
+                </div>
+              </div>
+              <div class="image-overlay">
+                <mat-icon>zoom_in</mat-icon>
+              </div>
+            </div>
+            <div class="image-info">
+              <p class="image-name" [title]="image.fileName">
+                {{ image.fileName }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlarged Image View -->
+  <div
+    *ngIf="selectedImage"
+    class="enlarged-view"
+    (click)="onCloseEnlargedView()"
+  >
+    <div class="enlarged-content" (click)="$event.stopPropagation()">
+      <button
+        mat-icon-button
+        (click)="onCloseEnlargedView()"
+        class="close-enlarged-button"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <img
+        [src]="getImageUrl(selectedImage.imageId)"
+        [alt]="selectedImage.fileName"
+        class="enlarged-image"
+      />
+      <div class="enlarged-info">
+        <h4>{{ selectedImage.fileName }}</h4>
+        <div class="metadata">
+          <div class="metadata-item">
+            <strong>Ground Truth:</strong>
+            {{ getGroundTruthClassName(selectedImage) }}
+          </div>
+          <div class="metadata-item">
+            <strong>Prediction:</strong>
+            {{ getPredictionClassName(selectedImage) }}
+          </div>
+          <div class="metadata-item">
+            <strong>Confidence:</strong> {{ getConfidence(selectedImage) }}
+          </div>
+          <div class="metadata-item">
+            <strong>Correct:</strong>
+            <mat-icon
+              [class.correct]="selectedImage.isCorrect"
+              [class.incorrect]="!selectedImage.isCorrect"
+            >
+              {{ selectedImage.isCorrect ? "check_circle" : "cancel" }}
+            </mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

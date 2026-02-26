@@ -1,0 +1,62 @@
+<!-- Model Detail Panel Overlay -->
+<div
+  class="model-detail-overlay"
+  *ngIf="isPanelOpen$ | async"
+  (click)="onOverlayClick()"
+  [@fadeInOut]
+>
+  <!-- Model Detail Panel -->
+  <div
+    class="model-detail-panel"
+    [class.panel-normal]="(panelWidth$ | async) === 'normal'"
+    [class.panel-expanded]="(panelWidth$ | async) === 'expanded'"
+    (click)="onPanelClick($event)"
+    [@slideIn]
+  >
+    <!-- Panel Header -->
+    <div class="panel-header">
+      <app-model-detail-header
+        (close)="onClosePanel()"
+        (toggleWidth)="onTogglePanelWidth()"
+      ></app-model-detail-header>
+    </div>
+
+    <!-- Panel Tabs -->
+    <div class="panel-tabs">
+      <app-model-detail-tabs></app-model-detail-tabs>
+    </div>
+
+    <!-- Panel Content -->
+    <div class="panel-content">
+      <!-- Loading State -->
+      <div *ngIf="isLoading$ | async" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Loading model data...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error$ | async as error" class="error-container">
+        <mat-icon>error_outline</mat-icon>
+        <h3>Unable to Load Model Details</h3>
+        <p class="error-message">{{ getErrorMessage(error) }}</p>
+        <div class="error-actions">
+          <button mat-raised-button color="primary" (click)="onRetry()">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+          <button mat-stroked-button (click)="onClosePanel()">Close</button>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div *ngIf="!(isLoading$ | async) && !(error$ | async)">
+        <app-training-information-tab
+          *ngIf="(activeTab$ | async) === 'training'"
+        ></app-training-information-tab>
+        <app-performance-report-tab
+          *ngIf="(activeTab$ | async) === 'performance'"
+        ></app-performance-report-tab>
+      </div>
+    </div>
+  </div>
+</div>

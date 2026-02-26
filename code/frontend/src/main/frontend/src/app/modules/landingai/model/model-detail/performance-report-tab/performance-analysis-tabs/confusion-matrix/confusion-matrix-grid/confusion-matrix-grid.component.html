@@ -1,0 +1,85 @@
+<div class="confusion-matrix-grid">
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Left Section: GT labels and Precision label -->
+    <div class="left-section">
+      <div class="ground-truth-label">Ground truth</div>
+      <div
+        *ngFor="let gtClass of matrixData.classes"
+        class="gt-class-label"
+        [title]="gtClass.name"
+      >
+        <span class="class-name">{{ gtClass.name }}</span>
+      </div>
+      <div class="precision-label">Precision</div>
+    </div>
+
+    <!-- Middle Section: Matrix cells and Prediction labels -->
+    <div class="middle-section">
+      <!-- Empty space at top -->
+      <div class="top-empty"></div>
+
+      <!-- Matrix rows -->
+      <div *ngFor="let gtClass of matrixData.classes" class="matrix-cells-row">
+        <div
+          *ngFor="let predClass of matrixData.predictionClasses"
+          class="matrix-cell"
+          [class.diagonal]="isDiagonalCell(getCell(gtClass.id, predClass.id)!)"
+          [class.clickable]="getCell(gtClass.id, predClass.id)!.count > 0"
+          [style.background-color]="
+            getCellColor(getCell(gtClass.id, predClass.id)!.count)
+          "
+          [style.color]="getTextColor(getCell(gtClass.id, predClass.id)!.count)"
+          (click)="onCellClick(getCell(gtClass.id, predClass.id)!)"
+          [title]="
+            'GT: ' +
+            gtClass.name +
+            ', Pred: ' +
+            predClass.name +
+            ', Count: ' +
+            getCell(gtClass.id, predClass.id)!.count
+          "
+        >
+          {{
+            isNoLabelNoPredictionCell(getCell(gtClass.id, predClass.id)!)
+              ? "--"
+              : getCell(gtClass.id, predClass.id)!.count
+          }}
+        </div>
+      </div>
+
+      <!-- Precision row: one value per prediction class -->
+      <div class="bottom-row">
+        <div class="precision-row">
+          <div
+            *ngFor="let predClass of matrixData.predictionClasses"
+            class="precision-cell"
+          >
+            {{ getPrecision(predClass.id) }}
+          </div>
+        </div>
+        <div class="prediction-class-labels">
+          <div
+            *ngFor="let classInfo of matrixData.predictionClasses"
+            class="prediction-class-label"
+            [title]="classInfo.name"
+          >
+            <span class="class-name">{{ classInfo.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Section: Recall values (one per GT class), Prediction label -->
+    <div class="right-section">
+      <div class="recall-header">
+        <div class="recall-label">Recall</div>
+      </div>
+      <div *ngFor="let gtClass of matrixData.classes" class="recall-value-row">
+        {{ getRecall(gtClass.id) }}
+      </div>
+      <div class="right-empty"></div>
+      <div class="prediction-label-bottom">Prediction</div>
+    </div>
+  </div>
+</div>

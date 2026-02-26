@@ -1,0 +1,87 @@
+<div class="predictions-block">
+  <!-- Header with toggle -->
+  <div class="predictions-header">
+    <span class="predictions-title">Predictions</span>
+    <span class="predictions-count">({{ predictionAnnotations.length }})</span>
+    <mat-slide-toggle
+      (change)="onShowPredictionsChange()"
+      [(ngModel)]="showPredictions"
+      class="predictions-toggle"
+      matTooltip="Show/Hide predictions on canvas."
+    ></mat-slide-toggle>
+  </div>
+
+  <!-- Model Selection and Label Assist -->
+  <div class="model-selection">
+    <span class="model-name">{{ selectedModel || "No model selected" }}</span>
+    <button
+      (click)="onLabelAssistClick()"
+      class="label-assist-btn"
+      color="primary"
+      mat-stroked-button
+      matTooltip="By enabling label assist, you can accept model predictions as ground truth labels."
+    >
+      Label Assist
+    </button>
+  </div>
+
+  <!-- No Predictions Message -->
+  <div
+    *ngIf="predictionAnnotations.length === 0"
+    class="no-predictions-message"
+  >
+    <p>No predictions available.</p>
+  </div>
+
+  <!-- Prediction Groups -->
+  <div
+    *ngIf="predictionAnnotations.length > 0"
+    [class.hidden-predictions]="!showPredictions"
+    class="annotation-groups"
+  >
+    <mat-accordion multi>
+      <mat-expansion-panel
+        *ngFor="let group of predictionGroups"
+        [expanded]="group.expanded"
+        class="annotation-group"
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title class="group-title">
+            <span
+              [style.background-color]="group.color"
+              class="color-indicator"
+            ></span>
+            <span class="class-name">{{ group.className }}</span>
+            <span class="annotation-count"
+              >({{ group.annotations.length }})</span
+            >
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- Predictions List -->
+        <div class="annotations-list">
+          <div
+            (click)="onAnnotationClick(annotation, $event)"
+            *ngFor="let annotation of group.annotations; let i = index"
+            [class.selected]="isAnnotationSelected(annotation)"
+            class="annotation-item prediction"
+          >
+            <div class="annotation-header">
+              <span class="annotation-label">{{ annotation.id }}</span>
+              <span class="prediction-badge">Prediction</span>
+              <span
+                *ngIf="annotation.confidenceRate !== undefined"
+                class="confidence-rate"
+                >{{ annotation.confidenceRate }}</span
+              >
+              <span class="annotation-type">{{ annotation.type }}</span>
+            </div>
+            <div class="annotation-coordinates">
+              {{ getCoordinateInfo(annotation) }}
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+</div>

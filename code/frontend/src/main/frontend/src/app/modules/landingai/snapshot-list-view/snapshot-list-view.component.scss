@@ -1,0 +1,340 @@
+/**
+ * Snapshot List View Component Styles
+ * Requirements: 9.1, 9.4
+ *
+ * Layout follows the same patterns as image-upload page for consistency.
+ * Uses flexbox for responsive layout with collapsible sidebar.
+ */
+
+.snapshot-list-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #e5f5e0; // Light green background
+  position: relative;
+}
+
+// Header section with project info and action buttons
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f5f5f5; // Light grey background
+  border-bottom: 1px solid #e0e0e0;
+  min-height: 56px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .project-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .project-type-icon {
+        color: #666;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .project-name {
+        font-weight: 500;
+        font-size: 16px;
+        color: #333;
+      }
+
+      .separator {
+        color: #ccc;
+        margin: 0 4px;
+      }
+
+      .view-title {
+        font-size: 16px;
+        color: #666;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    // Filter button - Orange color
+    .filter-btn {
+      display: inline-flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px;
+      padding: 0 16px !important;
+      height: 36px !important;
+      min-width: 110px !important;
+      max-width: none !important;
+      background-color: #ff9800;
+      color: white;
+      white-space: nowrap !important;
+      line-height: 36px;
+
+      &:hover {
+        background-color: #f57c00;
+      }
+
+      &.active {
+        background-color: #fb8c00;
+      }
+
+      // Active filters indicator
+      &.has-active-filters {
+        background-color: #f57c00;
+        box-shadow: 0 0 0 2px #ff9800;
+
+        &:hover {
+          background-color: #e65100;
+        }
+      }
+
+      .icon-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        mat-icon {
+          font-size: 18px !important;
+          width: 18px !important;
+          height: 18px !important;
+          line-height: 18px !important;
+        }
+
+        .filter-badge {
+          position: absolute;
+          top: -4px;
+          right: -4px;
+          width: 8px;
+          height: 8px;
+          background-color: #f44336;
+          border-radius: 50%;
+          border: 2px solid white;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      .btn-text {
+        font-size: 14px;
+        font-weight: 500;
+        flex-shrink: 0;
+        display: inline-block;
+      }
+    }
+
+    // Global Material button overrides for filter button
+    .filter-btn ::ng-deep {
+      .mat-mdc-button-touch-target {
+        height: 36px !important;
+      }
+
+      .mdc-button__label {
+        display: inline-flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 6px !important;
+        white-space: nowrap !important;
+      }
+
+      .mat-mdc-button-persistent-ripple {
+        border-radius: 4px;
+      }
+    }
+
+    // Sort button - Blue color
+    .sort-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 12px;
+      height: 36px;
+      background-color: #2196f3;
+      color: white;
+
+      &:hover {
+        background-color: #1976d2;
+      }
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      .btn-text {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Main content area with sidebar
+.content-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+
+  &.sidebar-collapsed {
+    .main-content {
+      flex: 1;
+    }
+  }
+}
+
+// Main content (left side)
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0; // Prevent flex item from overflowing
+}
+
+// Filter panel container
+.filter-panel-container {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+// Image grid container
+.image-grid-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  position: relative;
+}
+
+// Loading overlay for images
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+
+  .loading-text {
+    margin-top: 16px;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+  color: #666;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+// Error banner
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #ffebee;
+  color: #c62828;
+  border-top: 1px solid #ef9a9a;
+
+  mat-icon {
+    color: #c62828;
+  }
+
+  span {
+    flex: 1;
+  }
+
+  button {
+    color: #c62828;
+  }
+}
+
+// Operation loading overlay (for create, revert, delete operations)
+.operation-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+
+  .operation-text {
+    margin-top: 16px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .header {
+    .header-right {
+      gap: 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    .header-right {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}

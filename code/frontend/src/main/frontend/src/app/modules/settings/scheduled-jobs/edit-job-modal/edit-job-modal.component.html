@@ -1,0 +1,46 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <span>Edit Job Description</span>
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <form>
+      <div class="grid w-[32rem] grid-cols-1 gap-4">
+        <mat-form-field>
+          <mat-label>Job Name</mat-label>
+          <input [value]="jobOverview.jobName" disabled matInput />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Job Description</mat-label>
+          <input
+            [formControl]="jobDescriptionControl"
+            matInput
+            matTooltip="A short description about the function of the job"
+            required
+            type="text"
+          />
+          <mat-error *ngIf="jobDescriptionControl.errors">
+            This field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <mat-dialog-actions align="end">
+        <button
+          (click)="updateSchedule()"
+          class="mr-2"
+          color="accent"
+          mat-flat-button
+        >
+          Save
+        </button>
+        <button (click)="close()" mat-stroked-button>Close</button>
+      </mat-dialog-actions>
+    </form>
+
+    <app-spinner *ngIf="isLoading"></app-spinner>
+  </mat-dialog-content>
+</div>

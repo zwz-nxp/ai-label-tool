@@ -1,0 +1,21 @@
+<div
+  class="upload-zone"
+  [class.drag-over]="isDragOver"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="triggerFileInput()"
+>
+  <mat-icon class="upload-icon">cloud_upload</mat-icon>
+
+  <p class="upload-text">Drop images here</p>
+
+  <input
+    type="file"
+    id="file-input"
+    multiple
+    [accept]="acceptedFormats"
+    (change)="onFileInputChange($event)"
+    style="display: none"
+  />
+</div>

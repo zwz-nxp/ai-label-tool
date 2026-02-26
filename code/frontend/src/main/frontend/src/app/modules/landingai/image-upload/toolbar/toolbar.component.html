@@ -1,0 +1,485 @@
+<div class="toolbar">
+  <!-- Row 1: Project Name + Action Buttons -->
+  <div class="toolbar-row-1">
+    <!-- Project Name -->
+    <div class="project-info">
+      <h1 class="project-title">
+        {{ projectName }}
+        <span *ngIf="projectType" class="project-type-badge">
+          <mat-icon class="type-icon">{{ getProjectTypeIcon() }}</mat-icon>
+          {{ projectType }}
+        </span>
+        <span *ngIf="totalImageCount" class="image-count-badge">
+          {{ totalImageCount }} images
+        </span>
+      </h1>
+    </div>
+
+    <!-- Action Buttons on the right -->
+    <div class="action-buttons">
+      <!-- Manage Button -->
+      <button
+        [matMenuTriggerFor]="actionsMenu"
+        class="manage-btn"
+        mat-raised-button
+      >
+        <mat-icon>settings</mat-icon>
+        <span class="btn-text">Manage</span>
+      </button>
+
+      <!-- Download Dataset Button -->
+      <button
+        (click)="onExportAllDataset()"
+        class="export-all-btn"
+        mat-raised-button
+        style="background-color: #ffeb3b; color: #000000"
+      >
+        <mat-icon>download</mat-icon>
+        <span class="btn-text">Download</span>
+      </button>
+
+      <!-- Snapshot Button -->
+      <button
+        [matMenuTriggerFor]="snapshotMenu"
+        class="snapshot-btn"
+        mat-raised-button
+      >
+        <mat-icon>photo_camera</mat-icon>
+        <span class="btn-text">Snapshot</span>
+      </button>
+
+      <!-- Upload Button - Simple for non-Classification projects -->
+      <button
+        *ngIf="projectType !== 'Classification'"
+        [matMenuTriggerFor]="uploadMenuOther"
+        class="upload-btn"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>cloud_upload</mat-icon>
+        <span class="btn-text">Upload</span>
+      </button>
+
+      <!-- Upload Button with Menu - For Classification projects -->
+      <button
+        *ngIf="projectType === 'Classification'"
+        [matMenuTriggerFor]="uploadMenu"
+        class="upload-btn"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>cloud_upload</mat-icon>
+        <span class="btn-text">Upload</span>
+      </button>
+
+      <!-- Custom Training Button -->
+      <button
+        (click)="onTrainingAction('custom_training')"
+        class="training-btn"
+        color="accent"
+        mat-raised-button
+      >
+        <mat-icon>tune</mat-icon>
+        <span class="btn-text">Training</span>
+      </button>
+
+      <!-- Model Button -->
+      <button (click)="onModelPageClick()" class="model-btn" mat-raised-button>
+        <mat-icon>psychology</mat-icon>
+        <span class="btn-text">Model</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Row 2: View Controls + Filter & Sort -->
+  <div class="toolbar-row-2">
+    <!-- View Controls -->
+    <!-- View Mode Toggle -->
+    <div class="view-mode-toggle">
+      <button
+        (click)="onViewModeChange('images')"
+        [class.active]="viewMode === 'images'"
+        class="view-mode-btn"
+        mat-button
+      >
+        <mat-icon>image</mat-icon>
+        <span class="btn-text">Images</span>
+      </button>
+      <button
+        (click)="onViewModeChange('instances')"
+        [class.active]="viewMode === 'instances'"
+        class="view-mode-btn"
+        mat-button
+      >
+        <mat-icon>grid_view</mat-icon>
+        <span class="btn-text">Instances</span>
+      </button>
+    </div>
+
+    <!-- Annotation Type Toggle -->
+    <div class="annotation-type-toggle">
+      <div class="toggle-group-container">
+        <button
+          (click)="onAnnotationTypeSelect('all')"
+          [class.active]="!annotationType || annotationType === 'all'"
+          [disabled]="isAnnotationTypeSelectorDisabled"
+          class="toggle-btn"
+          mat-button
+        >
+          All
+        </button>
+        <button
+          (click)="onAnnotationTypeSelect('Ground-Truth')"
+          [class.active]="annotationType === 'Ground-Truth'"
+          [disabled]="isAnnotationTypeSelectorDisabled"
+          class="toggle-btn"
+          mat-button
+        >
+          Ground truth
+        </button>
+        <button
+          (click)="onPredictionClick()"
+          [class.active]="annotationType === 'Prediction'"
+          [disabled]="
+            availableModels.length === 0 || isAnnotationTypeSelectorDisabled
+          "
+          class="toggle-btn"
+          mat-button
+        >
+          Prediction
+        </button>
+      </div>
+    </div>
+
+    <!-- Model Selector Dropdown -->
+    <button
+      [disabled]="availableModels.length === 0"
+      [matMenuTriggerFor]="modelMenu"
+      class="model-selector-btn"
+      mat-button
+    >
+      <span class="model-name">{{ getSelectedModelDisplayName() }}</span>
+      <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+    </button>
+
+    <!-- Label Details Toggle (hidden for Classification projects - no bounding box labels) -->
+    <div *ngIf="projectType !== 'Classification'" class="label-details-toggle">
+      <mat-slide-toggle
+        (change)="onShowLabelDetailsToggle($event)"
+        [checked]="showLabelDetails"
+        color="primary"
+      >
+        <span class="btn-text">Label Details</span>
+      </mat-slide-toggle>
+    </div>
+
+    <!-- Filter & Sort Buttons -->
+    <div class="filter-sort-buttons">
+      <!-- Filter Button -->
+      <button
+        (click)="onFilterClick()"
+        [class.filter-active]="activeFilterCount > 0"
+        class="filter-btn"
+        mat-raised-button
+      >
+        <mat-icon>filter_list</mat-icon>
+        <span class="btn-text">Filter</span>
+        <span *ngIf="activeFilterCount > 0" class="filter-badge">{{
+          activeFilterCount
+        }}</span>
+      </button>
+
+      <!-- Sort Button -->
+      <button [matMenuTriggerFor]="sortMenu" class="sort-btn" mat-raised-button>
+        <mat-icon>sort</mat-icon>
+        <span class="btn-text">Sort</span>
+      </button>
+    </div>
+
+    <!-- Select + Batch Update pushed to the right -->
+    <div class="select-batch-buttons">
+      <!-- Select Button -->
+      <button [matMenuTriggerFor]="selectMenu" class="select-btn" mat-button>
+        <mat-icon>check_box</mat-icon>
+        <span class="btn-text">{{ getSelectButtonText() }}</span>
+      </button>
+
+      <!-- Batch Update Button -->
+      <button
+        [disabled]="!isBatchActionsEnabled"
+        [matMenuTriggerFor]="
+          projectType === 'Classification'
+            ? batchUpdateMenuClassification
+            : batchUpdateMenuOther
+        "
+        class="batch-update-btn"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>edit</mat-icon>
+        <span class="btn-text">Batch Update</span>
+        <span *ngIf="selectedCount > 0" class="selection-badge">{{
+          selectedCount
+        }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sort Menu -->
+<mat-menu #sortMenu="matMenu">
+  <button
+    (click)="onSortChange('upload_time_desc')"
+    [class.active]="sortMethod === 'upload_time_desc'"
+    mat-menu-item
+  >
+    <mat-icon>arrow_downward</mat-icon>
+    <span>Upload Time (Newest)</span>
+  </button>
+  <button
+    (click)="onSortChange('upload_time_asc')"
+    [class.active]="sortMethod === 'upload_time_asc'"
+    mat-menu-item
+  >
+    <mat-icon>arrow_upward</mat-icon>
+    <span>Upload Time (Oldest)</span>
+  </button>
+  <button
+    (click)="onSortChange('label_time_desc')"
+    [class.active]="sortMethod === 'label_time_desc'"
+    mat-menu-item
+  >
+    <mat-icon>arrow_downward</mat-icon>
+    <span>Label Time (Newest)</span>
+  </button>
+  <button
+    (click)="onSortChange('label_time_asc')"
+    [class.active]="sortMethod === 'label_time_asc'"
+    mat-menu-item
+  >
+    <mat-icon>arrow_upward</mat-icon>
+    <span>Label Time (Oldest)</span>
+  </button>
+  <button
+    (click)="onSortChange('name_asc')"
+    [class.active]="sortMethod === 'name_asc'"
+    mat-menu-item
+  >
+    <mat-icon>text_rotation_none</mat-icon>
+    <span>Name (A-Z)</span>
+  </button>
+  <button
+    (click)="onSortChange('name_desc')"
+    [class.active]="sortMethod === 'name_desc'"
+    mat-menu-item
+  >
+    <mat-icon>text_rotation_none</mat-icon>
+    <span>Name (Z-A)</span>
+  </button>
+</mat-menu>
+
+<!-- Actions Menu -->
+<mat-menu #actionsMenu="matMenu">
+  <button (click)="onActionSelect('manage_classes')" mat-menu-item>
+    <mat-icon>category</mat-icon>
+    <span>Manage Classes</span>
+  </button>
+  <button (click)="onActionSelect('manage_tags')" mat-menu-item>
+    <mat-icon>label</mat-icon>
+    <span>Manage Tags</span>
+  </button>
+  <button (click)="onActionSelect('manage_metadata')" mat-menu-item>
+    <mat-icon>info</mat-icon>
+    <span>Manage Metadata</span>
+  </button>
+  <button (click)="onActionSelect('auto_split')" mat-menu-item>
+    <mat-icon>call_split</mat-icon>
+    <span>Auto Split</span>
+  </button>
+</mat-menu>
+
+<!-- Snapshot Menu -->
+<mat-menu #snapshotMenu="matMenu">
+  <button (click)="onSnapshotAction('snapshot_entire_dataset')" mat-menu-item>
+    <mat-icon>photo_camera</mat-icon>
+    <span>Snapshot entire dataset</span>
+  </button>
+  <button (click)="onSnapshotAction('view_snapshots')" mat-menu-item>
+    <mat-icon>visibility</mat-icon>
+    <span>View Snapshots</span>
+  </button>
+</mat-menu>
+
+<!-- Training Menu -->
+<mat-menu #trainingMenu="matMenu">
+  <button (click)="onTrainingAction('train')" mat-menu-item>
+    <mat-icon>flash_on</mat-icon>
+    <span>Train</span>
+  </button>
+  <button (click)="onTrainingAction('custom_training')" mat-menu-item>
+    <mat-icon>tune</mat-icon>
+    <span>Custom Training</span>
+  </button>
+</mat-menu>
+
+<!-- Upload Menu (Classification projects only) -->
+<mat-menu #uploadMenu="matMenu">
+  <button (click)="onUploadUnclassified()" mat-menu-item>
+    <mat-icon>photo_library</mat-icon>
+    <span>Upload Images</span>
+  </button>
+  <button (click)="onUploadClassified()" mat-menu-item>
+    <mat-icon>folder_zip</mat-icon>
+    <span>Upload Classified Images(ZIP)</span>
+  </button>
+</mat-menu>
+
+<!-- Upload Menu (Object Detection / Segmentation projects) -->
+<mat-menu #uploadMenuOther="matMenu">
+  <button (click)="onUploadClick()" mat-menu-item>
+    <mat-icon>photo_library</mat-icon>
+    <span>Upload Images</span>
+  </button>
+  <button (click)="onUploadBatchZip()" mat-menu-item>
+    <mat-icon>folder_zip</mat-icon>
+    <span>Upload Batch Images (ZIP)</span>
+  </button>
+</mat-menu>
+
+<!-- Prediction Menu with Model Selection -->
+<mat-menu #modelMenu="matMenu">
+  <div
+    (click)="$event.stopPropagation()"
+    *ngIf="availableModels.length === 0"
+    class="no-models-message"
+  >
+    <mat-icon>info</mat-icon>
+    <p>No trained models available. Train a model first.</p>
+  </div>
+  <button
+    (click)="onModelSelect(model.id)"
+    *ngFor="let model of availableModels; let first = first"
+    [class.active]="isModelSelected(model.id, first)"
+    mat-menu-item
+  >
+    <mat-icon *ngIf="isModelSelected(model.id, first)">check</mat-icon>
+    <mat-icon
+      *ngIf="!isModelSelected(model.id, first)"
+      style="visibility: hidden"
+      >check
+    </mat-icon>
+    <span
+      >{{ model.modelAlias || "Model-" + model.id }} (F1:
+      {{ (model.devF1Rate || 0) / 100 | number: "1.2-2" }})</span
+    >
+  </button>
+</mat-menu>
+
+<!-- Select Menu -->
+<mat-menu #selectMenu="matMenu">
+  <button
+    (click)="onSelectManually()"
+    [class.active]="isManualSelectActive"
+    mat-menu-item
+  >
+    <mat-icon *ngIf="isManualSelectActive">check</mat-icon>
+    <mat-icon *ngIf="!isManualSelectActive" style="visibility: hidden"
+      >check
+    </mat-icon>
+    <span>Select image</span>
+  </button>
+  <button
+    (click)="onSelectPage()"
+    [class.active]="isPageSelectActive"
+    mat-menu-item
+  >
+    <mat-icon *ngIf="isPageSelectActive">check</mat-icon>
+    <mat-icon *ngIf="!isPageSelectActive" style="visibility: hidden"
+      >check
+    </mat-icon>
+    <span>Select page</span>
+  </button>
+  <button (click)="onDeselectAll()" [class.active]="!selectMode" mat-menu-item>
+    <mat-icon *ngIf="!selectMode">check</mat-icon>
+    <mat-icon *ngIf="selectMode" style="visibility: hidden">check</mat-icon>
+    <span>Deselect all</span>
+  </button>
+</mat-menu>
+
+<!-- Batch Update Menu (Classification) -->
+<mat-menu #batchUpdateMenuClassification="matMenu">
+  <button
+    (click)="onBatchSetClass()"
+    [disabled]="!isBatchActionsEnabled"
+    mat-menu-item
+  >
+    <mat-icon>category</mat-icon>
+    <span>Set class</span>
+  </button>
+  <button
+    (click)="onBatchSetTags()"
+    [disabled]="!isBatchActionsEnabled"
+    mat-menu-item
+  >
+    <mat-icon>label</mat-icon>
+    <span>Set tags</span>
+  </button>
+  <button
+    (click)="onBatchSetMetadata()"
+    [disabled]="!isBatchActionsEnabled"
+    mat-menu-item
+  >
+    <mat-icon>info</mat-icon>
+    <span>Set Metadata</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button (click)="onExportDataset()" mat-menu-item>
+    <mat-icon>download</mat-icon>
+    <span>Download</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button
+    (click)="onBatchDelete()"
+    [disabled]="!isBatchActionsEnabled"
+    class="delete-menu-item"
+    mat-menu-item
+  >
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</mat-menu>
+
+<!-- Batch Update Menu (Object Detection / Segmentation) -->
+<mat-menu #batchUpdateMenuOther="matMenu">
+  <button
+    (click)="onBatchSetMetadata()"
+    [disabled]="!isBatchActionsEnabled"
+    mat-menu-item
+  >
+    <mat-icon>info</mat-icon>
+    <span>Set metadata</span>
+  </button>
+  <button
+    (click)="onBatchSetTags()"
+    [disabled]="!isBatchActionsEnabled"
+    mat-menu-item
+  >
+    <mat-icon>label</mat-icon>
+    <span>Set Tags</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button (click)="onExportDataset()" mat-menu-item>
+    <mat-icon>download</mat-icon>
+    <span>Download</span>
+  </button>
+  <mat-divider></mat-divider>
+  <button
+    (click)="onBatchDelete()"
+    [disabled]="!isBatchActionsEnabled"
+    class="delete-menu-item"
+    mat-menu-item
+  >
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</mat-menu>

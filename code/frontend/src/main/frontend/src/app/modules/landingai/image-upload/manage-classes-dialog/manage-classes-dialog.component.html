@@ -1,0 +1,198 @@
+<div class="manage-classes-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>Classes</h2>
+    <div class="header-actions">
+      <button
+        (click)="onCreateClass()"
+        *ngIf="!selectedClass && !isCreating"
+        class="create-btn"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>add</mat-icon>
+        Create Class
+      </button>
+      <button (click)="onClose()" class="close-button" mat-icon-button>
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Card View: List of Classes -->
+    <div *ngIf="!selectedClass && !isCreating && !loading" class="card-view">
+      <div class="classes-list">
+        <div *ngFor="let class of classes" class="class-item">
+          <div (click)="onClassClick(class)" class="class-item-content">
+            <div
+              [style.background-color]="class.colorCode"
+              class="class-color-box"
+            ></div>
+            <div class="class-details">
+              <div class="class-name">{{ class.className }}</div>
+              <div class="class-updated">
+                Last updated: {{ class.createdAt | date: "M/d/yy, h:mm a" }}
+              </div>
+            </div>
+          </div>
+          <div class="class-actions">
+            <button
+              (click)="onEditClick(class, $event)"
+              mat-icon-button
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              (click)="onDeleteClick(class, $event)"
+              color="warn"
+              mat-icon-button
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="classes.length === 0" class="empty-state">
+          <mat-icon>category</mat-icon>
+          <p>No classes yet. Create your first class to get started.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail View: Edit Class -->
+    <div *ngIf="selectedClass && !loading" class="detail-view">
+      <div class="detail-header">
+        <button (click)="onBackToCardView()" class="back-button" mat-button>
+          <mat-icon>arrow_back</mat-icon>
+          Back to card view
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="class-preview">
+          <div
+            [style.background-color]="editingColorCode"
+            class="preview-color"
+          ></div>
+          <div class="preview-name">{{ selectedClass.className }}</div>
+        </div>
+
+        <div class="form-section">
+          <label>Class Color</label>
+          <div class="color-palette">
+            <button
+              (click)="onColorSelect(color)"
+              *ngFor="let color of colorPalette"
+              [class.selected]="editingColorCode === color"
+              [style.background-color]="color"
+              class="color-option"
+              type="button"
+            >
+              <mat-icon *ngIf="editingColorCode === color">check</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label>Class name</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input
+              [(ngModel)]="editingClassName"
+              matInput
+              maxlength="100"
+              placeholder="Enter class name"
+            />
+          </mat-form-field>
+          <p class="info-text">
+            Class names are permanent and cannot be changed
+          </p>
+        </div>
+
+        <div class="stats-section">
+          <div class="stat-item">
+            <span class="stat-value">{{ selectedClass.labelCount || 0 }}</span>
+            <span class="stat-label">labeled media</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button
+          (click)="onSaveEdit()"
+          class="save-button"
+          color="primary"
+          mat-raised-button
+        >
+          Save
+        </button>
+      </div>
+    </div>
+
+    <!-- Create View: New Class -->
+    <div *ngIf="isCreating && !loading" class="create-view">
+      <div class="create-header">
+        <h3>Create a Class</h3>
+      </div>
+
+      <div class="create-content">
+        <div class="form-section">
+          <label>Class Color</label>
+          <div class="color-palette">
+            <button
+              (click)="onColorSelect(color)"
+              *ngFor="let color of colorPalette"
+              [class.selected]="editingColorCode === color"
+              [style.background-color]="color"
+              class="color-option"
+              type="button"
+            >
+              <mat-icon *ngIf="editingColorCode === color">check</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label>Class name</label>
+          <mat-form-field appearance="outline" class="full-width">
+            <input
+              [(ngModel)]="editingClassName"
+              matInput
+              maxlength="100"
+              placeholder="Enter class name"
+            />
+          </mat-form-field>
+          <p class="warning-text">
+            Class names are permanent and cannot be changed
+          </p>
+        </div>
+
+        <div class="info-box">
+          <mat-icon>info</mat-icon>
+          <p>
+            If you want to rename an unused class, you must delete it and create
+            a new class.
+          </p>
+        </div>
+      </div>
+
+      <div class="create-actions">
+        <button (click)="onCancelCreate()" mat-button>Cancel</button>
+        <button
+          (click)="onSaveNewClass()"
+          [disabled]="!editingClassName.trim()"
+          color="primary"
+          mat-raised-button
+        >
+          Create
+        </button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

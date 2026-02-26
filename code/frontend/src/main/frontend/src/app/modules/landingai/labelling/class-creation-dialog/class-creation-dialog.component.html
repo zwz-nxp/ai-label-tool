@@ -1,0 +1,86 @@
+<h2 mat-dialog-title>Create New Class</h2>
+
+<mat-dialog-content>
+  <form #classForm="ngForm">
+    <!-- Class Name Field -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Class Name</mat-label>
+      <input
+        [(ngModel)]="className"
+        matInput
+        maxlength="100"
+        name="className"
+        placeholder="Enter class name"
+        required
+      />
+      <mat-hint>Required</mat-hint>
+    </mat-form-field>
+
+    <!-- Color Palette -->
+    <div class="color-palette">
+      <div class="palette-header">
+        <div class="palette-label">Select Color:</div>
+        <div class="selected-color-display">
+          <span
+            [style.background-color]="colorCode"
+            class="color-preview-large"
+          ></span>
+          <span class="color-code-text">{{ colorCode }}</span>
+        </div>
+      </div>
+      <div class="palette-colors">
+        <button
+          (click)="selectColor(color)"
+          *ngFor="let color of colorPalette"
+          [attr.aria-label]="'Select color ' + color"
+          [class.selected]="colorCode.toUpperCase() === color"
+          [style.background-color]="color"
+          class="color-button"
+          type="button"
+        ></button>
+      </div>
+    </div>
+
+    <!-- Description Field -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea
+        [(ngModel)]="description"
+        cdkAutosizeMaxRows="5"
+        cdkAutosizeMinRows="3"
+        cdkTextareaAutosize
+        matInput
+        maxlength="500"
+        name="description"
+        placeholder="Enter class description"
+      ></textarea>
+      <mat-hint align="end">{{ description.length }}/500</mat-hint>
+    </mat-form-field>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onCancel()" [disabled]="isCreating" mat-button>
+    Cancel
+  </button>
+  <button
+    (click)="onSubmit()"
+    [disabled]="!classForm.valid || isCreating"
+    color="primary"
+    mat-raised-button
+  >
+    <mat-spinner
+      *ngIf="isCreating"
+      class="button-spinner"
+      diameter="20"
+    ></mat-spinner>
+    <span *ngIf="!isCreating">Create</span>
+    <span *ngIf="isCreating">Creating...</span>
+  </button>
+</mat-dialog-actions>

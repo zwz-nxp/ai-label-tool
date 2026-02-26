@@ -1,0 +1,85 @@
+<div class="featured-image-container">
+  <!-- Zoom Controls -->
+  <div class="zoom-controls">
+    <button
+      (click)="zoomIn()"
+      [disabled]="zoomLevel >= 3"
+      title="放大 (Zoom In)"
+    >
+      +
+    </button>
+    <button (click)="resetZoom()" title="重置 (Reset)">⟲</button>
+    <button
+      (click)="zoomOut()"
+      [disabled]="zoomLevel <= 0.5"
+      title="縮小 (Zoom Out)"
+    >
+      −
+    </button>
+  </div>
+
+  <!-- Image Viewport -->
+  <div
+    #viewport
+    class="image-viewport"
+    (wheel)="onMouseWheel($event)"
+    (mousedown)="onMouseDown($event, viewport)"
+    (mousemove)="onMouseMove($event, viewport)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseUp()"
+    [class.dragging]="isDragging"
+  >
+    <div class="image-wrapper" [style.transform]="'scale(' + zoomLevel + ')'">
+      <img
+        [src]="imageUrl"
+        (load)="onImageLoad($event)"
+        class="featured-image"
+        alt="Featured image"
+      />
+
+      <svg
+        *ngIf="imageLoaded && boundingBoxes.length > 0"
+        class="bounding-box-overlay"
+        [attr.viewBox]="'0 0 ' + imageWidth + ' ' + imageHeight"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g *ngFor="let box of boundingBoxes">
+          <!-- Bounding box rectangle -->
+          <rect
+            [attr.x]="box.x"
+            [attr.y]="box.y"
+            [attr.width]="box.width"
+            [attr.height]="box.height"
+            [attr.stroke]="box.color"
+            [attr.stroke-width]="box.strokeWidth"
+            [attr.fill]="box.color"
+            [attr.fill-opacity]="box.fillOpacity"
+          />
+
+          <!-- Label background (在 box 上方) -->
+          <rect
+            [attr.x]="box.labelX"
+            [attr.y]="box.labelY"
+            [attr.width]="box.labelWidth"
+            [attr.height]="box.labelHeight"
+            [attr.fill]="box.color"
+            [attr.opacity]="0.9"
+            rx="3"
+          />
+
+          <!-- Class label text (白色文字) -->
+          <text
+            [attr.x]="box.labelX + 4"
+            [attr.y]="box.labelY + box.labelHeight - 6"
+            fill="#ffffff"
+            [attr.font-size]="box.fontSize"
+            font-family="Arial"
+            font-weight="normal"
+          >
+            {{ box.labelText }}
+          </text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>

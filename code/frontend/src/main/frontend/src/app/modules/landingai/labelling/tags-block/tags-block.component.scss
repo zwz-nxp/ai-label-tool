@@ -1,0 +1,106 @@
+@use "../colors" as colors;
+@use "../mixins" as mixins;
+
+.tags-block {
+  padding: colors.$spacing-md;
+
+  .tags-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .tag-input-field {
+      width: 100%;
+
+      mat-icon[matSuffix] {
+        color: colors.$text-hint;
+      }
+    }
+
+    .tag-input-container {
+      display: flex;
+      flex-direction: column;
+      gap: colors.$spacing-sm;
+      @include mixins.fade-in;
+
+      .tag-input-field {
+        width: 100%;
+      }
+
+      .tag-input-actions {
+        display: flex;
+        gap: colors.$spacing-sm;
+
+        button {
+          flex: 1;
+          @include mixins.hover-effect;
+          @include mixins.click-feedback;
+
+          mat-icon {
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: colors.$spacing-sm;
+      color: colors.$text-hint;
+
+      mat-spinner {
+        flex-shrink: 0;
+      }
+    }
+
+    .tags-list {
+      @include mixins.fade-in;
+
+      mat-chip-listbox {
+        display: flex;
+        flex-wrap: wrap;
+        gap: colors.$spacing-sm;
+      }
+
+      .tag-chip {
+        @include mixins.smooth-transition(all);
+
+        &:hover {
+          @include mixins.elevation(1);
+          transform: translateY(-1px);
+        }
+
+        button[matChipRemove] {
+          opacity: 0.6;
+          transition: opacity colors.$transition-normal;
+
+          &:hover {
+            opacity: 1;
+            color: colors.$warn-color;
+          }
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+        }
+      }
+    }
+
+    .no-tags-message {
+      text-align: center;
+      color: colors.$text-hint;
+      padding: colors.$spacing-md;
+      font-size: colors.$font-size-base;
+    }
+  }
+
+  .no-image-message {
+    text-align: center;
+    color: colors.$text-hint;
+    padding: colors.$spacing-md;
+  }
+}

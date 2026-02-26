@@ -1,0 +1,179 @@
+<div class="model-parameter-container">
+  <!-- Loading spinner (Task 9.5) -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <div class="editor-preview-row">
+      <!-- Left column: Model Parameters -->
+      <div class="editor-column">
+        <div class="section-title">Model Parameters</div>
+        <mat-card class="tree-card">
+          <!-- Undo / Redo / Clear toolbar inside card -->
+          <div class="card-toolbar">
+            <span class="spacer"></span>
+            <button
+              (click)="undo()"
+              [disabled]="historyIndex <= 0"
+              mat-icon-button
+              matTooltip="Undo"
+            >
+              <mat-icon>undo</mat-icon>
+            </button>
+            <button
+              (click)="redo()"
+              [disabled]="historyIndex >= historyStack.length - 1"
+              mat-icon-button
+              matTooltip="Redo"
+            >
+              <mat-icon>redo</mat-icon>
+            </button>
+            <button (click)="clearAll()" mat-icon-button matTooltip="Clear All">
+              <mat-icon>delete_sweep</mat-icon>
+            </button>
+          </div>
+
+          <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+            <!-- Leaf node -->
+            <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+              <button disabled mat-icon-button></button>
+              <ng-container *ngIf="node.isOriginal; else editableLeafKey">
+                <span class="original-key-label">{{ node.key }}</span>
+              </ng-container>
+              <ng-template #editableLeafKey>
+                <input
+                  (blur)="updateKey(node, $any($event.target).value)"
+                  [value]="node.key"
+                  class="node-input"
+                />
+              </ng-template>
+              <span class="node-separator">:</span>
+              <input
+                (blur)="updateValue(node, $any($event.target).value)"
+                [value]="node.value"
+                class="node-input"
+              />
+              <span class="node-type-badge">{{ node.type }}</span>
+              <button
+                (click)="deleteNode(node)"
+                [disabled]="node.isOriginal"
+                color="warn"
+                mat-icon-button
+                matTooltip="Delete"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-tree-node>
+
+            <!-- Expandable node (object/array) -->
+            <mat-tree-node
+              *matTreeNodeDef="let node; when: hasChild"
+              matTreeNodePadding
+            >
+              <button mat-icon-button matTreeNodeToggle>
+                <mat-icon>
+                  {{
+                    treeControl.isExpanded(node)
+                      ? "expand_more"
+                      : "chevron_right"
+                  }}
+                </mat-icon>
+              </button>
+              <ng-container *ngIf="node.isOriginal; else editableExpandableKey">
+                <span class="original-key-label">{{ node.key }}</span>
+              </ng-container>
+              <ng-template #editableExpandableKey>
+                <input
+                  (blur)="updateKey(node, $any($event.target).value)"
+                  [value]="node.key"
+                  class="node-input"
+                />
+              </ng-template>
+              <span class="node-type-badge expandable">{{ node.type }}</span>
+              <button
+                [matMenuTriggerFor]="childTypeMenu"
+                color="primary"
+                mat-icon-button
+                matTooltip="Add child"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+              <mat-menu #childTypeMenu="matMenu">
+                <button
+                  (click)="addChildWithType(node, t)"
+                  *ngFor="let t of nodeTypes"
+                  mat-menu-item
+                >
+                  {{ t }}
+                </button>
+              </mat-menu>
+              <button
+                (click)="deleteNode(node)"
+                [disabled]="node.isOriginal"
+                color="warn"
+                mat-icon-button
+                matTooltip="Delete"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-tree-node>
+          </mat-tree>
+
+          <!-- Add root-level child button -->
+          <div class="add-root-child">
+            <button
+              [matMenuTriggerFor]="rootTypeMenu"
+              color="primary"
+              mat-stroked-button
+            >
+              <mat-icon>add</mat-icon>
+              Add Property
+            </button>
+            <mat-menu #rootTypeMenu="matMenu">
+              <button
+                (click)="
+                  addChildWithType(
+                    {
+                      expandable: true,
+                      key: 'root',
+                      value: null,
+                      type: 'object',
+                      level: 0,
+                    },
+                    t
+                  )
+                "
+                *ngFor="let t of nodeTypes"
+                mat-menu-item
+              >
+                {{ t }}
+              </button>
+            </mat-menu>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Right column: JSON Preview -->
+      <div class="preview-column">
+        <div class="section-title">JSON Preview</div>
+        <mat-card class="preview-card">
+          <div class="card-toolbar">
+            <span class="spacer"></span>
+            <button (click)="copyJson()" mat-icon-button matTooltip="Copy JSON">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button
+              (click)="downloadJson()"
+              mat-icon-button
+              matTooltip="Download JSON"
+            >
+              <mat-icon>download</mat-icon>
+            </button>
+          </div>
+          <pre class="json-preview">{{ jsonString }}</pre>
+        </mat-card>
+      </div>
+    </div>
+  </ng-container>
+</div>

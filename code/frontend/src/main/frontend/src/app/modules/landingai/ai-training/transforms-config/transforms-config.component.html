@@ -1,0 +1,381 @@
+<div class="transforms-config-container">
+  <!-- Section Header -->
+  <div class="section-header">
+    <h3>Image Transforms</h3>
+    <p class="section-description">
+      Configure image transformations to prepare your data for training.
+    </p>
+  </div>
+
+  <!-- Transform Items Row - 3 columns -->
+  <div class="transform-items-row">
+    <!-- Rescale with Padding Section -->
+    <!--
+      Validates: Requirement 7.1 - Display "Rescale with padding" configuration section
+      Validates: Requirement 7.2 - Display tooltip explaining the rescale behavior
+      Validates: Requirement 7.6 - Display current Image Size with Edit button on hover
+      Validates: Requirement 7.7 - Open Rescale with padding configuration dialog on Edit click
+    -->
+    <div
+      (mouseenter)="isRescaleHovered = true"
+      (mouseleave)="isRescaleHovered = false"
+      [matTooltip]="rescaleTooltip"
+      class="transform-item rescale-section"
+      data-testid="rescale-section"
+      matTooltipPosition="above"
+    >
+      <div class="transform-header">
+        <div class="transform-info">
+          <mat-icon class="transform-icon">aspect_ratio</mat-icon>
+          <div class="transform-details">
+            <span class="transform-name">Rescale with padding</span>
+            <span class="transform-description"
+              >Resize images while maintaining aspect ratio</span
+            >
+          </div>
+        </div>
+
+        <!-- Edit Button - shown on hover -->
+        <!-- Requirement 7.6: Display Edit button on hover -->
+        <button
+          (click)="openRescaleDialog()"
+          [class.visible]="isRescaleHovered"
+          class="edit-button"
+          data-testid="rescale-edit-button"
+          mat-icon-button
+          matTooltip="Edit rescale settings"
+          matTooltipPosition="above"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <!-- Image Size Display -->
+      <!-- Requirement 7.6: Display current Image Size -->
+      <div class="transform-config">
+        <div class="config-field">
+          <label class="field-label">Image Size</label>
+          <div class="size-display">
+            <div class="size-input-group">
+              <label>Width</label>
+              <input
+                (change)="onRescaleWidthChange($event)"
+                [value]="rescaleConfig.width"
+                class="size-input"
+                data-testid="rescale-width-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+            <span class="size-separator">×</span>
+            <div class="size-input-group">
+              <label>Height</label>
+              <input
+                (change)="onRescaleHeightChange($event)"
+                [value]="rescaleConfig.height"
+                class="size-input"
+                data-testid="rescale-height-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manual Resize Section (if added) -->
+    <div
+      (mouseenter)="isManualResizeHovered = true"
+      (mouseleave)="isManualResizeHovered = false"
+      *ngIf="hasManualResize"
+      [matTooltip]="manualResizeTooltip"
+      class="transform-item manual-resize-section"
+      data-testid="manual-resize-section"
+      matTooltipPosition="above"
+    >
+      <div class="transform-header">
+        <div class="transform-info">
+          <mat-icon class="transform-icon">photo_size_select_large</mat-icon>
+          <div class="transform-details">
+            <span class="transform-name">Manual resize</span>
+            <span class="transform-description"
+              >Resize to exact dimensions</span
+            >
+          </div>
+        </div>
+
+        <div class="transform-actions">
+          <!-- Edit Button -->
+          <button
+            (click)="openManualResizeDialog()"
+            [class.visible]="isManualResizeHovered"
+            class="edit-button"
+            data-testid="manual-resize-edit-button"
+            mat-icon-button
+            matTooltip="Edit manual resize settings"
+            matTooltipPosition="above"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <!-- Remove Button -->
+          <button
+            (click)="removeTransform('manualResize')"
+            [class.visible]="isManualResizeHovered"
+            class="remove-button"
+            data-testid="manual-resize-remove-button"
+            mat-icon-button
+            matTooltip="Remove manual resize"
+            matTooltipPosition="above"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Manual Resize Configuration -->
+      <div class="transform-config">
+        <div class="config-field">
+          <div class="size-display">
+            <div class="size-input-group">
+              <label>Width</label>
+              <input
+                (change)="onManualResizeWidthChange($event)"
+                [value]="manualResizeConfig.width"
+                class="size-input"
+                data-testid="manual-resize-width-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+            <span class="size-separator">×</span>
+            <div class="size-input-group">
+              <label>Height</label>
+              <input
+                (change)="onManualResizeHeightChange($event)"
+                [value]="manualResizeConfig.height"
+                class="size-input"
+                data-testid="manual-resize-height-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-field checkbox-field">
+          <label class="checkbox-label">
+            <input
+              (change)="onKeepAspectRatioChange($any($event.target).checked)"
+              [checked]="manualResizeConfig.keepAspectRatio"
+              data-testid="keep-aspect-ratio-checkbox"
+              type="checkbox"
+            />
+            <span>Keep aspect ratio</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop Section (if added) -->
+    <div
+      (mouseenter)="isCropHovered = true"
+      (mouseleave)="isCropHovered = false"
+      *ngIf="hasCrop"
+      [matTooltip]="cropTooltip"
+      class="transform-item crop-section"
+      data-testid="crop-section"
+      matTooltipPosition="above"
+    >
+      <div class="transform-header">
+        <div class="transform-info">
+          <mat-icon class="transform-icon">crop</mat-icon>
+          <div class="transform-details">
+            <span class="transform-name">Crop</span>
+            <span class="transform-description"
+              >Extract a rectangular region</span
+            >
+          </div>
+        </div>
+
+        <div class="transform-actions">
+          <!-- Edit Button -->
+          <button
+            (click)="openCropDialog()"
+            [class.visible]="isCropHovered"
+            class="edit-button"
+            data-testid="crop-edit-button"
+            mat-icon-button
+            matTooltip="Edit crop settings"
+            matTooltipPosition="above"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <!-- Remove Button -->
+          <button
+            (click)="removeTransform('crop')"
+            [class.visible]="isCropHovered"
+            class="remove-button"
+            data-testid="crop-remove-button"
+            mat-icon-button
+            matTooltip="Remove crop"
+            matTooltipPosition="above"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Crop Configuration -->
+      <div class="transform-config crop-config">
+        <div class="config-row">
+          <div class="config-field">
+            <label class="field-label">X Offset</label>
+            <div class="input-with-unit">
+              <input
+                (change)="onCropChange('xOffset', $event)"
+                [value]="cropConfig.xOffset"
+                class="size-input"
+                data-testid="crop-x-offset-input"
+                min="0"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+
+          <div class="config-field">
+            <label class="field-label">Y Offset</label>
+            <div class="input-with-unit">
+              <input
+                (change)="onCropChange('yOffset', $event)"
+                [value]="cropConfig.yOffset"
+                class="size-input"
+                data-testid="crop-y-offset-input"
+                min="0"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="config-row">
+          <div class="config-field">
+            <label class="field-label">Width</label>
+            <div class="input-with-unit">
+              <input
+                (change)="onCropChange('width', $event)"
+                [value]="cropConfig.width"
+                class="size-input"
+                data-testid="crop-width-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+
+          <div class="config-field">
+            <label class="field-label">Height</label>
+            <div class="input-with-unit">
+              <input
+                (change)="onCropChange('height', $event)"
+                [value]="cropConfig.height"
+                class="size-input"
+                data-testid="crop-height-input"
+                min="1"
+                type="number"
+              />
+              <span class="unit">px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Transform Button -->
+  <!--
+    Validates: Requirement 7.3 - Provide add button to add transform options: Manual resize and Crop
+    [disabled]="!canAddManualResize && !canAddCrop"
+  -->
+  <!--
+  <div class="add-transform-section">
+    <button
+      [disabled]="!canAddManualResize && !canAddCrop"
+      [matMenuTriggerFor]="addTransformMenu"
+      class="add-transform-button"
+      data-testid="add-transform-button"
+      mat-stroked-button
+      matTooltip="Add a new image transform"
+      matTooltipPosition="above"
+    >
+      <mat-icon>add</mat-icon>
+      Add Transform
+    </button>
+
+    <mat-menu #addTransformMenu="matMenu">
+    -->
+  <!-- Manual Resize Option -->
+  <!--
+  <button
+    (click)="addTransform('manualResize')"
+    [disabled]="!canAddManualResize"
+    data-testid="add-manual-resize-option"
+    mat-menu-item
+  >
+    <mat-icon>photo_size_select_large</mat-icon>
+    <span>Manual resize</span>
+  </button>
+-->
+  <!-- Crop Option -->
+  <!--
+      <button
+        (click)="addTransform('crop')"
+        [disabled]="!canAddCrop"
+        data-testid="add-crop-option"
+        mat-menu-item
+      >
+        <mat-icon>crop</mat-icon>
+        <span>Crop</span>
+      </button>
+    </mat-menu>
+  </div>
+  -->
+
+  <!-- Configuration Summary -->
+  <!--
+  <div class="config-summary">
+    <div class="summary-title">Active Transforms</div>
+    <div class="summary-items">
+      <div *ngIf="rescaleEnabled" class="summary-item">
+        <mat-icon>aspect_ratio</mat-icon>
+        <span>Rescale: {{ imageSizeDisplay }}</span>
+      </div>
+      <div *ngIf="hasManualResize" class="summary-item">
+        <mat-icon>photo_size_select_large</mat-icon>
+        <span
+          >Manual resize: {{ manualResizeConfig.width }} ×
+          {{ manualResizeConfig.height }}</span
+        >
+      </div>
+      <div *ngIf="hasCrop" class="summary-item">
+        <mat-icon>crop</mat-icon>
+        <span
+          >Crop: {{ cropConfig.width }} × {{ cropConfig.height }} at ({{
+            cropConfig.xOffset
+          }}
+          , {{ cropConfig.yOffset }})</span
+        >
+      </div>
+    </div>
+  </div>
+  -->
+</div>

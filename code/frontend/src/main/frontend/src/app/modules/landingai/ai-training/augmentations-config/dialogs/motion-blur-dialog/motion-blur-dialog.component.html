@@ -1,0 +1,81 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">motion_photos_on</mat-icon>
+  Motion Blur
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the motion blur kernel size limit. This simulates camera movement
+    blur. A larger value produces a stronger motion blur effect.
+  </p>
+
+  <div class="form-container">
+    <!-- Motion Blur Limit Slider -->
+    <!-- Requirement 14.1: Display Blur limit slider -->
+    <div class="slider-field">
+      <label class="field-label">Blur Limit (Kernel Size)</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatBlurLimit"
+          class="blur-slider"
+          data-testid="motion-blur-limit-slider"
+          discrete
+          max="21"
+          min="3"
+          step="2"
+        >
+          <input
+            (valueChange)="onSliderChange($event)"
+            [(ngModel)]="blurLimit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onInputChange($event)"
+            [value]="blurLimit"
+            data-testid="motion-blur-limit-input"
+            matInput
+            max="21"
+            min="3"
+            step="2"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>3 (Subtle)</span>
+        <span>21 (Strong)</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span
+        >Motion blur kernel size up to {{ blurLimit }}×{{
+          blurLimit
+        }}
+        pixels</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="motion-blur-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="motion-blur-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,106 @@
+<div class="project-list-container">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>All Projects</h1>
+    <div class="header-actions">
+      <button
+        (click)="navigateToCreate()"
+        aria-label="Create new project"
+        class="create-button"
+        color="primary"
+        mat-raised-button
+      >
+        <mat-icon>add</mat-icon>
+        Create Project
+      </button>
+      <button
+        (click)="toggleViewAll()"
+        [class.active]="viewAll"
+        aria-label="Toggle view all projects"
+        class="view-all-button"
+        mat-stroked-button
+      >
+        <mat-icon>{{ viewAll ? "person" : "people" }}</mat-icon>
+        {{ viewAll ? "My Projects" : "View All" }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading$ | async" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading projects...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error$ | async as error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <div class="error-content">
+      <p class="error-message">{{ error }}</p>
+      <p class="error-hint">Please check your connection and try again.</p>
+    </div>
+    <button (click)="retryLoadProjects()" color="primary" mat-raised-button>
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  </div>
+
+  <!-- Unauthorized Message -->
+  <div *ngIf="!isAuthorized" class="error-container">
+    <mat-icon color="warn">lock</mat-icon>
+    <div class="error-content">
+      <p class="error-message">
+        You don't have the required permissions to view project data for this
+        location.
+      </p>
+      <p class="error-hint">
+        Please contact your administrator to request access.
+      </p>
+    </div>
+  </div>
+
+  <!-- Project Grid -->
+  <div
+    *ngIf="isAuthorized && !(loading$ | async) && !(error$ | async)"
+    class="projects-container"
+  >
+    <ng-container *ngIf="projectGroups$ | async as projectGroups">
+      <!-- Empty State -->
+      <div *ngIf="projectGroups.length === 0" class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <h2>No projects found</h2>
+        <p *ngIf="!viewAll">You haven't created any projects yet.</p>
+        <p *ngIf="viewAll">No projects available in this location.</p>
+        <button (click)="navigateToCreate()" color="primary" mat-raised-button>
+          Create Your First Project
+        </button>
+      </div>
+
+      <!-- Project Groups -->
+      <div *ngFor="let group of projectGroups" class="project-group">
+        <!-- Group Header -->
+        <div (click)="toggleGroup(group)" class="group-header">
+          <div class="group-title">
+            <mat-icon [class.expanded]="group.expanded" class="expand-icon">
+              {{ group.expanded ? "expand_more" : "chevron_right" }}
+            </mat-icon>
+            <h2>{{ group.groupName }}</h2>
+            <span class="project-count">({{ group.projects.length }})</span>
+          </div>
+        </div>
+
+        <!-- Group Projects -->
+        <div *ngIf="group.expanded" [@slideDown] class="projects-grid">
+          <app-project-card
+            (cardClick)="navigateToProject($event)"
+            (deleteClick)="onDeleteProject($event)"
+            (editClick)="onEditProject($event)"
+            *ngFor="let project of group.projects"
+            [project]="project"
+          >
+          </app-project-card>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

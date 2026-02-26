@@ -1,0 +1,334 @@
+<div class="flex max-h-full flex-col">
+  <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-2">
+    <app-page-title>Location Management</app-page-title>
+
+    <div class="flex items-center gap-4">
+      <button (click)="resetFilters()" color="primary" mat-button>
+        Reset filters
+      </button>
+
+      <button
+        (click)="add()"
+        [disabled]="0 | authorization: role : true"
+        color="accent"
+        mat-mini-fab
+        matTooltip="{{ addButtonTooltip() }}"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex min-h-0 flex-col">
+    <mat-tab-group
+      (selectedTabChange)="attachPaginator($event)"
+      [(selectedIndex)]="tabIndex"
+      class="overflow-auto"
+      mat-stretch-tabs="false"
+    >
+      <mat-tab label="Sites">
+        <div class="flex max-h-full flex-col">
+          <div class="overflow-auto">
+            <table
+              (matSortChange)="sortData($event)"
+              [dataSource]="sitesDataSource"
+              mat-table
+              matSort
+            >
+              <ng-container matColumnDef="acronym" sticky>
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>Site</th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.acronym }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="isSubContractor">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Subcon
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.isSubContractor | booleanInterpreter }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="tmdbCode">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  TMDB Code
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.tmdbCode }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="name">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>Name</th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.name }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="city">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>City</th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.city }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="country">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Country
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.country }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="sapCode">
+                <th
+                  *matHeaderCellDef
+                  mat-header-cell
+                  mat-sort-header
+                  matTooltip="Plant Code in SAP system"
+                >
+                  Plant Code
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.sapCode }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="vendorCode">
+                <th
+                  *matHeaderCellDef
+                  mat-header-cell
+                  mat-sort-header
+                  matTooltip="Vendor Code in SAP system"
+                >
+                  Vendor Code
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.vendorCode }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="planningEngine">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Planning Engine
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ convertPlanningEngine(element.planningEngine) }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="menuGrouping">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Menu Grouping
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.menuGrouping?.toUpperCase() }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="extendedSuffix">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Extended suffix
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.extendedSuffix }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="lastUpdated">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Last updated
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.lastUpdated | date: "yyyy-MM-dd" }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="updater.name">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Updated by
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ getUsernameByWbi(element.updatedBy) | async }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions" stickyEnd>
+                <th *matHeaderCellDef mat-header-cell></th>
+                <td *matCellDef="let element" mat-cell>
+                  <div class="flex items-center gap-1">
+                    <button
+                      (click)="editLocation(element)"
+                      [disabled]="element.id | authorization: role : true"
+                      matIcon="edit"
+                      table-icon-button
+                    ></button>
+                    <button
+                      (click)="deleteSite(element)"
+                      [disabled]="!isAuthorized() || !isSiteDeletable(element)"
+                      [matTooltip]="deleteTooltip(element)"
+                      matIcon="delete"
+                      table-icon-button
+                    ></button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container
+                *ngFor="let column of searchColumnsSites"
+                [matColumnDef]="column.sortField"
+                [stickyEnd]="column.stickyEnd"
+                [sticky]="column.sticky"
+              >
+                <th *matHeaderCellDef mat-header-cell>
+                  <app-generic-search
+                    (emitSearchTrigger)="searchFieldTriggered($event)"
+                    [booleanValues]="booleanSearchValues"
+                    [searchField]="column.sortField"
+                  >
+                  </app-generic-search>
+                </th>
+              </ng-container>
+
+              <tr
+                *matHeaderRowDef="displayedColumnsSites; sticky: true"
+                mat-header-row
+              ></tr>
+              <tr
+                *matHeaderRowDef="searchColumnsSitesNames; sticky: true"
+                mat-header-row
+              ></tr>
+              <tr
+                *matRowDef="let row; columns: displayedColumnsSites"
+                class="hover:!bg-table-row-hover"
+                mat-row
+              ></tr>
+            </table>
+          </div>
+
+          <mat-paginator
+            #paginatorSites
+            (page)="getPages()"
+            [pageSizeOptions]="[25, 50, 100, 250]"
+            showFirstLastButtons
+          ></mat-paginator>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Manufacturer Codes">
+        <div class="flex max-h-full flex-col">
+          <div class="overflow-auto">
+            <table
+              (matSortChange)="sortData($event)"
+              [dataSource]="manufacturerCodesDataSource"
+              mat-table
+              matSort
+            >
+              <ng-container matColumnDef="location">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>Site</th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.locationId | locationAcronym }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="manufacturerCode">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Manufacturer Code
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.manufacturerCode }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="lastUpdated">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Last updated
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ element.lastUpdated | date: "yyyy-MM-dd" }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="updater.name">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header>
+                  Updated by
+                </th>
+                <td *matCellDef="let element" mat-cell>
+                  {{ getUsernameByWbi(element.updatedBy) | async }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions" stickyEnd>
+                <th *matHeaderCellDef mat-header-cell></th>
+                <td *matCellDef="let element" mat-cell>
+                  <div class="flex items-center gap-1">
+                    <button
+                      (click)="editManufacturerCode(element)"
+                      [disabled]="element.id | authorization: role : true"
+                      matIcon="edit"
+                      table-icon-button
+                    ></button>
+                    <button
+                      (click)="deleteManufacturerCode(element)"
+                      [disabled]="!isAuthorized()"
+                      matIcon="delete"
+                      table-icon-button
+                    ></button>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container
+                *ngFor="let column of searchColumnsManufacturerCodes"
+                [matColumnDef]="column.sortField"
+                [stickyEnd]="column.stickyEnd"
+                [sticky]="column.sticky"
+              >
+                <th *matHeaderCellDef mat-header-cell>
+                  <app-generic-search
+                    (emitSearchTrigger)="searchFieldTriggered($event)"
+                    [booleanValues]="booleanSearchValues"
+                    [searchField]="column.sortField"
+                  >
+                  </app-generic-search>
+                </th>
+              </ng-container>
+
+              <tr
+                *matHeaderRowDef="
+                  displayedColumnsManufacturerCodes;
+                  sticky: true
+                "
+                mat-header-row
+              ></tr>
+              <tr
+                *matHeaderRowDef="
+                  searchColumnsManufacturerCodesNames;
+                  sticky: true
+                "
+                mat-header-row
+              ></tr>
+              <tr
+                *matRowDef="let row; columns: displayedColumnsManufacturerCodes"
+                class="hover:!bg-table-row-hover"
+                mat-row
+              ></tr>
+            </table>
+          </div>
+
+          <mat-paginator
+            #paginatorManufacturerCodes
+            (page)="getPages()"
+            [pageSizeOptions]="[25, 50, 100, 250]"
+            showFirstLastButtons
+          ></mat-paginator>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <app-spinner *ngIf="isLoading"></app-spinner>
+  </div>
+</div>

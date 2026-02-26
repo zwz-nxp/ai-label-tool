@@ -1,0 +1,52 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2>Guidelines for scheduling jobs</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <div class="flex flex-col gap-2">
+      <p>This page provides an overview of scheduled Jobs in IE-MDM.</p>
+      <p>
+        A job is a scheduled IE-MDM task. It is possible to change the schedule
+        for a job but also to trigger a job manually. For the scheduling timing
+        and interval a Cron Expression is used. Only valid Cron Expressions are
+        accepted. To get more information about Cron Expressions, and to check
+        their validity, an external site can be used such as
+        <a
+          class="text-prod-primary underline"
+          href="https://www.freeformatter.com/cron-expression-generator-quartz.html"
+          target="_blank"
+          >FreeFormatter</a
+        >.
+      </p>
+      <p>
+        Jobs can be paused. While paused, the job will not be executed according
+        to its schedule, but the configured schedule will stay in place. When a
+        job is resumed, the job will be executed again according to the defined
+        schedule. The jobs are also non-reentrant, meaning that the same job
+        cannot be executed while still running. If a scheduled job cannot start
+        because a current execution is still running, then it will automatically
+        be rescheduled to start when the current execution is finished. If a
+        manually triggered job cannot start it will not be rescheduled.
+      </p>
+      <div>
+        <div class="flex items-center gap-2">
+          <p>To edit the configuration press</p>
+          <mat-icon [inline]="true">edit</mat-icon>
+        </div>
+        <div class="flex items-center gap-2">
+          <p>To manually trigger a Job press</p>
+          <mat-icon [inline]="true">play_circle_filled</mat-icon>
+        </div>
+        <div class="flex items-center gap-2">
+          <p>To see the execution log history press</p>
+          <mat-icon [inline]="true">history</mat-icon>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>

@@ -1,0 +1,254 @@
+<mat-toolbar class="top-toolbar">
+  <div class="toolbar-content">
+    <!-- Left section: Annotation tools -->
+    <div class="toolbar-section toolbar-left">
+      <!-- Pan button -->
+      <button
+        (click)="onButtonClick('pan')"
+        *ngIf="hasButton('pan')"
+        [class.active]="isButtonActive('pan')"
+        [matTooltip]="getButton('pan')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("pan")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Bounding Box button (Object Detection) -->
+      <button
+        (click)="onButtonClick('boundingBox')"
+        *ngIf="hasButton('boundingBox')"
+        [class.active]="isButtonActive('boundingBox')"
+        [disabled]="isNoClass"
+        [matTooltip]="getButton('boundingBox')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("boundingBox")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Classes Dropdown (for Object Detection and Classification) -->
+      <mat-form-field
+        *ngIf="classes.length > 0 && !isNoClass"
+        appearance="fill"
+        class="classes-dropdown"
+      >
+        <mat-label>Class</mat-label>
+        <mat-select
+          (selectionChange)="onClassSelected($event.value)"
+          [(value)]="selectedClass"
+          panelClass="class-dropdown-panel"
+        >
+          <mat-select-trigger *ngIf="selectedClass">
+            <span class="class-option-item">
+              <span
+                [style.background-color]="selectedClass.colorCode"
+                class="class-color-swatch"
+              ></span>
+              <span class="selected-class-name">{{
+                selectedClass.className
+              }}</span>
+            </span>
+          </mat-select-trigger>
+          <mat-option
+            *ngFor="let cls of classes"
+            [value]="cls"
+            class="colored-option"
+          >
+            <span class="class-option-item">
+              <span
+                [style.background-color]="cls.colorCode"
+                class="class-color-swatch"
+              ></span>
+              <span class="class-name">{{ cls.className }}</span>
+            </span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- No Class Toggle -->
+      <mat-slide-toggle
+        (change)="onNoClassChange($event.checked)"
+        *ngIf="hasButton('boundingBox') && projectType !== 'Classification'"
+        [checked]="isNoClass"
+        [disabled]="!currentImage"
+        class="no-class-toggle"
+        matTooltip="Mark image as having no objects to label"
+      >
+        No Class
+      </mat-slide-toggle>
+
+      <!-- Smart Labeling button (Segmentation) -->
+      <button
+        (click)="onButtonClick('smartLabeling')"
+        *ngIf="hasButton('smartLabeling')"
+        [matTooltip]="getButton('smartLabeling')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("smartLabeling")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Brush button (Segmentation) -->
+      <button
+        (click)="onButtonClick('brush')"
+        *ngIf="hasButton('brush')"
+        [matTooltip]="getButton('brush')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("brush")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Polygon button (Segmentation) -->
+      <button
+        (click)="onButtonClick('polygon')"
+        *ngIf="hasButton('polygon')"
+        [matTooltip]="getButton('polygon')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("polygon")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Polyline button (Segmentation) -->
+      <button
+        (click)="onButtonClick('polyline')"
+        *ngIf="hasButton('polyline')"
+        [matTooltip]="getButton('polyline')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("polyline")?.icon }}</mat-icon>
+      </button>
+
+      <span *ngIf="hasButton('undo')" class="toolbar-divider"></span>
+
+      <!-- Undo button -->
+      <button
+        (click)="onButtonClick('undo')"
+        *ngIf="hasButton('undo')"
+        [disabled]="!canUndo"
+        [matTooltip]="getButton('undo')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("undo")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Redo button -->
+      <button
+        (click)="onButtonClick('redo')"
+        *ngIf="hasButton('redo')"
+        [disabled]="!canRedo"
+        [matTooltip]="getButton('redo')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("redo")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Clear button -->
+      <button
+        (click)="onButtonClick('clear')"
+        *ngIf="hasButton('clear')"
+        [matTooltip]="getButton('clear')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("clear")?.icon }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Center section: Image navigation -->
+    <div class="toolbar-section toolbar-center">
+      <button
+        (click)="onNavigateToProject()"
+        mat-icon-button
+        matTooltip="Back to project"
+      >
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <span *ngIf="projectName" class="project-name">{{ projectName }}</span>
+      <span class="toolbar-divider"></span>
+      <button
+        (click)="onPreviousImage()"
+        [disabled]="!canGoPrevious()"
+        mat-icon-button
+        matTooltip="Previous image"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="image-index"
+        >{{ currentImageIndex + 1 }} / {{ totalImages }}</span
+      >
+      <button
+        (click)="onNextImage()"
+        [disabled]="!canGoNext()"
+        mat-icon-button
+        matTooltip="Next image"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- Right section: View controls -->
+    <div class="toolbar-section toolbar-right">
+      <!-- Zoom In button -->
+      <button
+        (click)="onButtonClick('zoomIn')"
+        *ngIf="hasButton('zoomIn')"
+        [matTooltip]="getButton('zoomIn')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("zoomIn")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Zoom percentage display -->
+      <span
+        *ngIf="hasButton('zoomIn') || hasButton('zoomOut')"
+        class="zoom-percentage"
+      >
+        {{ getZoomPercentage() }}
+      </span>
+
+      <!-- Zoom Out button -->
+      <button
+        (click)="onButtonClick('zoomOut')"
+        *ngIf="hasButton('zoomOut')"
+        [matTooltip]="getButton('zoomOut')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("zoomOut")?.icon }}</mat-icon>
+      </button>
+
+      <span *ngIf="hasButton('enhance')" class="toolbar-divider"></span>
+
+      <!-- Enhance button -->
+      <button
+        (click)="onButtonClick('enhance')"
+        *ngIf="hasButton('enhance')"
+        [matTooltip]="getButton('enhance')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("enhance")?.icon }}</mat-icon>
+      </button>
+
+      <!-- Hold to Hide button -->
+      <button
+        (mousedown)="onHoldToHideMouseDown()"
+        (mouseleave)="onHoldToHideMouseLeave()"
+        (mouseup)="onHoldToHideMouseUp()"
+        *ngIf="hasButton('holdToHide')"
+        [class.holding]="isHoldingHide"
+        [matTooltip]="getButton('holdToHide')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("holdToHide")?.icon }}</mat-icon>
+      </button>
+
+      <span class="toolbar-divider"></span>
+
+      <!-- Show Label Details Toggle -->
+      <mat-slide-toggle
+        (change)="onShowLabelDetailsChange($event.checked)"
+        [(ngModel)]="showLabelDetails"
+        class="label-details-toggle"
+        matTooltip="Show/Hide label class names and confidence rates on canvas"
+      >
+        Label Details
+      </mat-slide-toggle>
+    </div>
+  </div>
+</mat-toolbar>

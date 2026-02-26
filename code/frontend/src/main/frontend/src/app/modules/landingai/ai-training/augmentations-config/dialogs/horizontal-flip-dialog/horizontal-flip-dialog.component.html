@@ -1,0 +1,77 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">flip</mat-icon>
+  Horizontal Flip
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the probability of applying horizontal flip to images during
+    training. A probability of 0.5 means 50% of images will be flipped.
+  </p>
+
+  <div class="form-container">
+    <div class="slider-field">
+      <label class="field-label">Probability</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatProbability"
+          class="probability-slider"
+          data-testid="horizontal-flip-probability-slider"
+          discrete
+          max="1"
+          min="0"
+          step="0.01"
+        >
+          <input
+            (valueChange)="onSliderChange($event)"
+            [(ngModel)]="probability"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onInputChange($event)"
+            [value]="probability"
+            data-testid="horizontal-flip-probability-input"
+            matInput
+            max="1"
+            min="0"
+            step="0.01"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>0 (Never)</span>
+        <span>1 (Always)</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span
+        >{{ (probability * 100).toFixed(0) }}% of images will be horizontally
+        flipped</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="horizontal-flip-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="horizontal-flip-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

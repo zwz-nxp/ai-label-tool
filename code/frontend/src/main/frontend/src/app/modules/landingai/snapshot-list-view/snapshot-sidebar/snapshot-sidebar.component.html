@@ -1,0 +1,36 @@
+<!-- Snapshot Sidebar Component Template -->
+<!-- Requirements: 2.1, 2.4, 2.5 -->
+
+<div class="snapshot-sidebar" [class.collapsed]="collapsed">
+  <!-- Sidebar content -->
+  <div class="sidebar-content">
+    <!-- Header -->
+    <div class="sidebar-header">
+      <h3>Snapshots</h3>
+      <span class="snapshot-count">{{ snapshots.length }}</span>
+    </div>
+
+    <!-- Loading state -->
+    <div class="loading-state" *ngIf="loading">
+      <mat-spinner diameter="32"></mat-spinner>
+      <span>Loading snapshots...</span>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!loading && snapshots.length === 0">
+      <mat-icon>photo_camera</mat-icon>
+      <p>No snapshots yet</p>
+    </div>
+
+    <!-- Snapshot list -->
+    <div class="snapshot-list" *ngIf="!loading && snapshots.length > 0">
+      <app-snapshot-card
+        *ngFor="let snapshot of snapshots"
+        [snapshot]="snapshot"
+        [selected]="isSelected(snapshot.id)"
+        (clicked)="selectSnapshot($event)"
+      >
+      </app-snapshot-card>
+    </div>
+  </div>
+</div>

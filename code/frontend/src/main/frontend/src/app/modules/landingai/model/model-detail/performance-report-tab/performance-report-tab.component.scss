@@ -1,0 +1,331 @@
+.performance-report-tab {
+  padding: 24px;
+  background-color: #ffffff;
+  min-height: 100%;
+}
+
+.content-loaded {
+  animation: fadeIn 300ms ease-in-out;
+}
+
+// Top Section: Evaluation Set and Performance Summary
+.evaluation-set-and-performance-summary {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+// First Row: Controls
+.evaluation-set-and-performance-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.evaluation-set-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .label-text {
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+      white-space: nowrap;
+    }
+  }
+
+  .evaluation-set-select {
+    width: 85px;
+    margin: 0;
+
+    ::ng-deep .mat-form-field-wrapper {
+      padding-bottom: 0;
+      margin: 0;
+    }
+
+    ::ng-deep .mat-mdc-form-field-flex {
+      align-items: center;
+    }
+
+    ::ng-deep .mat-form-field-infix {
+      padding: 0;
+      border-top: 0;
+      width: auto;
+      min-width: 50px;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding: 0;
+    }
+
+    // 移除外框線
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+
+    // 調整字形與大小與標籤一致
+    ::ng-deep .mat-mdc-select-value-text,
+    ::ng-deep .mat-mdc-select-min-line {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    // 調整 select value 容器
+    ::ng-deep .mat-mdc-select-value {
+      max-width: none;
+    }
+
+    // 調整下拉箭頭與文字的距離
+    ::ng-deep .mat-mdc-select-arrow-wrapper {
+      padding-left: 0;
+      margin-left: 2px;
+    }
+
+    // 調整 select trigger 的 padding
+    ::ng-deep .mat-mdc-select-trigger {
+      padding-right: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    // 移除 subscript wrapper 的高度
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+}
+
+.labeled-data-info {
+  flex: 1;
+  min-width: 200px;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+
+    span {
+      color: #666;
+    }
+  }
+}
+
+.confidence-threshold-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  span {
+    font-size: 14px;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .threshold-value {
+    .inline-text {
+      display: inline;
+      margin: 0;
+      font-weight: 500;
+      color: #1976d2;
+    }
+  }
+
+  .adjust-button-container {
+    .adjust-threshold {
+      text-transform: none;
+      font-size: 14px;
+    }
+  }
+}
+
+.csv-export-section {
+  .download-model-evaluation-report-csv {
+    text-transform: none;
+    font-size: 14px;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Second Row: Performance Metrics with Circular Progress
+.performance-metrics-row {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  padding: 16px 0;
+}
+
+.metric-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.circular-progress-container {
+  position: relative;
+  width: 48px;
+  height: 48px;
+
+  .background-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    ::ng-deep circle {
+      stroke: #e0e0e0;
+    }
+  }
+
+  .foreground-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    ::ng-deep circle {
+      stroke: #1976d2;
+    }
+  }
+}
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-value-container {
+  h2 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  .metric-label-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .spacer {
+      width: 4px;
+    }
+
+    .info-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #999;
+
+      &:hover {
+        color: #666;
+      }
+    }
+  }
+}
+
+.analysis-section {
+  margin-top: 24px;
+}
+
+.placeholder-text {
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  padding: 40px 20px;
+  border: 1px dashed #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background-color: #fafafa;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  gap: 16px;
+  color: #999;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    opacity: 0.5;
+  }
+
+  p {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// Loading State Styles
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 16px;
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// 調整下拉選單選項的字體大小
+::ng-deep .mat-mdc-option {
+  font-size: 14px !important;
+
+  .mdc-list-item__primary-text {
+    font-size: 14px !important;
+    color: #666;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .performance-report-tab {
+    padding: 16px;
+  }
+
+  .evaluation-set-and-performance-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .performance-metrics-row {
+    flex-direction: column;
+    gap: 24px;
+  }
+}

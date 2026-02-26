@@ -1,0 +1,180 @@
+<div class="snapshot-create-dialog">
+  <div class="dialog-header">
+    <h2>Create Snapshot</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="snapshotForm">
+      <div class="form-field">
+        <label>Snapshot Name</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <input
+            formControlName="snapshotName"
+            matInput
+            maxlength="100"
+            placeholder="Enter snapshot name"
+          />
+          <mat-error
+            *ngIf="snapshotForm.get('snapshotName')?.hasError('required')"
+          >
+            Snapshot name is required
+          </mat-error>
+          <mat-error
+            *ngIf="snapshotForm.get('snapshotName')?.hasError('maxlength')"
+          >
+            Snapshot name must be 100 characters or less
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <label>Description</label>
+        <mat-form-field appearance="outline" class="full-width">
+          <textarea
+            formControlName="description"
+            matInput
+            maxlength="500"
+            placeholder="e.g. Backup current data, training on subset, holdout for evaluation etc."
+            rows="3"
+          ></textarea>
+          <mat-error
+            *ngIf="snapshotForm.get('description')?.hasError('maxlength')"
+          >
+            Description must be 500 characters or less
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </form>
+
+    <!-- Snapshot Preview & Settings Section -->
+    <div class="preview-settings-section">
+      <div class="section-header">
+        <span>Snapshot Preview & Settings</span>
+      </div>
+
+      <!-- Image Status -->
+      <div class="stats-card">
+        <div class="stats-title">Image status</div>
+        <div
+          style="
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 10px;
+            width: 100%;
+          "
+        >
+          <div
+            [style.width]="getImageStatusBarWidth('labeled') + '%'"
+            style="height: 100%; background-color: #1565c0"
+          ></div>
+          <div
+            [style.width]="getImageStatusBarWidth('noClass') + '%'"
+            style="height: 100%; background-color: #42a5f5"
+          ></div>
+          <div
+            [style.width]="getImageStatusBarWidth('unlabeled') + '%'"
+            style="height: 100%; background-color: #90caf9"
+          ></div>
+        </div>
+        <div class="stats-values">
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.labeled || 0
+            }}</span>
+            <span class="stat-label">labeled</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.noClass || 0
+            }}</span>
+            <span class="stat-label">no_class</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.unlabeled || 0
+            }}</span>
+            <span class="stat-label">unlabeled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Distribution -->
+      <div class="stats-card">
+        <div class="stats-title">Split distribution on labeled images</div>
+        <div
+          style="
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 10px;
+            width: 100%;
+          "
+        >
+          <div
+            [style.width]="getSplitBarWidth('train') + '%'"
+            style="height: 100%; background-color: #2e7d32"
+          ></div>
+          <div
+            [style.width]="getSplitBarWidth('dev') + '%'"
+            style="height: 100%; background-color: #66bb6a"
+          ></div>
+          <div
+            [style.width]="getSplitBarWidth('test') + '%'"
+            style="height: 100%; background-color: #a5d6a7"
+          ></div>
+          <div
+            [style.width]="getSplitBarWidth('unassigned') + '%'"
+            style="height: 100%; background-color: #fff59d"
+          ></div>
+        </div>
+        <div class="stats-values split-values">
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.trainCount || 0
+            }}</span>
+            <span class="stat-label">train</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.devCount || 0
+            }}</span>
+            <span class="stat-label">dev</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.testCount || 0
+            }}</span>
+            <span class="stat-label">test</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{
+              data.previewStats.unassignedCount || 0
+            }}</span>
+            <span class="stat-label">unassigned</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <div class="total-images">Total: {{ data.totalImages || 0 }} images</div>
+    <button
+      (click)="onSubmit()"
+      [disabled]="!snapshotForm.valid"
+      color="primary"
+      mat-raised-button
+      class="save-btn"
+    >
+      Save snapshot
+    </button>
+  </mat-dialog-actions>
+</div>

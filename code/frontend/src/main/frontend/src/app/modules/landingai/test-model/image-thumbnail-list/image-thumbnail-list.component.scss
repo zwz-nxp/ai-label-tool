@@ -1,0 +1,63 @@
+.thumbnail-list {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  .upload-button-container {
+    flex: 0 0 auto;
+
+    .upload-button {
+      width: 100px;
+      height: 92px;
+      border: 2px dashed #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #0056fe;
+        background: #f5f8ff;
+      }
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .thumbnail-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+
+    .thumbnail-item {
+      position: relative;
+      width: 100%;
+      height: 92px;
+      border: 4px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      &.selected {
+        border-color: rgb(0, 86, 254);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+    }
+  }
+}

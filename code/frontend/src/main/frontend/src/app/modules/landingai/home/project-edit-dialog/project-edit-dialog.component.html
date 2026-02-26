@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>Edit Project</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="editForm" class="edit-form">
+    <div class="form-section">
+      <!-- Project Name -->
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Project Name</mat-label>
+        <input
+          aria-label="Project name input"
+          formControlName="name"
+          matInput
+          placeholder="Enter a unique project name"
+          required
+        />
+        <mat-hint>Mandatory: Specify a custom project name</mat-hint>
+        <mat-error *ngIf="nameControl?.hasError('required')">
+          Project name is required
+        </mat-error>
+        <mat-error *ngIf="nameControl?.hasError('minlength')">
+          Project name must be at least 3 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Model Name -->
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Model Name</mat-label>
+        <mat-select
+          aria-label="Model name select"
+          formControlName="modelName"
+          placeholder="Select model"
+        >
+          <mat-option [value]="null">-- No Model --</mat-option>
+          <mat-option *ngFor="let model of availableModels" [value]="model">
+            {{ model }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Specify the model name in databricks</mat-hint>
+      </mat-form-field>
+
+      <!-- Group Name -->
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Group</mat-label>
+        <mat-select
+          aria-label="Group name select"
+          formControlName="groupName"
+          placeholder="Select group"
+        >
+          <mat-option [value]="null">-- No Group --</mat-option>
+          <mat-option *ngFor="let group of availableGroups" [value]="group">
+            {{ group }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Optional: Assign project to a group</mat-hint>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onCancel()" mat-button>Cancel</button>
+  <button
+    (click)="onSave()"
+    [disabled]="!editForm.valid"
+    color="primary"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>

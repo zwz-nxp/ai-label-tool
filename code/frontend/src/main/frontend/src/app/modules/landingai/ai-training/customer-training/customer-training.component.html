@@ -1,0 +1,415 @@
+<div class="customer-training-container">
+  <!-- Header with Step Indicator -->
+  <ng-container *ngIf="{ step: currentStep$ | async } as state">
+    <div class="training-header-row">
+      <!-- Header with Project Navigation -->
+      <div class="training-header">
+        <h1>Train Your Model</h1>
+        <a
+          *ngIf="projectId$ | async as projectId"
+          [routerLink]="['/landingai/projects', projectId]"
+          class="project-link"
+          matTooltip="Back to project"
+        >
+          Project ID: {{ projectId }}
+        </a>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div
+          [class.active]="state.step === 1"
+          [class.completed]="(state.step ?? 1) > 1"
+          class="step"
+        >
+          <span class="step-number">1</span>
+          <span class="step-label">Set up your data</span>
+        </div>
+        <div
+          [class.completed]="(state.step ?? 1) > 1"
+          class="step-connector"
+        ></div>
+        <div [class.active]="state.step === 2" class="step">
+          <span class="step-number">2</span>
+          <span class="step-label">Configure your model</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading$ | async" class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Loading...</p>
+    </div>
+
+    <!-- Error Display -->
+    <div *ngIf="error$ | async as error" class="error-banner">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Content Area -->
+    <mat-card class="content-card">
+      <!-- Step 1: Data Setup -->
+      <div *ngIf="state.step === 1" class="step-content">
+        <h2>Set up your data</h2>
+        <p class="step-description">
+          Configure your data version and split distribution for training.
+          <span class="training-requirement-notice"
+            >Project must have at least 10 labeled images to start
+            training.</span
+          >
+        </p>
+
+        <!-- Data Version Selection -->
+        <!--
+          Validates: Requirement 1.1 - Display dropdown for data version selection with "Current version" as default
+          Validates: Requirement 1.2 - Display all available snapshots from the backend
+          Validates: Requirement 1.3 - Update split preview data when snapshot changes
+          Validates: Requirement 1.4 - Store selected snapshot ID for training request
+        -->
+        <div class="data-version-section">
+          <h3>Data Version</h3>
+          <mat-form-field appearance="outline" class="snapshot-select">
+            <mat-label>Select data version</mat-label>
+            <mat-select
+              (selectionChange)="
+                onSnapshotChange(
+                  $event.value === 'current' ? null : $event.value
+                )
+              "
+              [value]="(selectedSnapshotId$ | async) ?? 'current'"
+              data-testid="snapshot-select"
+              matTooltip="Select a data snapshot to use for training. 'Current version' uses the latest data."
+            >
+              <!-- Custom trigger to display selected value -->
+              <mat-select-trigger>
+                <ng-container
+                  *ngIf="
+                    getSelectedSnapshot(
+                      selectedSnapshotId$ | async,
+                      snapshots$ | async
+                    ) as snapshot;
+                    else currentVersion
+                  "
+                >
+                  <mat-icon>history</mat-icon>
+                  {{ snapshot.name }} ({{ snapshot.imageCount }} images)
+                </ng-container>
+                <ng-template #currentVersion>
+                  <mat-icon>update</mat-icon>
+                  Current version
+                </ng-template>
+              </mat-select-trigger>
+              <!-- Default option: Current version -->
+              <mat-option value="current">
+                <mat-icon>update</mat-icon>
+                Current version
+              </mat-option>
+              <!-- Available snapshots -->
+              <mat-option
+                *ngFor="let snapshot of snapshots$ | async"
+                [value]="snapshot.id"
+              >
+                <mat-icon>history</mat-icon>
+                {{ snapshot.name }} ({{ snapshot.imageCount }} images)
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Config Split Section - Only show when no split configuration exists -->
+        <div
+          *ngIf="!(hasSplitConfiguration$ | async)"
+          class="config-split-section"
+        >
+          <p class="config-split-description">
+            Your dataset contains {{ totalImages$ | async }} labeled images, out
+            of which {{ unassignedCount$ | async }}
+            have not yet been assigned to a split.
+          </p>
+          <button
+            (click)="openAutoSplitDialog()"
+            [disabled]="isLoading$ | async"
+            class="config-split-button"
+            color="primary"
+            data-testid="config-split-button"
+            mat-stroked-button
+            matTooltip="Configure and assign split distribution for your images"
+          >
+            <mat-icon>tune</mat-icon>
+            Config Split
+          </button>
+        </div>
+
+        <!-- Warning: Not enough labeled images -->
+        <div
+          *ngIf="labeledImagesBelowMinimum$ | async"
+          class="labeled-images-warning"
+        >
+          <mat-icon class="warning-icon">warning</mat-icon>
+          <span
+            >Project must have at least 10 labeled images to start
+            training.</span
+          >
+        </div>
+
+        <!-- Placeholder for remaining data setup components -->
+        <div class="split-preview-section-wrapper">
+          <div class="split-preview-section">
+            <!-- Split Preview Component - Only show when split configuration exists -->
+            <!--
+              Validates: Requirement 4.1 - Display title "Preview your split ({count} images)"
+              Validates: Requirement 4.2 - Toggle button group with "By class" and "By Split" options
+              Validates: Requirement 4.3 - Display each class with its train/dev/test distribution
+              Validates: Requirement 4.4 - Display each split with its class distribution
+              Validates: Requirement 4.5 - Display color legend
+              Validates: Requirement 4.6 - Automatically update preview when split data changes
+            -->
+            <ng-container
+              *ngIf="hasSplitConfiguration$ | async; else noSplitConfig"
+            >
+              <app-split-preview
+                [splitPreview]="splitPreview$ | async"
+                [totalImages]="(totalImages$ | async) || 0"
+              >
+              </app-split-preview>
+            </ng-container>
+            <ng-template #noSplitConfig>
+              <div class="no-split-config-message">
+                <mat-icon>info_outline</mat-icon>
+                <p>
+                  No split data available. Please configure split settings to
+                  see the preview.
+                </p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Model Configuration -->
+      <div *ngIf="state.step === 2" class="step-content">
+        <h2>Configure your model</h2>
+        <p class="step-description">
+          Set hyperparameters, image transforms, and data augmentations.
+        </p>
+
+        <!-- Validation Errors Display -->
+        <!--
+          Validates: Requirement 21.2 - Display error messages for invalid fields
+          Validates: Requirement 29.5 - Display inline error messages below invalid fields
+        -->
+        <div
+          *ngIf="(validationErrors$ | async)?.length"
+          class="validation-errors"
+        >
+          <mat-icon class="error-icon">warning</mat-icon>
+          <div class="error-list">
+            <span
+              *ngFor="let error of validationErrors$ | async"
+              class="error-item"
+            >
+              {{ error.message }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Multiple Model Configurations -->
+        <ng-container *ngIf="modelConfigs$ | async as modelConfigs">
+          <div
+            *ngFor="
+              let modelConfig of modelConfigs;
+              let i = index;
+              trackBy: trackByIndex
+            "
+            [class.collapsed]="isModelCollapsed(i)"
+            class="model-config-card"
+          >
+            <!-- Model Header with Alias and Remove Button -->
+            <div class="model-config-header">
+              <div class="model-alias-section">
+                <button
+                  (click)="toggleModelCollapse(i)"
+                  [matTooltip]="isModelCollapsed(i) ? 'Expand' : 'Collapse'"
+                  class="collapse-toggle-button"
+                  mat-icon-button
+                >
+                  <mat-icon>{{
+                    isModelCollapsed(i) ? "chevron_right" : "expand_more"
+                  }}</mat-icon>
+                </button>
+                <h3>Model Alias</h3>
+                <div class="model-alias-value">
+                  <mat-icon>label</mat-icon>
+                  <span>{{ getModelAlias(i) }}</span>
+                </div>
+              </div>
+              <button
+                (click)="onRemoveModel(i)"
+                *ngIf="modelConfigs.length > 1"
+                class="remove-model-button"
+                color="warn"
+                data-testid="remove-model-button"
+                mat-icon-button
+                matTooltip="Remove this model configuration"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+
+            <!-- Collapsible content -->
+            <ng-container *ngIf="!isModelCollapsed(i)">
+              <!-- Hyperparameters Configuration -->
+              <div class="hyperparameters-section">
+                <app-hyperparameters-config
+                  (configChange)="onHyperparametersChange($event, i)"
+                  [config]="{
+                    epochs: modelConfig.epochs,
+                    modelSize: modelConfig.modelSize,
+                  }"
+                  [locationId]="currentLocationId"
+                  [modelType]="currentModelType"
+                >
+                </app-hyperparameters-config>
+              </div>
+
+              <!-- Transforms Config Component -->
+              <div class="transforms-section">
+                <app-transforms-config
+                  (configChange)="onTransformsChange($event, i)"
+                  [config]="modelConfig.transforms"
+                >
+                </app-transforms-config>
+              </div>
+
+              <!-- Augmentations Config Component -->
+              <!--
+              <div class="augmentations-section">
+                <app-augmentations-config
+                  (configChange)="onAugmentationsChange($event, i)"
+                  [config]="modelConfig.augmentations"
+                >
+                </app-augmentations-config>
+              </div>
+              -->
+              <!-- Model Parameter JSON Editor -->
+              <div class="model-parameter-section">
+                <app-model-parameter
+                  (parametersChange)="onModelParametersChange($event, i)"
+                  [locationId]="currentLocationId || 0"
+                  [modelSize]="modelConfig.modelSize"
+                  [modelType]="currentModelType || ''"
+                ></app-model-parameter>
+              </div>
+            </ng-container>
+          </div>
+
+          <!-- Add Another Model Button -->
+          <div class="add-model-section">
+            <button
+              (click)="onAddModel()"
+              [disabled]="modelConfigs.length >= maxModelConfigs"
+              [matTooltip]="
+                modelConfigs.length >= maxModelConfigs
+                  ? 'Maximum ' + maxModelConfigs + ' models allowed'
+                  : 'Add another model configuration'
+              "
+              class="add-model-button"
+              color="primary"
+              data-testid="add-model-button"
+              mat-button
+            >
+              Add Another Model
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </mat-card>
+  </ng-container>
+
+  <!-- Navigation Buttons -->
+  <!--
+    Validates: Requirement 20.1 - Display Back, Next, Start Training, and Cancel buttons
+    Validates: Requirement 20.2 - Back returns to previous step
+    Validates: Requirement 20.3 - Next proceeds to next step
+    Validates: Requirement 20.4 - Back button disabled on first step
+    Validates: Requirement 20.5 - Start Training shown on last step instead of Next
+    Validates: Requirement 20.6 - Cancel returns to previous page without saving
+  -->
+  <div class="navigation-buttons">
+    <!-- Cancel Button (Requirement 20.6) -->
+    <button
+      (click)="onCancel()"
+      class="cancel-button"
+      data-testid="cancel-button"
+      mat-stroked-button
+      matTooltip="Return to project page without saving"
+    >
+      Cancel
+    </button>
+
+    <div class="nav-right">
+      <!-- Back Button (Requirements 20.2, 20.4) -->
+      <button
+        (click)="onBack()"
+        [disabled]="isFirstStep$ | async"
+        class="back-button"
+        data-testid="back-button"
+        mat-stroked-button
+        matTooltip="Return to previous step"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button>
+
+      <!-- Next Button (Requirement 20.3) - shown when not on last step -->
+      <!-- Disabled when project split is empty (no split configuration) or labeled images below minimum -->
+      <button
+        (click)="onNext()"
+        *ngIf="!(isLastStep$ | async)"
+        [disabled]="
+          (isLoading$ | async) ||
+          !(hasSplitConfiguration$ | async) ||
+          (labeledImagesBelowMinimum$ | async)
+        "
+        [matTooltip]="
+          (labeledImagesBelowMinimum$ | async)
+            ? 'Project must have at least 10 labeled images to start training'
+            : (hasSplitConfiguration$ | async)
+              ? 'Proceed to next step'
+              : 'Please configure split settings before proceeding'
+        "
+        class="next-button"
+        color="primary"
+        data-testid="next-button"
+        mat-raised-button
+      >
+        Next
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+
+      <!-- Start Training Button (Requirement 20.5) - shown on last step -->
+      <!--
+        Validates: Requirement 29.6 - Disable button when validation fails
+      -->
+      <button
+        (click)="onStartTraining()"
+        *ngIf="isLastStep$ | async"
+        [disabled]="!(canStartTraining$ | async) || (isLoading$ | async)"
+        [matTooltip]="
+          (canStartTraining$ | async)
+            ? 'Start the training process'
+            : 'Please fix validation errors before starting training'
+        "
+        class="start-training-button"
+        color="primary"
+        data-testid="start-training-button"
+        mat-raised-button
+      >
+        <mat-icon>play_arrow</mat-icon>
+        Start Training
+      </button>
+    </div>
+  </div>
+</div>

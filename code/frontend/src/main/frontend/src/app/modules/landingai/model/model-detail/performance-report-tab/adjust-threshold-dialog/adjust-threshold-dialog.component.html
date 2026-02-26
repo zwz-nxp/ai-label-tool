@@ -1,0 +1,58 @@
+<!-- Adjust Threshold Dialog -->
+<div class="adjust-threshold-dialog">
+  <!-- Dialog Header -->
+  <h2 mat-dialog-title>Adjust Confidence Threshold</h2>
+
+  <!-- Dialog Content -->
+  <mat-dialog-content>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading prediction data...</p>
+    </div>
+
+    <!-- Loaded State -->
+    <div *ngIf="!loading" class="content-container">
+      <!-- Threshold Slider Section -->
+      <div class="threshold-section">
+        <app-threshold-slider
+          [value]="currentThreshold"
+          [min]="0.0"
+          [max]="0.99"
+          [step]="0.01"
+          [originalThreshold]="originalThreshold"
+          [disabled]="recalculating || generating"
+          (valueChange)="onThresholdChange($event)"
+        >
+        </app-threshold-slider>
+      </div>
+
+      <!-- Dynamic Confusion Matrix Section -->
+      <div class="confusion-matrix-section">
+        <app-dynamic-confusion-matrix
+          [data]="confusionMatrixData"
+          [loading]="recalculating"
+        >
+        </app-dynamic-confusion-matrix>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Dialog Actions -->
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="generating">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onGenerate()"
+      [disabled]="!showGenerateButton || generating"
+      *ngIf="showGenerateButton"
+    >
+      <mat-spinner diameter="20" *ngIf="generating"></mat-spinner>
+      <span *ngIf="!generating">{{ generateButtonText }}</span>
+      <span *ngIf="generating">Generating...</span>
+    </button>
+  </mat-dialog-actions>
+</div>

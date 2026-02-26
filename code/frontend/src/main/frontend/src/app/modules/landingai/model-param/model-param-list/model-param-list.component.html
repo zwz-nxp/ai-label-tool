@@ -1,0 +1,204 @@
+<div class="model-param-container">
+  <!-- Header Section -->
+  <div class="header">
+    <h1>Model Parameter Configurations</h1>
+    <button
+      (click)="onCreate()"
+      aria-label="Create new model parameter"
+      class="create-button"
+      color="primary"
+      mat-raised-button
+      [disabled]="!currentLocation"
+    >
+      <mat-icon>add</mat-icon>
+      Create Configuration
+    </button>
+  </div>
+
+  <!-- No Location Selected Message -->
+  <div *ngIf="!currentLocation" class="no-location-message">
+    <mat-icon color="warn">warning</mat-icon>
+    <p>Please select a location from the top bar to view model parameters.</p>
+  </div>
+
+  <ng-container *ngIf="currentLocation">
+    <!-- Filter Section -->
+    <div class="filters-section">
+      <mat-form-field appearance="fill" class="filter-field">
+        <mat-label>Model Type</mat-label>
+        <mat-select
+          [(value)]="modelTypeFilter"
+          (selectionChange)="onModelTypeChange($event.value)"
+        >
+          <mat-option [value]="null">All Types</mat-option>
+          <mat-option value="Object Detection">Object Detection</mat-option>
+          <mat-option value="Classification">Classification</mat-option>
+          <mat-option value="Segmentation">Segmentation</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="filter-field search-field">
+        <mat-label>Search by Model Name</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Enter model name"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <button
+        *ngIf="hasActiveFilters"
+        (click)="onClearFilters()"
+        mat-stroked-button
+        class="clear-filters-button"
+      >
+        <mat-icon>clear</mat-icon>
+        Clear Filters
+      </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading$ | async" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading model parameters...</p>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error$ | async as error" class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <div class="error-content">
+        <p class="error-message">{{ error }}</p>
+        <p class="error-hint">Please check your connection and try again.</p>
+      </div>
+      <button (click)="onRetry()" color="primary" mat-raised-button>
+        <mat-icon>refresh</mat-icon>
+        Retry
+      </button>
+    </div>
+
+    <!-- Table Section -->
+    <div
+      *ngIf="!(loading$ | async) && !(error$ | async)"
+      class="table-container"
+    >
+      <ng-container *ngIf="modelParams$ | async as modelParams">
+        <!-- Empty State -->
+        <div *ngIf="modelParams.length === 0" class="empty-state">
+          <mat-icon>settings</mat-icon>
+          <h2>No model parameters found</h2>
+          <p *ngIf="!hasActiveFilters">
+            You haven't created any model parameter configurations yet.
+          </p>
+          <p *ngIf="hasActiveFilters">
+            No model parameters match your current filters.
+          </p>
+          <button
+            *ngIf="!hasActiveFilters"
+            (click)="onCreate()"
+            color="primary"
+            mat-raised-button
+          >
+            Create Your First Configuration
+          </button>
+          <button
+            *ngIf="hasActiveFilters"
+            (click)="onClearFilters()"
+            mat-stroked-button
+          >
+            Clear Filters
+          </button>
+        </div>
+
+        <!-- Data Table -->
+        <table
+          *ngIf="modelParams.length > 0"
+          mat-table
+          [dataSource]="modelParams"
+          class="model-param-table"
+        >
+          <!-- Model Name Column -->
+          <ng-container matColumnDef="modelName">
+            <th mat-header-cell *matHeaderCellDef>Model Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.modelName }}</td>
+          </ng-container>
+
+          <!-- Location Column -->
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>Location</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.locationName }}
+            </td>
+          </ng-container>
+
+          <!-- Model Type Column -->
+          <ng-container matColumnDef="modelType">
+            <th mat-header-cell *matHeaderCellDef>Model Type</th>
+            <td mat-cell *matCellDef="let element">
+              <span class="model-type-badge">{{ element.modelType }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Created At Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Created At</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.createdAt | date: "short" }}
+            </td>
+          </ng-container>
+
+          <!-- Created By Column -->
+          <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef>Created By</th>
+            <td mat-cell *matCellDef="let element">{{ element.createdBy }}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element">
+              <button
+                (click)="onView(element)"
+                mat-icon-button
+                matTooltip="View details"
+                color="primary"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                (click)="onEdit(element)"
+                mat-icon-button
+                matTooltip="Edit"
+                color="accent"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                (click)="onDelete(element)"
+                mat-icon-button
+                matTooltip="Delete"
+                color="warn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Paginator -->
+        <mat-paginator
+          *ngIf="modelParams.length > 0"
+          [length]="modelParams.length"
+          [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          showFirstLastButtons
+        >
+        </mat-paginator>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

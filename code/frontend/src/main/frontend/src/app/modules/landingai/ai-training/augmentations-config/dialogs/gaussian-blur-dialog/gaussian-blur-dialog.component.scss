@@ -1,0 +1,76 @@
+/**
+ * GaussianBlurDialogComponent Styles
+ *
+ * Requirements:
+ * - 27.2: Use mat-raised-button with primary color for primary actions (Save)
+ * - 27.3: Use mat-stroked-button for secondary actions (Cancel)
+ * - 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/training-shared" as *;
+@use "app/styles/dialog-shared" as dialog;
+
+:host {
+  display: block;
+}
+
+::ng-deep h2[mat-dialog-title] {
+  @include dialog.dialog-title;
+}
+
+.dialog-description {
+  @include dialog.dialog-description;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.slider-field {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.field-label {
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $text-primary;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.blur-slider,
+.sigma-slider {
+  flex: 1;
+  @include slider-color($primary-color, rgba($primary-color, 0.3));
+}
+
+.value-field {
+  width: 80px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-hint;
+}
+
+.preview-info {
+  @include info-box(rgba($info-color, 0.1), $primary-color);
+}
+
+mat-dialog-actions {
+  @include dialog.dialog-actions;
+}

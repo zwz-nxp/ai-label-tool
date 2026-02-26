@@ -1,0 +1,78 @@
+<h2 mat-dialog-title>Enhance Image</h2>
+
+<mat-dialog-content>
+  <div class="enhance-controls">
+    <!-- Brightness Control -->
+    <div class="control-group">
+      <div class="control-header">
+        <label class="control-label">Brightness</label>
+        <span class="control-value">{{ formatSliderValue(brightness) }}</span>
+      </div>
+      <mat-slider
+        class="full-width-slider"
+        discrete
+        max="100"
+        min="-100"
+        showTickMarks
+        step="1"
+      >
+        <input
+          (input)="onBrightnessChange()"
+          [(ngModel)]="brightness"
+          matSliderThumb
+        />
+      </mat-slider>
+      <div class="slider-labels">
+        <span>-100</span>
+        <span>0</span>
+        <span>+100</span>
+      </div>
+    </div>
+
+    <!-- Contrast Control -->
+    <div class="control-group">
+      <div class="control-header">
+        <label class="control-label">Contrast</label>
+        <span class="control-value">{{ formatSliderValue(contrast) }}</span>
+      </div>
+      <mat-slider
+        class="full-width-slider"
+        discrete
+        max="100"
+        min="-100"
+        showTickMarks
+        step="1"
+      >
+        <input
+          (input)="onContrastChange()"
+          [(ngModel)]="contrast"
+          matSliderThumb
+        />
+      </mat-slider>
+      <div class="slider-labels">
+        <span>-100</span>
+        <span>0</span>
+        <span>+100</span>
+      </div>
+    </div>
+
+    <!-- Info Message -->
+    <div class="info-message">
+      <mat-icon>info</mat-icon>
+      <span
+        >Adjustments are non-destructive and only affect the display. The
+        original image file remains unchanged.</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onResetToDefault()" class="reset-button" mat-button>
+    <mat-icon>refresh</mat-icon>
+    Reset to Default
+  </button>
+  <div class="spacer"></div>
+  <button (click)="onCancel()" mat-button>Cancel</button>
+  <button (click)="onApply()" color="primary" mat-raised-button>Apply</button>
+</mat-dialog-actions>

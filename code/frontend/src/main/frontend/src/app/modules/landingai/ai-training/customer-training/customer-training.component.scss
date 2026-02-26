@@ -1,0 +1,678 @@
+/**
+ * CustomerTrainingComponent Styles
+ *
+ * Main container component styles for the AI training configuration workflow.
+ * Uses Material Design styling with consistent spacing and colors.
+ *
+ * Requirements:
+ * - 27.1: Use Angular Material components for all UI elements
+ * - 27.2: Use mat-raised-button with primary color for primary actions
+ * - 27.3: Use mat-stroked-button for secondary actions
+ * - 27.4: Use mat-icon-button for icon-only buttons
+ * - 27.5: Display tooltips on hover for all configurable items
+ * - 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "sass:color";
+@use "app/styles/training-shared" as shared;
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.customer-training-container {
+  padding: shared.$spacing-lg;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  @include shared.respond-to("md") {
+    padding: shared.$spacing-md;
+  }
+
+  @include shared.respond-to("sm") {
+    padding: shared.$spacing-sm;
+  }
+}
+
+// Training Header
+.training-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: shared.$font-weight-medium;
+    color: shared.$text-primary;
+
+    @include shared.respond-to("sm") {
+      font-size: 24px;
+    }
+  }
+
+  .project-link {
+    margin-left: 3em; // approximately 6 spaces
+    color: shared.$text-secondary;
+    text-decoration: none;
+    font-size: shared.$font-size-base;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: shared.$primary-color;
+      text-decoration: underline;
+    }
+  }
+}
+
+// Header Row with Step Indicator
+.training-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: shared.$spacing-lg;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: shared.$spacing-md;
+
+  @include shared.respond-to("md") {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// Loading Overlay
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+
+  .loading-text {
+    margin-top: shared.$spacing-md;
+    color: shared.$text-secondary;
+    font-size: shared.$font-size-base;
+  }
+}
+
+// Error Banner
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-sm;
+  padding: shared.$spacing-sm shared.$spacing-md;
+  margin-bottom: shared.$spacing-md;
+  background: rgba(shared.$error-color, 0.1);
+  border: 1px solid shared.$error-color;
+  border-radius: shared.$border-radius-sm;
+  color: color.adjust(shared.$error-color, $lightness: -15%);
+
+  mat-icon {
+    color: shared.$error-color;
+    flex-shrink: 0;
+  }
+}
+
+// Step Indicator (Requirement 27.6: Consistent spacing and typography)
+.step-indicator {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: shared.$spacing-sm;
+  flex-shrink: 0;
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: shared.$spacing-sm;
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: shared.$border-radius-round;
+      background: shared.$border-color;
+      color: shared.$text-secondary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: shared.$font-weight-medium;
+      font-size: shared.$font-size-sm;
+      transition: all 0.3s ease;
+    }
+
+    .step-label {
+      font-size: shared.$font-size-sm;
+      color: shared.$text-secondary;
+      transition: color 0.3s ease;
+      white-space: nowrap;
+
+      @include shared.respond-to("sm") {
+        font-size: shared.$font-size-xs;
+      }
+    }
+
+    &.active {
+      .step-number {
+        background: shared.$primary-color;
+        color: white;
+        box-shadow: 0 2px 8px rgba(shared.$primary-color, 0.4);
+      }
+
+      .step-label {
+        color: shared.$primary-color;
+        font-weight: shared.$font-weight-medium;
+      }
+    }
+
+    &.completed {
+      .step-number {
+        background: shared.$success-color;
+        color: white;
+      }
+
+      .step-label {
+        color: shared.$success-color;
+      }
+    }
+  }
+
+  .step-connector {
+    width: 60px;
+    height: 2px;
+    background: shared.$border-color;
+    margin: 0 shared.$spacing-sm;
+    transition: background 0.3s ease;
+
+    &.completed {
+      background: shared.$success-color;
+    }
+
+    @include shared.respond-to("sm") {
+      width: 30px;
+      margin: 0 shared.$spacing-xs;
+    }
+  }
+}
+
+// Content Card
+.content-card {
+  flex: 1;
+  margin-bottom: shared.$spacing-lg;
+  overflow: auto;
+  min-height: 0;
+
+  .step-content {
+    padding: shared.$spacing-lg;
+    height: 100%;
+    box-sizing: border-box;
+
+    h2 {
+      margin: 0 0 shared.$spacing-sm;
+      font-size: shared.$font-size-xl;
+      font-weight: shared.$font-weight-medium;
+      color: shared.$text-primary;
+    }
+
+    .step-description {
+      margin: 0 0 shared.$spacing-lg;
+      color: shared.$text-secondary;
+      font-size: shared.$font-size-base;
+      line-height: 1.5;
+
+      .training-requirement-notice {
+        color: #ff6b9d; // 桃红色
+        font-size: shared.$font-size-md;
+        font-weight: shared.$font-weight-bold;
+        margin-left: shared.$spacing-sm;
+      }
+    }
+
+    @include shared.respond-to("sm") {
+      padding: shared.$spacing-md;
+    }
+  }
+}
+
+// Placeholder content (temporary)
+.placeholder-content {
+  background: shared.$background-light;
+  border-radius: shared.$border-radius-md;
+  padding: shared.$spacing-lg;
+
+  p {
+    margin: 0 0 shared.$spacing-md;
+    color: shared.$text-secondary;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: shared.$spacing-lg;
+
+    li {
+      margin-bottom: shared.$spacing-sm;
+      color: shared.$text-hint;
+    }
+  }
+}
+
+// Data Version Section
+.data-version-section {
+  margin-bottom: shared.$spacing-lg;
+
+  h3 {
+    margin: 0 0 shared.$spacing-sm;
+    font-size: shared.$font-size-md;
+    font-weight: shared.$font-weight-medium;
+    color: shared.$text-primary;
+  }
+
+  .snapshot-select {
+    width: 100%;
+    max-width: 400px;
+
+    // Hide the outline border
+    ::ng-deep {
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border: none !important;
+      }
+
+      .mat-mdc-form-field-flex {
+        background: #f5f5f5;
+        border-radius: 4px;
+      }
+
+      .mat-mdc-select-value,
+      .mat-mdc-floating-label {
+        padding-left: 24px;
+      }
+    }
+  }
+}
+
+// Navigation Buttons (Requirements 27.2, 27.3, 27.4)
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: shared.$spacing-md 0;
+  border-top: 1px solid shared.$border-color;
+  flex-wrap: wrap;
+  gap: shared.$spacing-sm;
+  flex-shrink: 0;
+
+  .nav-right {
+    display: flex;
+    gap: shared.$spacing-sm;
+    flex-wrap: wrap;
+  }
+
+  button {
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  // Requirement 27.3: mat-stroked-button for secondary actions (Back)
+  .back-button {
+    mat-icon {
+      margin-right: shared.$spacing-xs;
+    }
+  }
+
+  // Requirement 27.2: mat-raised-button with primary color for primary actions (Next, Start Training)
+  .next-button,
+  .start-training-button {
+    mat-icon {
+      margin-left: shared.$spacing-xs;
+    }
+  }
+
+  // Requirement 27.3: mat-stroked-button for secondary actions (Cancel)
+  .cancel-button {
+    color: shared.$text-secondary;
+  }
+
+  @include shared.respond-to("sm") {
+    flex-direction: column;
+    align-items: stretch;
+
+    .nav-right {
+      justify-content: flex-end;
+    }
+  }
+}
+
+// Config Split Section
+.config-split-section {
+  margin: shared.$spacing-lg 0;
+  padding: shared.$spacing-md;
+  background: rgba(shared.$primary-color, 0.04);
+  border-radius: shared.$border-radius-md;
+  border: 1px dashed rgba(shared.$primary-color, 0.3);
+
+  .config-split-description {
+    margin: 0 0 shared.$spacing-md;
+    color: shared.$text-secondary;
+    font-size: shared.$font-size-base;
+    line-height: 1.5;
+  }
+
+  .config-split-button {
+    mat-icon {
+      margin-right: shared.$spacing-sm;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+}
+
+// Validation Errors Section
+// Validates: Requirement 21.2 - Display error messages for invalid fields
+// Validates: Requirement 29.5 - Display inline error messages below invalid fields
+.validation-errors {
+  display: flex;
+  align-items: flex-start;
+  gap: shared.$spacing-sm;
+  padding: shared.$spacing-md;
+  margin-bottom: shared.$spacing-lg;
+  background: rgba(shared.$warning-color, 0.1);
+  border: 1px solid shared.$warning-color;
+  border-radius: shared.$border-radius-md;
+
+  .error-icon {
+    color: shared.$warning-color;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .error-list {
+    display: flex;
+    flex-direction: column;
+    gap: shared.$spacing-sm;
+
+    .error-item {
+      color: color.adjust(shared.$warning-color, $lightness: -20%);
+      font-size: shared.$font-size-base;
+      line-height: 1.4;
+
+      &::before {
+        content: "• ";
+        color: shared.$warning-color;
+      }
+    }
+  }
+}
+
+// Field-level error styling
+.field-error {
+  color: shared.$error-color;
+  font-size: shared.$font-size-sm;
+  margin-top: shared.$spacing-xs;
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-xs;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Invalid field highlighting
+.mat-form-field.invalid {
+  .mat-form-field-outline {
+    color: shared.$error-color !important;
+  }
+
+  .mat-form-field-label {
+    color: shared.$error-color !important;
+  }
+}
+
+// Error snackbar styling
+::ng-deep .error-snackbar {
+  background: shared.$error-color;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+// Warning snackbar styling
+::ng-deep .warning-snackbar {
+  background: shared.$warning-color;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+// Success snackbar styling
+::ng-deep .success-snackbar {
+  background: shared.$success-color;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: white;
+  }
+}
+
+// Section spacing for step content
+.split-distribution-section,
+.hyperparameters-section,
+.transforms-section,
+.augmentations-section {
+  margin-bottom: shared.$spacing-lg;
+}
+
+// Model Alias Section
+.model-alias-section {
+  flex: 1;
+
+  h3 {
+    margin: 0 0 shared.$spacing-sm;
+    font-size: shared.$font-size-md;
+    font-weight: shared.$font-weight-medium;
+    color: shared.$text-primary;
+  }
+
+  .model-alias-value {
+    display: flex;
+    align-items: center;
+    gap: shared.$spacing-sm;
+    padding: shared.$spacing-sm shared.$spacing-md;
+    background: white;
+    border-radius: shared.$border-radius-sm;
+    border: 1px solid shared.$border-color;
+
+    mat-icon {
+      color: shared.$primary-color;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    span {
+      font-family: monospace;
+      font-size: shared.$font-size-base;
+      color: shared.$text-primary;
+      word-break: break-all;
+    }
+  }
+}
+
+// Model Configuration Card - for multiple models
+.model-config-card {
+  margin-bottom: shared.$spacing-xl;
+  padding: shared.$spacing-lg;
+  background: shared.$background-light;
+  border-radius: shared.$border-radius-md;
+  border: 1px solid shared.$border-color;
+
+  &:last-of-type {
+    margin-bottom: shared.$spacing-lg;
+  }
+
+  .model-config-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: shared.$spacing-lg;
+    gap: shared.$spacing-md;
+
+    .model-alias-section {
+      display: flex;
+      align-items: center;
+      gap: shared.$spacing-sm;
+      margin-bottom: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+
+    .collapse-toggle-button {
+      flex-shrink: 0;
+    }
+
+    .remove-model-button {
+      flex-shrink: 0;
+      margin-top: shared.$spacing-xs;
+    }
+  }
+
+  &.collapsed {
+    .model-config-header {
+      margin-bottom: 0;
+    }
+  }
+
+  .hyperparameters-section,
+  .transforms-section,
+  .augmentations-section {
+    margin-bottom: shared.$spacing-lg;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Add Another Model Section
+.add-model-section {
+  display: flex;
+  justify-content: center;
+  padding: shared.$spacing-lg;
+  margin-top: shared.$spacing-md;
+  border-top: 1px solid shared.$border-color;
+
+  .add-model-button {
+    font-size: shared.$font-size-md;
+    font-weight: shared.$font-weight-medium;
+    padding: shared.$spacing-sm shared.$spacing-lg;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Split Preview Section Wrapper - 2/3 width, left aligned
+.split-preview-section-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: shared.$spacing-lg;
+}
+
+.split-preview-section {
+  width: 66.67%;
+  max-width: 66.67%;
+
+  @include shared.respond-to("md") {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+// No Split Configuration Message
+.no-split-config-message {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-md;
+  padding: shared.$spacing-lg;
+  background: shared.$background-light;
+  border-radius: shared.$border-radius-md;
+  border: 1px dashed shared.$border-color;
+
+  mat-icon {
+    color: shared.$info-color;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    color: shared.$text-secondary;
+    font-size: shared.$font-size-base;
+    line-height: 1.5;
+  }
+}
+
+// Labeled Images Warning
+.labeled-images-warning {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-sm;
+  padding: shared.$spacing-md;
+  margin: shared.$spacing-md 0;
+  background: rgba(shared.$warning-color, 0.1);
+  border: 1px solid shared.$warning-color;
+  border-radius: shared.$border-radius-md;
+
+  .warning-icon {
+    color: shared.$warning-color;
+    flex-shrink: 0;
+  }
+
+  span {
+    color: color.adjust(shared.$warning-color, $lightness: -20%);
+    font-size: shared.$font-size-base;
+    font-weight: shared.$font-weight-medium;
+    line-height: 1.4;
+  }
+}

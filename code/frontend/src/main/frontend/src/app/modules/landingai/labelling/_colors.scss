@@ -1,0 +1,113 @@
+// Image Annotation System Color Palette
+// Requirements: 29.4 - Consistent color scheme throughout application
+
+// Primary Colors
+$primary-color: #2196f3; // Blue - Main actions, selected states
+$primary-light: #e3f2fd; // Light blue - Hover states, backgrounds
+$primary-dark: #1976d2; // Dark blue - Active states, emphasis
+
+// Accent Colors
+$accent-color: #66bb6a; // Green - Success, confirmations
+$accent-light: #c8e6c9; // Light green - Success backgrounds
+$accent-dark: #4caf50; // Dark green - Success emphasis
+
+// Warning Colors
+$warn-color: #f44336; // Red - Errors, deletions
+$warn-light: #ffebee; // Light red - Error backgrounds
+$warn-dark: #d32f2f; // Dark red - Error emphasis
+
+// Neutral Colors
+$background-primary: #ffffff; // White - Main backgrounds
+$background-secondary: #fafafa; // Off-white - Secondary backgrounds
+$background-tertiary: #f5f5f5; // Light gray - Tertiary backgrounds
+$background-canvas: #e0e0e0; // Gray - Canvas background
+
+// Border Colors
+$border-light: #f0f0f0; // Very light gray - Subtle borders
+$border-medium: #e0e0e0; // Light gray - Standard borders
+$border-dark: #bdbdbd; // Medium gray - Emphasized borders
+
+// Text Colors
+$text-primary: #212121; // Almost black - Primary text
+$text-secondary: #616161; // Dark gray - Secondary text
+$text-tertiary: #757575; // Medium gray - Tertiary text
+$text-disabled: #9e9e9e; // Light gray - Disabled text
+$text-hint: rgba(0, 0, 0, 0.6); // Transparent black - Hints
+
+// Status Colors
+$status-train: #c8e6c9; // Light green - Train split
+$status-train-text: #2e7d32; // Dark green - Train split text
+$status-dev: #fff9c4; // Light yellow - Dev split
+$status-dev-text: #f57f17; // Dark yellow - Dev split text
+$status-test: #ffccbc; // Light orange - Test split
+$status-test-text: #d84315; // Dark orange - Test split text
+$status-unassigned: #e0e0e0; // Light gray - Unassigned split
+$status-unassigned-text: #616161; // Dark gray - Unassigned split text
+
+// Special States
+$selected-background: #e3f2fd; // Light blue - Selected items
+$selected-border: #2196f3; // Blue - Selected item borders
+$hover-background: #f5f5f5; // Light gray - Hover states
+$active-background: #e3f2fd; // Light blue - Active states
+$checked-background: #fff3e0; // Light orange - Checked items
+
+// Annotation Colors
+$annotation-prediction: #2196f3; // Blue - Pre-annotations
+$annotation-prediction-bg: #e3f2fd; // Light blue - Pre-annotation backgrounds
+$annotation-ground-truth: #4caf50; // Green - Manual annotations
+
+// Shadow Colors
+$shadow-light: rgba(0, 0, 0, 0.1); // Light shadow
+$shadow-medium: rgba(0, 0, 0, 0.15); // Medium shadow
+$shadow-dark: rgba(0, 0, 0, 0.2); // Dark shadow
+
+// Overlay Colors
+$overlay-light: rgba(255, 255, 255, 0.1); // Light overlay
+$overlay-medium: rgba(255, 255, 255, 0.2); // Medium overlay
+$overlay-dark: rgba(0, 0, 0, 0.5); // Dark overlay
+
+// Functional Colors
+$info-color: #2196f3; // Blue - Information
+$info-background: #e3f2fd; // Light blue - Information backgrounds
+$success-color: #4caf50; // Green - Success
+$success-background: #c8e6c9; // Light green - Success backgrounds
+$warning-color: #ff9800; // Orange - Warnings
+$warning-background: #fff3e0; // Light orange - Warning backgrounds
+$error-color: #f44336; // Red - Errors
+$error-background: #ffebee; // Light red - Error backgrounds
+
+// Z-index layers
+$z-index-base: 1;
+$z-index-toolbar: 2;
+$z-index-sidebar: 3;
+$z-index-dropdown: 10;
+$z-index-overlay: 50;
+$z-index-modal: 100;
+$z-index-tooltip: 200;
+
+// Transitions
+$transition-fast: 0.15s ease;
+$transition-normal: 0.2s ease;
+$transition-slow: 0.3s ease;
+
+// Border Radius
+$border-radius-small: 2px;
+$border-radius-medium: 4px;
+$border-radius-large: 8px;
+$border-radius-round: 50%;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Font Sizes
+$font-size-xs: 11px;
+$font-size-sm: 12px;
+$font-size-md: 13px;
+$font-size-base: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-xxl: 20px;

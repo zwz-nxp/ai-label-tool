@@ -1,0 +1,189 @@
+<div class="split-distribution-container">
+  <!-- Section Header -->
+  <div class="section-header">
+    <h3>Target Distribution</h3>
+    <p class="section-description">
+      Configure the target ratio for splitting your data into training,
+      development, and test sets.
+    </p>
+  </div>
+
+  <!-- Scope Selection -->
+  <!--
+    Validates: Requirement 3.1 - Dropdown with "All Classes" and "Per Class" options
+    Validates: Requirement 3.2 - Display class selector when "Per Class" is selected
+  -->
+  <div class="scope-selection">
+    <mat-form-field appearance="outline" class="scope-select">
+      <mat-label>Apply to</mat-label>
+      <mat-select
+        (selectionChange)="onScopeChange($event.value)"
+        [value]="scope"
+        data-testid="scope-select"
+        matTooltip="Choose whether to apply distribution to all classes or a specific class"
+      >
+        <mat-option value="all"> All Classes</mat-option>
+        <mat-option value="perClass"> Per Class</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Class Selector (shown when "Per Class" is selected) -->
+    <mat-form-field
+      *ngIf="scope === 'perClass'"
+      appearance="outline"
+      class="class-select"
+    >
+      <mat-label>Select Class</mat-label>
+      <mat-select
+        (selectionChange)="onClassSelect($event.value)"
+        [value]="selectedClassId"
+        data-testid="class-select"
+        matTooltip="Select a specific class to configure its distribution"
+      >
+        <mat-option *ngFor="let cls of classes" [value]="cls.id">
+          <span
+            [style.background-color]="cls.color"
+            class="class-color-indicator"
+          ></span>
+          {{ cls.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Distribution Sliders -->
+  <!--
+    Validates: Requirement 3.3 - Slider controls for Train/Dev/Test ratio allocation
+    Validates: Requirement 3.4 - Default ratio 70% Train / 15% Dev / 15% Test
+    Validates: Requirement 3.5 - Ensure total equals 100%
+  -->
+  <div class="distribution-sliders">
+    <!-- Train Slider -->
+    <div class="slider-row">
+      <div class="slider-label">
+        <span class="label-text">Train</span>
+        <span [class.highlight]="trainValue > 0" class="label-value"
+          >{{ trainValue }}%</span
+        >
+      </div>
+      <div class="slider-container">
+        <mat-slider
+          [discrete]="true"
+          [matTooltip]="trainTooltip"
+          [max]="sliderMax"
+          [min]="sliderMin"
+          [step]="sliderStep"
+          class="train-slider"
+          data-testid="train-slider"
+        >
+          <input
+            (valueChange)="onSliderChange('train', $event)"
+            [value]="trainValue"
+            matSliderThumb
+          />
+        </mat-slider>
+        <div [style.width.%]="trainValue" class="slider-bar train-bar"></div>
+      </div>
+    </div>
+
+    <!-- Dev Slider -->
+    <div class="slider-row">
+      <div class="slider-label">
+        <span class="label-text">Dev</span>
+        <span [class.highlight]="devValue > 0" class="label-value"
+          >{{ devValue }}%</span
+        >
+      </div>
+      <div class="slider-container">
+        <mat-slider
+          [discrete]="true"
+          [matTooltip]="devTooltip"
+          [max]="sliderMax"
+          [min]="sliderMin"
+          [step]="sliderStep"
+          class="dev-slider"
+          data-testid="dev-slider"
+        >
+          <input
+            (valueChange)="onSliderChange('dev', $event)"
+            [value]="devValue"
+            matSliderThumb
+          />
+        </mat-slider>
+        <div [style.width.%]="devValue" class="slider-bar dev-bar"></div>
+      </div>
+    </div>
+
+    <!-- Test Slider -->
+    <div class="slider-row">
+      <div class="slider-label">
+        <span class="label-text">Test</span>
+        <span [class.highlight]="testValue > 0" class="label-value"
+          >{{ testValue }}%</span
+        >
+      </div>
+      <div class="slider-container">
+        <mat-slider
+          [discrete]="true"
+          [matTooltip]="testTooltip"
+          [max]="sliderMax"
+          [min]="sliderMin"
+          [step]="sliderStep"
+          class="test-slider"
+          data-testid="test-slider"
+        >
+          <input
+            (valueChange)="onSliderChange('test', $event)"
+            [value]="testValue"
+            matSliderThumb
+          />
+        </mat-slider>
+        <div [style.width.%]="testValue" class="slider-bar test-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distribution Summary -->
+  <div class="distribution-summary">
+    <div class="summary-bar">
+      <div [style.width.%]="trainValue" class="segment train-segment">
+        <span *ngIf="trainValue >= 10">{{ trainValue }}%</span>
+      </div>
+      <div [style.width.%]="devValue" class="segment dev-segment">
+        <span *ngIf="devValue >= 10">{{ devValue }}%</span>
+      </div>
+      <div [style.width.%]="testValue" class="segment test-segment">
+        <span *ngIf="testValue >= 10">{{ testValue }}%</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-color train-color"></span>
+        <span class="legend-label">Train ({{ trainValue }}%)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color dev-color"></span>
+        <span class="legend-label">Dev ({{ devValue }}%)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color test-color"></span>
+        <span class="legend-label">Test ({{ testValue }}%)</span>
+      </div>
+    </div>
+
+    <!-- Validation Status -->
+    <div
+      [class.invalid]="!isValid"
+      [class.valid]="isValid"
+      class="validation-status"
+    >
+      <mat-icon>{{ isValid ? "check_circle" : "error" }}</mat-icon>
+      <span *ngIf="isValid">Total: 100%</span>
+      <span *ngIf="!isValid"
+        >Total: {{ totalPercentage }}% (must equal 100%)</span
+      >
+    </div>
+  </div>
+</div>

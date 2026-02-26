@@ -1,0 +1,150 @@
+@use "app/styles/training-shared" as shared;
+
+.model-parameter-container {
+  @include shared.section-container;
+  position: relative;
+}
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 0;
+}
+
+.section-title {
+  font-size: shared.$font-size-lg;
+  font-weight: shared.$font-weight-medium;
+  color: shared.$text-primary;
+  margin-bottom: shared.$spacing-md;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.editor-preview-row {
+  display: flex;
+  gap: shared.$spacing-md;
+  align-items: stretch;
+}
+
+.editor-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-toolbar {
+  display: flex;
+  align-items: center;
+  padding: shared.$spacing-sm shared.$spacing-sm 0;
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+.tree-card {
+  @include shared.card-item;
+  flex: 1;
+  min-height: 400px;
+
+  mat-tree {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  mat-tree-node {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 48px;
+  }
+
+  .node-key-field,
+  .node-value-field {
+    width: 140px;
+    font-size: 13px;
+  }
+
+  .node-input {
+    width: 140px;
+    padding: shared.$spacing-sm;
+    border: 1px solid shared.$border-color;
+    border-radius: shared.$border-radius-sm;
+    font-size: shared.$font-size-base;
+    color: shared.$text-primary;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: shared.$primary-color;
+    }
+
+    &:focus-visible {
+      outline: 2px solid shared.$primary-color;
+      outline-offset: 2px;
+    }
+  }
+
+  .node-separator {
+    margin: 0 4px;
+    color: shared.$text-secondary;
+  }
+
+  .original-key-label {
+    font-weight: shared.$font-weight-bold;
+    font-size: shared.$font-size-base;
+    color: shared.$text-primary;
+    min-width: 80px;
+    padding: shared.$spacing-sm shared.$spacing-md;
+    line-height: 1.5;
+    background-color: #e0e0e0;
+    border-radius: shared.$border-radius-md;
+  }
+
+  .node-type-badge {
+    font-size: shared.$font-size-xs;
+    padding: 2px 6px;
+    border-radius: shared.$border-radius-sm;
+    background: #e0e0e0;
+    color: shared.$text-secondary;
+    margin: 0 4px;
+
+    &.expandable {
+      background: shared.$primary-light;
+      color: shared.$primary-color;
+    }
+  }
+}
+
+.add-root-child {
+  padding: shared.$spacing-sm shared.$spacing-md;
+}
+
+.preview-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  .preview-card {
+    @include shared.card-item;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .json-preview {
+      font-family: monospace;
+      font-size: 13px;
+      background: shared.$background-light;
+      padding: shared.$spacing-md;
+      border-radius: shared.$border-radius-sm;
+      overflow-x: auto;
+      overflow-y: auto;
+      margin: 0;
+      flex: 1;
+    }
+  }
+}

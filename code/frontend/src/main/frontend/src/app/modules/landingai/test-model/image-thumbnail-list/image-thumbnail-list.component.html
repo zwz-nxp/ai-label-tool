@@ -1,0 +1,35 @@
+<div class="thumbnail-list">
+  <!-- Upload Button -->
+  <div class="upload-button-container">
+    <button
+      mat-icon-button
+      class="upload-button"
+      (click)="triggerContinueUpload()"
+      matTooltip="Upload more images"
+    >
+      <mat-icon>folder_open</mat-icon>
+    </button>
+  </div>
+
+  <!-- Thumbnail Grid -->
+  <div class="thumbnail-grid">
+    <div
+      *ngFor="let image of images; let i = index"
+      class="thumbnail-item"
+      [class.selected]="isSelected(i)"
+      (click)="selectImage(i)"
+    >
+      <img [src]="image.thumbnailUrl" [alt]="'Image ' + (i + 1)" />
+    </div>
+  </div>
+
+  <!-- Hidden file input -->
+  <input
+    type="file"
+    id="continue-upload-input"
+    multiple
+    [accept]="acceptedFormats"
+    (change)="onContinueUploadChange($event)"
+    style="display: none"
+  />
+</div>

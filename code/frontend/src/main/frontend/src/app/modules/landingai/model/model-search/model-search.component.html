@@ -1,0 +1,47 @@
+<!-- Models Search Component -->
+<!-- Implementation requirements 2.1, 2.2, 2.5: Search input and debouncing functionality -->
+<div
+  class="models-search-container"
+  role="search"
+  aria-label="Search and filter models"
+>
+  <!-- Search Input - Requirements 2.1, 2.5, 8.1, 8.2, 8.3, 8.4: Real-time search with placeholder text, magnifying glass icon on left -->
+  <div class="search-container">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-icon matPrefix aria-hidden="true">search</mat-icon>
+      <input
+        matInput
+        [value]="searchTerm"
+        (input)="onSearchInputChange($event)"
+        placeholder="Search by model name, creator"
+        aria-label="Search models by name or creator"
+        aria-describedby="search-help"
+        autocomplete="off"
+        spellcheck="false"
+      />
+    </mat-form-field>
+    <!-- Hidden help text for screen readers -->
+    <div id="search-help" class="sr-only">
+      Search will filter models by name or creator as you type. Results update
+      automatically with a short delay.
+    </div>
+  </div>
+
+  <!-- Favorites Filter Checkbox - Requirement 2.3: "Only show favorite models" checkbox -->
+  <div class="filter-container">
+    <mat-checkbox
+      [checked]="showFavoritesOnly"
+      (change)="onFavoritesCheckboxChange($event.checked)"
+      class="favorites-filter"
+      aria-label="Only show favorite models"
+      aria-describedby="favorites-help"
+    >
+      Only show favorite models
+    </mat-checkbox>
+    <!-- Hidden help text for screen readers -->
+    <div id="favorites-help" class="sr-only">
+      When checked, only models marked as favorites will be displayed in the
+      table.
+    </div>
+  </div>
+</div>

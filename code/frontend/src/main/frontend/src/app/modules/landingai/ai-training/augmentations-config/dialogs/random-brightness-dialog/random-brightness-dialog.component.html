@@ -1,0 +1,81 @@
+<h2 mat-dialog-title>
+  <mat-icon class="dialog-icon">brightness_6</mat-icon>
+  Random Brightness
+</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    Configure the brightness adjustment limit. The brightness will be randomly
+    adjusted within the range [-limit, +limit].
+  </p>
+
+  <div class="form-container">
+    <!-- Limit Slider -->
+    <!-- Requirement 12.1: Display Limit slider with range -1 to 1 -->
+    <div class="slider-field">
+      <label class="field-label">Limit</label>
+      <div class="slider-row">
+        <mat-slider
+          [displayWith]="formatLimit"
+          class="limit-slider"
+          data-testid="random-brightness-limit-slider"
+          discrete
+          max="1"
+          min="-1"
+          step="0.01"
+        >
+          <input
+            (valueChange)="onSliderChange($event)"
+            [(ngModel)]="limit"
+            matSliderThumb
+          />
+        </mat-slider>
+        <mat-form-field appearance="outline" class="value-field">
+          <input
+            (change)="onInputChange($event)"
+            [value]="limit"
+            data-testid="random-brightness-limit-input"
+            matInput
+            max="1"
+            min="-1"
+            step="0.01"
+            type="number"
+          />
+        </mat-form-field>
+      </div>
+      <div class="slider-labels">
+        <span>-1 (Darker)</span>
+        <span>0</span>
+        <span>+1 (Brighter)</span>
+      </div>
+    </div>
+
+    <div class="preview-info">
+      <mat-icon>info</mat-icon>
+      <span
+        >Brightness will be adjusted by ±{{
+          (Math.abs(limit) * 100).toFixed(0)
+        }}%</span
+      >
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    data-testid="random-brightness-cancel-button"
+    mat-stroked-button
+  >
+    Cancel
+  </button>
+  <button
+    (click)="onSave()"
+    [disabled]="!isValid()"
+    color="primary"
+    data-testid="random-brightness-save-button"
+    mat-raised-button
+  >
+    Save
+  </button>
+</mat-dialog-actions>
