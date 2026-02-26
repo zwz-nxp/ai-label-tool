@@ -1,0 +1,104 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Header -->
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2 class="text-lg">{{ crudActionToText() }} Location</h2>
+
+    <button (click)="closeDialog()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <form #crudForm [formGroup]="inputForm" class="grid grid-cols-3 gap-4">
+      <mat-form-field>
+        <mat-label>Site</mat-label>
+        <input formControlName="acronym" matInput required />
+        <mat-error *ngIf="inputForm.get('acronym')?.hasError('required')">
+          This field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>TMDB Code</mat-label>
+        <input formControlName="tmdbCode" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>City</mat-label>
+        <input formControlName="city" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Country</mat-label>
+        <input formControlName="country" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Plant Code</mat-label>
+        <mat-select formControlName="sapCode">
+          <mat-option *ngFor="let sapcode of sapPlantCodes" [value]="sapcode">
+            {{ sapcode }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Planning Engine</mat-label>
+        <mat-select formControlName="planningEngine">
+          <mat-option value="I2">JDA</mat-option>
+          <mat-option value="TMDB">TMDB</mat-option>
+          <mat-option>NONE</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Extended Suffix</mat-label>
+        <input formControlName="extendedSuffix" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Menu Grouping</mat-label>
+        <input formControlName="menuGrouping" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Subcon</mat-label>
+        <mat-select
+          (selectionChange)="handleSubConSelectionChange($event)"
+          formControlName="isSubContractor"
+          required
+        >
+          <mat-option [value]="true">Yes</mat-option>
+          <mat-option [value]="false">No</mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="inputForm.get('isSubContractor')?.hasError('required')"
+        >
+          This field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Vendor Code</mat-label>
+        <input formControlName="vendorCode" matInput />
+        <mat-error *ngIf="isConditionalRequiredForVendorCode()">
+          This field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button
+      (click)="submit()"
+      [disabled]="inputForm.invalid || isLoading"
+      class="mr-2"
+      color="accent"
+      mat-flat-button
+      type="submit"
+    >
+      {{ getSubmitLabel() }}
+    </button>
+    <button (click)="closeDialog()" mat-stroked-button>Close</button>
+  </mat-dialog-actions>
+</div>

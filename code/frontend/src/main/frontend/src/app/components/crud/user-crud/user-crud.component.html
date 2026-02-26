@@ -1,0 +1,252 @@
+<div
+  cdkDrag
+  cdkDragRootElement=".cdk-overlay-pane"
+  class="flex max-h-screen flex-col"
+>
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2 class="text-lg">{{ crudActionToText() }} user for IE-MDM</h2>
+
+    <button (click)="closeDialog()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content class="!max-h-[unset] !p-2">
+    <form [formGroup]="inputForm">
+      <ng-container *ngIf="isUserSelected">
+        <!-- Show the details of the user that is about to be added or edited -->
+        <div>
+          <h3 class="font-medium">Selected User</h3>
+          <div class="flex items-center gap-4">
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>WBI</mat-label>
+              <input
+                [(ngModel)]="selectedUser.wbi"
+                [ngModelOptions]="{ standalone: true }"
+                disabled="true"
+                matInput
+                name="WBI"
+              />
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>Name</mat-label>
+              <input
+                [(ngModel)]="selectedUser.name"
+                [ngModelOptions]="{ standalone: true }"
+                disabled="true"
+                matInput
+                name="Name"
+              />
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>E-mail</mat-label>
+              <input
+                [(ngModel)]="selectedUser.email"
+                [ngModelOptions]="{ standalone: true }"
+                disabled="true"
+                matInput
+                name="E-mail"
+              />
+            </mat-form-field>
+
+            <app-searchable-select
+              (itemSelected)="locationSelected($event)"
+              [compareFn]="compareLocationOption"
+              [defaultValue]="selectedUser.primaryLocation"
+              [displayFn]="displayLocationOption"
+              [inputList]="allLocations"
+              label="Primary Location"
+              required
+              subscriptSizing="dynamic"
+            ></app-searchable-select>
+          </div>
+        </div>
+
+        <!-- Row to add a role to the user -->
+        <div class="my-3">
+          <h3 class="font-medium">Add User Role</h3>
+
+          <div class="flex items-center gap-4">
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>Location</mat-label>
+              <mat-select formControlName="selectedLocation">
+                <mat-option *ngFor="let loc of allLocations" [value]="loc">
+                  {{ loc.acronym }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>Role</mat-label>
+              <mat-select formControlName="selectedRole">
+                <mat-option
+                  *ngFor="let role of allAvailableRoles"
+                  [value]="role"
+                >
+                  {{ role.roleName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button
+              (click)="submitNewRoleForUser()"
+              [disabled]="isAddRoleDisabled"
+              mat-raised-button
+            >
+              Add Role
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ADD - Field to enter a WBI to find user(s) so they can be added to IE-MDM -->
+      <div *ngIf="showSearch">
+        <mat-form-field>
+          <mat-label>WBI</mat-label>
+          <input formControlName="wbiSearch" matInput />
+          <mat-error *ngIf="inputForm.get('wbiSearch')?.hasError('required')">
+            This field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+
+        <button
+          (click)="searchUsers()"
+          class="mx-3"
+          color="accent"
+          mat-mini-fab
+          matTooltip="Search"
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+
+      <div class="max-h-64 overflow-auto">
+        <table
+          *ngIf="!isUserSelected && foundUsers?.length"
+          [dataSource]="foundUsersDataSource"
+          mat-table
+          matSort
+        >
+          <ng-container matColumnDef="wbi">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>WBI</th>
+            <td *matCellDef="let user" mat-cell>{{ user.wbi }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Name</th>
+            <td *matCellDef="let user" mat-cell>{{ user.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="e-mail">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>E-mail</th>
+            <td *matCellDef="let user" mat-cell>{{ user.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header></th>
+            <td *matCellDef="let user" mat-cell>
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="selectForAddition(user)"
+                  matIcon="person_add"
+                  table-icon-button
+                ></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="displayedColumnsUsers; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr *matRowDef="let row; columns: displayedColumnsUsers" mat-row></tr>
+        </table>
+
+        <!-- Display the current roles of the user to be added/edited -->
+        <table
+          *ngIf="hasUserRoles"
+          [dataSource]="userRolesDataSource"
+          mat-table
+          matSort
+        >
+          <ng-container matColumnDef="wbi">
+            <th *matHeaderCellDef mat-header-cell>WBI</th>
+            <td *matCellDef="let userRole" mat-cell>{{ userRole.user.wbi }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th *matHeaderCellDef mat-header-cell>Name</th>
+            <td *matCellDef="let userRole" mat-cell>
+              {{ userRole.user.name }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="site">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Site</th>
+            <td *matCellDef="let userRole" mat-cell>
+              {{ userRole.location.acronym }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th *matHeaderCellDef mat-header-cell mat-sort-header>Role</th>
+            <td *matCellDef="let userRole" mat-cell>
+              {{ userRole.role.roleName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th *matHeaderCellDef mat-header-cell>Actions</th>
+            <td *matCellDef="let userRole" mat-cell>
+              <div class="flex items-center gap-1">
+                <button
+                  (click)="removeUserRole(userRole)"
+                  *ngIf="userRole.role"
+                  matIcon="delete"
+                  matTooltip="Delete this role"
+                  table-icon-button
+                ></button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="displayedColumnsRoles; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: displayedColumnsRoles"
+            class="hover:!bg-table-row-hover"
+            mat-row
+          ></tr>
+        </table>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button
+      (click)="submit()"
+      [disabled]="!isSaveEnabled"
+      class="mr-2"
+      color="accent"
+      mat-flat-button
+      type="submit"
+    >
+      {{ "Save" }}
+    </button>
+    <button
+      (click)="clearSelectedUser()"
+      *ngIf="showClearUser"
+      class="mr-2"
+      color="warn"
+      mat-flat-button
+      type="reset"
+    >
+      Clear user
+    </button>
+    <button (click)="closeDialog()" mat-stroked-button>Close</button>
+  </mat-dialog-actions>
+</div>

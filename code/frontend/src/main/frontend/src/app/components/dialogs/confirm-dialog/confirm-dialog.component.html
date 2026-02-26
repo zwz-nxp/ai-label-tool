@@ -1,0 +1,32 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="warn">
+    <h2 class="text-lg">{{ title }}</h2>
+
+    <button (click)="dismiss()" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content [innerHTML]="message"></mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button
+      (click)="accept()"
+      *ngIf="btnOkText"
+      color="accent"
+      mat-flat-button
+      type="button"
+    >
+      {{ btnOkText }}
+    </button>
+    <button
+      (click)="decline()"
+      *ngIf="btnCancelText"
+      class="mr-2"
+      mat-stroked-button
+      type="button"
+    >
+      {{ btnCancelText }}
+    </button>
+  </mat-dialog-actions>
+</div>

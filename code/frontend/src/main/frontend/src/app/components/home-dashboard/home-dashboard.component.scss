@@ -1,0 +1,14 @@
+:host ::ng-deep {
+  ol,
+  ul {
+    padding-left: 2rem;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+}

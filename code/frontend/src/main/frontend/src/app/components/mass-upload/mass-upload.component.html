@@ -1,0 +1,209 @@
+<div class="flex h-full gap-4 p-4">
+  <mat-card class="w-2/5">
+    <mat-card-header class="mb-4">
+      <mat-card-title>Mass Upload</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="!flex flex-col gap-4 overflow-auto">
+      <mat-form-field
+        *ngIf="massUploadsByCategory"
+        class="w-full"
+        subscriptSizing="dynamic"
+      >
+        <mat-label>Select Mass Upload Type</mat-label>
+        <mat-select
+          (selectionChange)="resetFields()"
+          [(ngModel)]="selectedMassUpload"
+        >
+          <mat-optgroup
+            *ngFor="let group of massUploadsByCategory"
+            [label]="group[0].category"
+          >
+            <mat-option *ngFor="let massUpload of group" [value]="massUpload">
+              {{ massUpload.massUploadName }}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="flex items-center gap-2">
+        <a
+          [disabled]="selectedMassUpload?.massUploadName === undefined"
+          [href]="downloadTemplateUrl"
+          color="accent"
+          download
+          mat-mini-fab
+          matTooltip="Download template '{{
+            selectedMassUpload?.massUploadName
+          }}'"
+        >
+          <mat-icon>download</mat-icon>
+        </a>
+
+        <h2 class="font-medium">Download template</h2>
+        <p *ngIf="selectedMassUpload?.massUploadName">
+          Version {{ selectedMassUpload?.version | number: "1.2" }}
+        </p>
+      </div>
+
+      <div class="flex flex-col items-start gap-4">
+        <div #fileUpload>
+          <button
+            (click)="uploadField.click()"
+            [disabled]="isChooseFileDisabled"
+            color="primary"
+            mat-raised-button
+          >
+            Choose file
+          </button>
+        </div>
+
+        <input
+          #uploadField
+          (change)="setFile($event)"
+          (click)="elementRef.nativeElement.value = null"
+          [disabled]="isChooseFileDisabled"
+          accept=".xlsx,.xlsm"
+          class="file:"
+          hidden
+          name="file-field"
+          type="file"
+        />
+
+        <div *ngIf="verifyError" class="text-red-500">{{ verifyError }}</div>
+      </div>
+
+      <div>
+        <h2 class="mb-2 text-2xl">Meta data</h2>
+
+        <div class="grid grid-cols-[auto_1fr] gap-x-3">
+          <div>File name</div>
+          <div>{{ fileName }}</div>
+          <div>Size</div>
+          <div>{{ fileSize }}</div>
+          <div>Date modified</div>
+          <div>{{ fileDateModified }}</div>
+          <div>Records</div>
+          <div>{{ recordsMetaData }}</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <mat-checkbox [(ngModel)]="sendEmail" class="-ml-3">
+          Send mass upload results by email
+        </mat-checkbox>
+
+        <button
+          (click)="upload()"
+          [disabled]="isUploadDisabled"
+          color="primary"
+          mat-mini-fab
+          matTooltip="Upload file"
+        >
+          <mat-icon>upload</mat-icon>
+        </button>
+      </div>
+
+      <div *ngIf="uploadError" class="text-red-500">{{ uploadError }}</div>
+
+      <div *ngIf="isUploading">
+        <p class="font-medium">Processing Mass Upload</p>
+        <mat-progress-bar
+          [value]="progressBarValue"
+          class="mt-4"
+          mode="determinate"
+        ></mat-progress-bar>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card *ngIf="completeMassUploadResponse" class="w-3/5">
+    <mat-card-header class="mb-4 flex justify-between">
+      <mat-card-title>Result</mat-card-title>
+
+      <button
+        (click)="downloadMassUploadResults()"
+        color="accent"
+        mat-mini-fab
+        matTooltip="Download mass upload results"
+      >
+        <mat-icon>download</mat-icon>
+      </button>
+    </mat-card-header>
+
+    <mat-card-content class="!flex flex-col overflow-auto">
+      <div class="mb-4 flex gap-4">
+        <span class="font-medium"
+          >Total records processed: {{ totalRecords }}</span
+        >
+        <span class="text-prod-accent">Successful: {{ successCount }}</span>
+        <span class="text-red-500">Errors: {{ errorCount }}</span>
+        <span class="text-orange-400">Ignored: {{ ignoreCount }}</span>
+      </div>
+
+      <div class="overflow-auto">
+        <div *ngFor="let error of errors">
+          <div
+            *ngIf="
+              error.excelRowNumber !== -1;
+              then withExcelRowNumberBlock;
+              else noExcelRowNumberBlock
+            "
+          ></div>
+          <ng-template #withExcelRowNumberBlock>
+            <div class="flex">
+              <div class="min-w-28 font-medium">
+                {{ error.excelRowNumber }}
+              </div>
+              <div class="font-medium">
+                {{ error.message }}
+              </div>
+            </div>
+          </ng-template>
+
+          <ng-template #noExcelRowNumberBlock>
+            <div class="font-medium">
+              {{ error.message }}
+            </div>
+          </ng-template>
+        </div>
+
+        <div *ngIf="unuploadedObjects && unuploadedObjects.length">
+          <p>
+            Were not uploaded:
+            <b>{{ unuploadedObjects.length }}</b>
+          </p>
+
+          <div *ngFor="let excludedRow of unuploadedObjects">
+            <div
+              *ngIf="
+                excludedRow.excelRowNumber !== -1;
+                then withExcelRowNumberNotUploadedBlock;
+                else noExcelRowNumberNotUploadedBlock
+              "
+            ></div>
+
+            <ng-template #withExcelRowNumberNotUploadedBlock>
+              <div class="flex">
+                <div class="min-w-28 font-medium">
+                  {{ excludedRow.excelRowNumber }}
+                </div>
+                <div class="font-medium">
+                  {{ excludedRow.message }}
+                </div>
+              </div>
+            </ng-template>
+
+            <ng-template #noExcelRowNumberNotUploadedBlock>
+              <div class="font-medium">
+                {{ excludedRow.message }}
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <app-spinner *ngIf="isLoadingResults"></app-spinner>
+</div>

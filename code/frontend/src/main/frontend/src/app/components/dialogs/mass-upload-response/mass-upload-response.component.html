@@ -1,0 +1,223 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2>Mass Upload</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <h2 class="text-lg font-medium">
+      {{ title }}
+    </h2>
+
+    <div>
+      <div class="flex items-center gap-2">
+        <p>
+          Successfully processed:
+          <strong>{{ response.successCount }}</strong> record(s).
+        </p>
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of Excel rows processed"
+          >info
+        </mat-icon>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p>
+          Inserted: <strong>{{ response.insertCount }}</strong> record(s).<br />
+        </p>
+
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of objects inserted into the database. Keep in mind that it may take several Excel rows to build one object"
+        >
+          info
+        </mat-icon>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p>
+          Updated: <strong>{{ response.updateCount }}</strong> record(s).<br />
+        </p>
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of previously existing objects that were updated"
+        >
+          info
+        </mat-icon>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p>
+          Duplicates:
+          <strong>{{ response.duplicateCount }}</strong> record(s).<br />
+        </p>
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of objects that were already present in the database in the same state before the mass upload. These objects were not modified"
+        >
+          info
+        </mat-icon>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p>
+          Ignored: <strong>{{ response.ignoreCount }}</strong> record(s).<br />
+        </p>
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of objects that have Upload Flag of one of their rows set to 'N'"
+        >
+          info
+        </mat-icon>
+      </div>
+
+      <div *ngIf="response.deleteCount > 0" class="flex items-center gap-2">
+        <p>
+          Deleted: <strong>{{ response.deleteCount }}</strong> record(s).<br />
+        </p>
+        <mat-icon
+          *ngIf="isPlanningFlowOrActivationPlanningFlow()"
+          matTooltip="Number of objects deleted from the database"
+        >
+          info
+        </mat-icon>
+      </div>
+    </div>
+
+    <div
+      *ngIf="
+        errorsDataSource &&
+        errorsDataSource.data &&
+        errorsDataSource.data.length
+      "
+    >
+      <button (click)="downloadUserFeedback()">
+        Download Mass Upload feedback
+      </button>
+
+      <div class="overflow-auto">
+        <table
+          *ngIf="
+            hasDelimiter(errorsDataSource.data[0].message);
+            else noExcelRowNumberBlock
+          "
+          [dataSource]="errorsDataSource"
+          mat-table
+        >
+          <ng-container matColumnDef="rowNumber">
+            <th *matHeaderCellDef mat-header-cell>Excel row number</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.excelRowNumber }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="errorMsg">
+            <th *matHeaderCellDef mat-header-cell>Error message</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.message }}
+            </td>
+          </ng-container>
+          <tr
+            *matHeaderRowDef="displayColumnsErrors; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr *matRowDef="let row; columns: displayColumnsErrors" mat-row></tr>
+        </table>
+
+        <ng-template #noExcelRowNumberBlock>
+          <table [dataSource]="errorsDataSource" mat-table>
+            <ng-container matColumnDef="errorMsg">
+              <th *matHeaderCellDef mat-header-cell>Error message</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ element.message }}
+              </td>
+            </ng-container>
+
+            <tr
+              *matHeaderRowDef="displayColumnsErrorsBasic; sticky: true"
+              mat-header-row
+            ></tr>
+            <tr
+              *matRowDef="let row; columns: displayColumnsErrorsBasic"
+              mat-row
+            ></tr>
+          </table>
+        </ng-template>
+      </div>
+    </div>
+
+    <div *ngIf="response.excludedFromUploadList.length > 0">
+      <p>
+        Were not uploaded:
+        <strong>{{ response.excludedFromUploadList.length }}</strong>
+      </p>
+
+      <div class="overflow-auto">
+        <table
+          *ngIf="
+            hasDelimiter(response.excludedFromUploadList[0]);
+            else noExcelRowNumberNotUploadedBlock
+          "
+          [dataSource]="listOfUnuploadedObjects"
+          mat-table
+        >
+          <ng-container matColumnDef="rowNumber">
+            <th *matHeaderCellDef mat-header-cell>Starting Excel row number</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.excelRowNumber }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="object">
+            <th *matHeaderCellDef mat-header-cell>Object</th>
+            <td *matCellDef="let element" mat-cell>
+              {{ element.message }}
+            </td>
+          </ng-container>
+
+          <tr
+            *matHeaderRowDef="displayColumnsUnuploadedObjects; sticky: true"
+            mat-header-row
+          ></tr>
+          <tr
+            *matRowDef="let row; columns: displayColumnsUnuploadedObjects"
+            mat-row
+          ></tr>
+        </table>
+
+        <ng-template #noExcelRowNumberNotUploadedBlock>
+          <table [dataSource]="listOfUnuploadedObjects" mat-table>
+            <ng-container matColumnDef="object">
+              <th *matHeaderCellDef mat-header-cell>Object</th>
+              <td *matCellDef="let element" mat-cell>
+                {{ element.message }}
+              </td>
+            </ng-container>
+
+            <tr
+              *matHeaderRowDef="
+                displayColumnsUnuploadedObjectsBasic;
+                sticky: true
+              "
+              mat-header-row
+            ></tr>
+            <tr
+              *matRowDef="
+                let row;
+                columns: displayColumnsUnuploadedObjectsBasic
+              "
+              mat-row
+            ></tr>
+          </table>
+        </ng-template>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button (click)="close()" type="button">Close</button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,86 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Header -->
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2>About</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="w-[600px]">
+    <mat-tab-group [(selectedIndex)]="tabIndex">
+      <mat-tab label="Version">
+        <div class="px-5 pb-6 pt-5">
+          <img
+            class="mx-auto mb-2 size-44"
+            height="512"
+            ngSrc="assets/ApplicationLogoMonocolor.png"
+            width="512"
+          />
+
+          <div class="text-center">
+            <p>
+              <b>Industrial Engineering Master Data Management</b>
+            </p>
+            <p>
+              Version: {{ mostRecentApplicationVersion }} &copy; 2018 -
+              {{ currentDate.getFullYear() }} NXP
+            </p>
+            <p>Database: {{ databaseName }}</p>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Details">
+        <app-spinner *ngIf="loading; else content"></app-spinner>
+
+        <ng-template #content>
+          <div class="grid grid-cols-2 gap-2 p-4">
+            <table *ngFor="let info of versionInfo; let index = index">
+              <thead>
+                <th colspan="100%">
+                  <b>{{ tableTitles[index] }}</b>
+                </th>
+              </thead>
+              <tr>
+                <td class="w-px whitespace-nowrap pr-2">Version Name:</td>
+                <td>{{ info.name }}</td>
+              </tr>
+              <tr>
+                <td class="w-px whitespace-nowrap pr-2">Version Number:</td>
+                <td>{{ info.commitHashShort }}</td>
+              </tr>
+              <tr>
+                <td class="w-px whitespace-nowrap pr-2">Build Date:</td>
+                <td>
+                  {{ info.buildDate | slice: 0 : 10 }}
+                </td>
+              </tr>
+              <tr>
+                <td class="w-px whitespace-nowrap pr-2">Node:</td>
+                <td>{{ info.node }}</td>
+              </tr>
+            </table>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <mat-dialog-actions align="end">
+    <ng-container *ngIf="tabIndex > 0">
+      <button
+        (click)="copyMessage()"
+        mat-stroked-button
+        matTooltip="Copy the system information to your clipboard."
+      >
+        Copy Details
+      </button>
+      <button (click)="switchToFirstTab()" mat-stroked-button>Back</button>
+    </ng-container>
+    <ng-container *ngIf="tabIndex < 1">
+      <button (click)="close()" mat-stroked-button>Close</button>
+    </ng-container>
+  </mat-dialog-actions>
+</div>

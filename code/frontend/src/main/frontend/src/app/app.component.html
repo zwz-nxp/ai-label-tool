@@ -1,0 +1,226 @@
+<div *ngIf="!initialized; else pageContent">
+  <app-spinner></app-spinner>
+</div>
+
+<ng-template #pageContent>
+  <div
+    *ngIf="isSupportedBrowser; else unsupportedBrowser"
+    class="flex h-screen w-screen flex-col overflow-hidden"
+  >
+    <!-- Navbar -->
+    <mat-toolbar class="green-header gap-1" color="primary">
+      <div class="flex flex-1 items-center justify-start gap-1">
+        <!-- NXP Logo -->
+        <a href="/">
+          <img
+            alt="White NXP logo"
+            class="mr-2 h-[50px] w-[70px]"
+            src="assets/nxp-logo-white.png"
+          />
+        </a>
+
+        <button
+          [matMenuTriggerFor]="owlVisionMenu"
+          class="landingai-nav-button adc-button"
+          mat-button
+        >
+          Owl Vision ADC
+          <mat-icon class="ml-1">arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #owlVisionMenu="matMenu">
+          <button [routerLink]="['/landingai/projects']" mat-menu-item>
+            Project List
+          </button>
+          <button [routerLink]="['/landingai/model-params']" mat-menu-item>
+            Model Param Config
+          </button>
+        </mat-menu>
+      </div>
+
+      <!-- Central Logo -->
+      <div class="mx-2 flex items-center gap-2">
+        <h1 *ngIf="isProd; else notProduction" class="title-badge">
+          {{ topTitle }}
+        </h1>
+        <ng-template #notProduction>
+          <h1 *ngIf="!isProd" class="title-badge bg-orange-300 p-1 text-black">
+            {{ topTitle }}
+          </h1>
+        </ng-template>
+
+        <!--Location Selector-->
+        <button
+          [matMenuTriggerFor]="locations"
+          aria-haspopup="true"
+          aria-labelledby="Select location"
+          class="!p-0 !pl-2"
+          mat-stroked-button
+          matTooltip="Select a location"
+        >
+          <div class="flex items-center">
+            <p class="m-0">
+              {{ selectedLocation.acronym }}
+            </p>
+            <mat-icon class="mb-0.5 ml-1">arrow_drop_down</mat-icon>
+          </div>
+        </button>
+
+        <mat-menu #locations="matMenu">
+          <ng-container *ngFor="let entry of locationMenuMap | keyvalue">
+            <ng-container *ngIf="entry.key.length === 0; else otherMenuItems">
+              <button
+                (click)="changeLocation(location)"
+                *ngFor="let location of entry.value"
+                class="!min-h-0"
+                mat-menu-item
+              >
+                {{ location.acronym }}
+              </button>
+            </ng-container>
+
+            <ng-template #otherMenuItems>
+              <button
+                [matMenuTriggerFor]="sub_menu"
+                class="!min-h-0"
+                mat-menu-item
+              >
+                {{ entry.key }}
+              </button>
+              <mat-menu #sub_menu="matMenu">
+                <button
+                  (click)="changeLocation(location)"
+                  *ngFor="let location of entry.value"
+                  class="!min-h-0"
+                  mat-menu-item
+                >
+                  {{ location.acronym }}
+                </button>
+              </mat-menu>
+            </ng-template>
+          </ng-container>
+        </mat-menu>
+      </div>
+
+      <div class="flex flex-1 items-center justify-end">
+        <!--Settings Menu-->
+        <button
+          [matMenuTriggerFor]="settings"
+          mat-icon-button
+          matTooltip="Settings"
+        >
+          <mat-icon>settings</mat-icon>
+        </button>
+        <mat-menu #settings="matMenu">
+          <button
+            *ngIf="isUserAdmin"
+            [routerLink]="['/settings/user-management']"
+            mat-menu-item
+          >
+            User Management
+          </button>
+
+          <button *ngIf="isAdmin" [routerLink]="['/admin/sites']" mat-menu-item>
+            Sites
+          </button>
+
+          <button
+            *ngIf="isAdmin"
+            [routerLink]="['/settings/sys-admin-tools']"
+            mat-menu-item
+          >
+            Sys-Admin tools
+          </button>
+          <button
+            *ngIf="isAdmin"
+            [routerLink]="['/settings/scheduled-jobs']"
+            mat-menu-item
+          >
+            Scheduled Jobs
+          </button>
+          <button (click)="openAbout()" mat-menu-item>About</button>
+        </mat-menu>
+
+        <!--Profile Options Menu-->
+        <button
+          *ngIf="showProfileBadge"
+          class="user-button mr-2 !p-1"
+          mat-icon-button
+          matTooltip="Logged in as {{ currentUser.name }}"
+        >
+          <img
+            [src]="profilePictureLink"
+            alt="User's profile picture"
+            class="!h-10 !w-10 rounded-full"
+            onerror="src = './assets/person.png'"
+          />
+        </button>
+
+        <button
+          (click)="openNotificationsDialog()"
+          *ngIf="!showProfileBadge"
+          [matBadge]="notificationCount"
+          class="user-button mr-2 !p-1"
+          mat-icon-button
+          matBadgeColor="warn"
+          matBadgePosition="after"
+          matBadgeSize="small"
+          matTooltip="Logged in as {{ currentUser.name }}"
+        >
+          <img
+            [src]="profilePictureLink"
+            alt="User's profile picture"
+            class="!h-10 !w-10 rounded-full"
+            onerror="src = './assets/person.png'"
+          />
+        </button>
+
+        <mat-menu #profile="matMenu">
+          <button [routerLink]="['/profile/my-profile']" mat-menu-item>
+            Profile
+          </button>
+          <button [routerLink]="['/profile/worklist']" mat-menu-item>
+            Worklist
+          </button>
+          <button
+            (click)="openSwitchUserDialog()"
+            *ngIf="!isProd"
+            mat-menu-item
+          >
+            Switch User
+          </button>
+        </mat-menu>
+
+        <button [matMenuTriggerFor]="profile" mat-stroked-button>
+          <div>{{ currentUser.name }}</div>
+        </button>
+      </div>
+    </mat-toolbar>
+
+    <div class="relative h-[calc(100vh-64px)] w-full overflow-y-auto">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <ng-template #unsupportedBrowser>
+    <div
+      class="m-auto flex h-full w-3/5 flex-col items-center justify-center bg-neutral-400 px-0 py-24"
+    >
+      <div class="text-7xl font-bold text-red-600" data-content="404">
+        Warning
+      </div>
+
+      <img alt="logo" class="mt-3 size-[100px]" src="assets/factory.svg" />
+
+      <div class="mt-3 text-xl font-bold text-white">
+        Your browser does not fully support the application,<br />
+        please use Chrome or Edge which you can download here:
+      </div>
+
+      <div class="m-3 rounded bg-red-600 p-3 font-bold uppercase no-underline">
+        <a class="text-white" href="https://www.google.com/chrome/"
+          >Download Chrome</a
+        >
+      </div>
+    </div>
+  </ng-template>
+</ng-template>

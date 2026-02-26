@@ -1,0 +1,130 @@
+@use "sass:meta";
+@use "app/styles/iemdm";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --prod-primary: #2196f3;
+  --prod-accent: #66bb6a;
+  --prod-warn: #d32f2fde;
+  --confirm-green: #{iemdm.$confirm-green};
+  --confirm-green-hover: #{iemdm.$confirm-green-hover};
+  --table-row-hover: #{iemdm.$table-row-hover};
+  --iemdm-white: #{iemdm.$iemdm-white};
+  --iemdm-yellow: #{iemdm.$iemdm-yellow};
+  --iemdm-red: #{iemdm.$iemdm-red};
+  --iemdm-text-grey: #{iemdm.$iemdm-text-grey};
+  --table-row-even: #{iemdm.$table-row-even};
+  --table-row-odd: #{iemdm.$table-row-odd};
+  --disabled-action: #{iemdm.$disabled-action};
+  --disabled-button: #{iemdm.$disabled-button};
+  --disabled-text: #{iemdm.$disabled-text};
+  --enabled-action: #{iemdm.$enabled-action};
+}
+
+* {
+  letter-spacing: normal !important;
+}
+
+@include meta.load-css("app/styles/material");
+
+// Snackbar notification styles
+.error-snackbar {
+  --mdc-snackbar-container-color: #f44336;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+.success-snackbar {
+  --mdc-snackbar-container-color: #4caf50;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+.warning-snackbar {
+  --mdc-snackbar-container-color: #ff9800;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+.info-snackbar {
+  --mdc-snackbar-container-color: #2196f3;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+// Upload Classified Dialog - remove scrollbar
+.upload-classified-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      overflow: visible !important;
+    }
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+// Upload Batch Dialog - remove scrollbar
+.upload-batch-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      overflow: visible !important;
+    }
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+// Highlight the Databricks ADC / LandingAI navigation button
+.landingai-nav-button {
+  border-radius: 4px;
+}
+
+// ADC button - Light orange background
+.adc-button {
+  background-color: #ffcc80 !important; // Light orange
+  color: #000 !important; // Black text for better contrast
+  border: none !important; // Remove orange border
+}
+
+// Title badge - Light blue background
+.title-badge {
+  background-color: #90caf9 !important; // Light blue
+  padding: 4px 12px !important;
+  border-radius: 4px !important;
+  color: #000 !important; // Black text for better contrast
+}
+
+// User button - Light green background
+.user-button {
+  background-color: #a5d6a7 !important; // Light green
+  border-radius: 50% !important;
+}
+
+// Filter Dialog Panel - centered popup dialog
+.filter-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 !important;
+    max-height: none !important;
+  }
+}
+
+// Green header for main navbar
+.green-header {
+  background-color: #4caf50 !important; // Material green
+}

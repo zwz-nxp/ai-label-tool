@@ -1,0 +1,61 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2 class="text-lg">{{ crudActionToText() }} Location</h2>
+
+    <button (click)="closeDialog()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <app-spinner *ngIf="loading"></app-spinner>
+
+    <form [formGroup]="inputForm" class="grid grid-cols-2 gap-4">
+      <mat-form-field>
+        <mat-label>SAP Plant Code</mat-label>
+        <input
+          class="!uppercase"
+          formControlName="plantCode"
+          matInput
+          required
+        />
+        <mat-error *ngIf="inputForm.get('plantCode')?.hasError('required')">
+          This field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Managed By</mat-label>
+        <mat-select [compareWith]="compareLocation" formControlName="managedBy">
+          <mat-option *ngFor="let loc of allLocations" [value]="loc">
+            {{ loc.acronym }} ({{ loc.city }}, {{ loc.country }})
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>City</mat-label>
+        <input formControlName="city" matInput />
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Country</mat-label>
+        <input formControlName="country" matInput />
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button
+      (click)="submit()"
+      [disabled]="inputForm.invalid || isLoading"
+      class="mr-2"
+      color="accent"
+      mat-flat-button
+      type="submit"
+    >
+      {{ isDelete() ? "Delete" : "Save" }}
+    </button>
+    <button (click)="closeDialog()" mat-stroked-button>Close</button>
+  </mat-dialog-actions>
+</div>

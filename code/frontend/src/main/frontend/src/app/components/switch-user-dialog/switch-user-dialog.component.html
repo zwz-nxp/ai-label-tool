@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Switch User</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>User ID (WBI)</mat-label>
+    <input
+      (keyup.enter)="confirm()"
+      (ngModelChange)="onWbiChange()"
+      [(ngModel)]="wbi"
+      autocomplete="off"
+      matInput
+      placeholder="e.g. nxf12345"
+    />
+  </mat-form-field>
+
+  <p *ngIf="errorMessage" class="mt-1 text-sm text-red-600">
+    {{ errorMessage }}
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="cancel()" [disabled]="loading" mat-button>Cancel</button>
+  <button
+    (click)="confirm()"
+    [disabled]="!wbi.trim() || loading"
+    color="primary"
+    mat-raised-button
+  >
+    <mat-spinner
+      *ngIf="loading"
+      class="mr-1 inline-block"
+      diameter="18"
+    ></mat-spinner>
+    Switch
+  </button>
+</mat-dialog-actions>

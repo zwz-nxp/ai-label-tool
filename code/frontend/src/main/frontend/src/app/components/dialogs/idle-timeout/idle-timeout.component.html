@@ -1,0 +1,20 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Header -->
+  <mat-toolbar cdkDragHandle color="primary">
+    <h2>{{ dialogTitle }}</h2>
+  </mat-toolbar>
+
+  <!-- Body -->
+  <mat-dialog-content>
+    <p class="max-w-md">{{ idleState }}</p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <div *ngIf="timedOut; else idleWarning">
+      <a href="/" mat-stroked-button>OK</a>
+    </div>
+    <ng-template #idleWarning>
+      <button (click)="closeDialog()" mat-stroked-button>Continue</button>
+    </ng-template>
+  </mat-dialog-actions>
+</div>
