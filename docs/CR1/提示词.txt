@@ -1,0 +1,13 @@
+CR1
+我是Java开发工程师，我想要实现下图的Landing AI 的home功能。
+图1
+1. 图1是project list页面，每个图片都是一个Project, project类的定义在data-modle的project.java里有,对应表是la_projects。
+2. 项目默认会显示project的第一张图片，如果没有会显示default图片。项目底下会显示项目名，项目创建人，图片数量以及label数量。
+3. 默认只显示登陆人创建的项目，如果点击view all才会显示非登陆人创建项目。项目列表需要通过location做filter，每个location只会维护自己location的project列表
+图2
+1.图二是创建项目的功能，当用户点击图1中create project时候才会进入这个页面。
+2.目前只允许三种类型的项目，object detection, segmentation, classification. 目前用户只允许创建object detection类型的项目。
+3.允许用户上传图片到新项目。图片数据会存储的la_images表，model类是Image.java.上传图片时候会在la_images生成图片的thumbnail image，用来在项目中快速显示图片缩略图
+实现要求：
+1. UI的code在frontend里，，前端的框架是angular19， 请参考现有其他功能的实现方式，生成components,modules, models, services等等code.请为landingui建立自己的package以防止影响其他现有功能。
+2. backend的code在backend中，后端框架是springboot3，后端是postgres数据库.请参考现有实现分配code放在对应的module里。请为landingui建立自己的package以防止影响其他现有功能。

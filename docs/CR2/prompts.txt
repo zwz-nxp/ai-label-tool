@@ -1,0 +1,22 @@
+I will start to work on CR2 now. CR2 is one page for image uploading.  it will show the image list in the primary area. 
+
+1. It will support display images using two different ways, images view or instances view. You only need to place button in page for now. We can discuss later for details.
+
+2. It will support multiple types of filters.You only need to place button in page for now. We can discuss later for details.
+
+3. it will support multiple types of sorting method. You only need to place button in page for now. We can discuss later for details.
+
+4. On the right top corner, it has three dots. which can support Manage Classes, Manage Tags, Manage Metadata, Auto Split actions. You only need to place button in page for now. We can discuss later for details.
+
+5. On the right of three dots, it has snapshot management  button. You only need to place button in page for now. We can discuss later for details.
+
+6. On the right of the snapshot management button, it has button to upload images. You only need to place button in page for now. We can discuss later for details.
+
+7. On the top right, it is training button. 
+
+8. Below the training button, it has zoom in/zoom out button, we can use them to change the image size to allow more/less images to be displayed in one line. For eg, if current page has 4 images in one line, after clicking zoom in, it will show 3 images; Or else If user click zoom out, then it will show 5 images in each line.
+
+9. The images list view will also display the labels over the thumbnail image. it supports pagination.
+
+10.The upload page can be entered upon clicking the project card of the home page.
+
