@@ -1,0 +1,231 @@
+/**
+ * Shared Dialog Styles for Customer Training Components
+ *
+ * This file contains shared styles for all dialog components in the training module.
+ * Ensures consistent Material Design styling across all dialogs.
+ *
+ * Requirements:
+ * - 27.1: Use Angular Material components for all UI elements
+ * - 27.2: Use mat-raised-button with primary color for primary actions (Save)
+ * - 27.3: Use mat-stroked-button for secondary actions (Cancel)
+ * - 27.5: Display tooltips on hover for all configurable items
+ * - 27.6: Use consistent spacing and typography throughout
+ */
+
+@use "app/styles/training-shared" as shared;
+
+// ============================================================================
+// Dialog Title
+// ============================================================================
+
+@mixin dialog-title {
+  @include shared.dialog-title;
+}
+
+// ============================================================================
+// Dialog Content
+// ============================================================================
+
+@mixin dialog-content {
+  @include shared.dialog-content;
+}
+
+@mixin dialog-description {
+  @include shared.dialog-description;
+}
+
+// ============================================================================
+// Dialog Actions
+// ============================================================================
+
+@mixin dialog-actions {
+  @include shared.dialog-actions;
+}
+
+// ============================================================================
+// Info Box (forwarded from training-shared)
+// ============================================================================
+
+@mixin info-box(
+  $bg-color: rgba(shared.$info-color, 0.1),
+  $icon-color: shared.$info-color
+) {
+  @include shared.info-box($bg-color, $icon-color);
+}
+
+// ============================================================================
+// Responsive (forwarded from training-shared)
+// ============================================================================
+
+@mixin respond-to($breakpoint) {
+  @include shared.respond-to($breakpoint) {
+    @content;
+  }
+}
+
+// ============================================================================
+// Re-export variables for convenience
+// ============================================================================
+
+$spacing-xs: shared.$spacing-xs;
+$spacing-sm: shared.$spacing-sm;
+$spacing-md: shared.$spacing-md;
+$spacing-lg: shared.$spacing-lg;
+$spacing-xl: shared.$spacing-xl;
+
+$font-size-sm: shared.$font-size-sm;
+$font-size-base: shared.$font-size-base;
+$font-size-md: shared.$font-size-md;
+$font-size-lg: shared.$font-size-lg;
+$font-size-xl: shared.$font-size-xl;
+
+$font-weight-medium: shared.$font-weight-medium;
+
+$text-primary: shared.$text-primary;
+$text-secondary: shared.$text-secondary;
+$text-hint: shared.$text-hint;
+
+$primary-color: shared.$primary-color;
+$info-color: shared.$info-color;
+
+$background-light: shared.$background-light;
+$border-color: shared.$border-color;
+
+// ============================================================================
+// Form Container
+// ============================================================================
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: shared.$spacing-md;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-md;
+
+  @include shared.respond-to("sm") {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+// ============================================================================
+// Slider Field
+// ============================================================================
+
+.slider-field {
+  display: flex;
+  flex-direction: column;
+  gap: shared.$spacing-sm;
+}
+
+.field-label {
+  font-size: shared.$font-size-base;
+  font-weight: shared.$font-weight-medium;
+  color: shared.$text-primary;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: shared.$spacing-md;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: shared.$font-size-sm;
+  color: shared.$text-hint;
+}
+
+// ============================================================================
+// Value Field
+// ============================================================================
+
+.value-field {
+  width: 80px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}
+
+// ============================================================================
+// Size Field
+// ============================================================================
+
+.size-field {
+  flex: 1;
+  max-width: 150px;
+
+  @include shared.respond-to("sm") {
+    max-width: none;
+  }
+}
+
+.size-separator {
+  font-size: shared.$font-size-xl;
+  color: shared.$text-secondary;
+  margin-top: -20px;
+
+  @include shared.respond-to("sm") {
+    display: none;
+  }
+}
+
+// ============================================================================
+// Checkbox Row
+// ============================================================================
+
+.checkbox-row {
+  margin-top: shared.$spacing-sm;
+}
+
+// ============================================================================
+// Info Boxes
+// ============================================================================
+
+.preview-info {
+  @include shared.info-box(
+    rgba(shared.$info-color, 0.1),
+    shared.$primary-color
+  );
+}
+
+.aspect-ratio-info {
+  @include shared.info-box(shared.$background-light, shared.$primary-color);
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// ============================================================================
+// Common Dialog Styles (to be applied via ::ng-deep or host)
+// ============================================================================
+
+// Dialog title styling
+::ng-deep h2[mat-dialog-title] {
+  @include shared.dialog-title;
+}
+
+// Dialog content styling
+::ng-deep mat-dialog-content {
+  @include shared.dialog-content;
+}
+
+// Dialog actions styling
+::ng-deep mat-dialog-actions {
+  @include shared.dialog-actions;
+}
+
+// Dialog description
+.dialog-description {
+  @include shared.dialog-description;
+}

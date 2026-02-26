@@ -1,0 +1,59 @@
+@use "../iemdm";
+
+.snackbar-success {
+  .mdc-snackbar__surface {
+    background: rgb(22, 155, 70) !important;
+    color: white;
+    white-space: pre-line;
+  }
+
+  button {
+    background-color: rgba(16, 95, 45, 0.945);
+    color: white !important;
+    border: none;
+  }
+}
+
+.snackbar-warning {
+  .mdc-snackbar__surface {
+    background: iemdm.$iemdm-yellow !important;
+    color: black !important;
+    white-space: pre-line;
+  }
+
+  button {
+    background-color: iemdm.$iemdm-yellow;
+    color: black !important;
+    border: none;
+  }
+}
+
+.snackbar-long-warning {
+  .mdc-snackbar__surface {
+    background: iemdm.$iemdm-yellow !important;
+    font-weight: bold;
+    color: black !important;
+    white-space: pre-line;
+  }
+
+  button {
+    background-color: iemdm.$iemdm-yellow;
+    color: black !important;
+    border: none;
+  }
+}
+
+.snackbar-failure,
+.delete-warn {
+  .mdc-snackbar__surface {
+    background: iemdm.$iemdm-red !important;
+    color: white !important;
+    white-space: pre-line;
+  }
+
+  button {
+    background-color: iemdm.$iemdm-red;
+    color: white !important;
+    border: none;
+  }
+}
