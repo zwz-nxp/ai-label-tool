@@ -1,0 +1,133 @@
+<div class="flex flex-row gap-4">
+  <!-- Shown columns -->
+  <div>
+    <p class="text-lg font-medium">{{ sourceTitle }}</p>
+    <div class="relative w-72 overflow-auto rounded border">
+      <ul
+        (dragleave)="dragLeave()"
+        (dragover)="allowDrop($event, availableItems)"
+        (drop)="drop($event, selectedItems)"
+        [ngClass]="{ 'bg-neutral-300': availableItems.dragOver }"
+        class="h-[300px] min-h-[300px]"
+      >
+        <li
+          (click)="
+            selectItem(availableItems.pickList, item);
+            shiftClick($event, idx, availableItems, item)
+          "
+          (dragend)="dragEnd(availableItems)"
+          (dragstart)="drag($event, item, availableItems)"
+          *ngFor="let item of availableItems.selectedList; let idx = index"
+          [draggable]="format.draggable"
+          [ngClass]="{
+            'bg-blue-100': isItemSelected(availableItems.pickList, item),
+          }"
+          class="cursor-pointer select-none whitespace-nowrap border-b p-1 pl-3 last:border-b-0 hover:bg-neutral-100"
+        >
+          <label class="cursor-pointer">{{ item.name }}</label>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mt-1 flex flex-row justify-between gap-1">
+      <button
+        (click)="selectAll(availableItems)"
+        [disabled]="isAllSelected(availableItems)"
+        class="w-1/2"
+        color="primary"
+        mat-stroked-button
+      >
+        {{ format.all }}
+      </button>
+      <button
+        (click)="selectNone(availableItems)"
+        [disabled]="!isAnySelected(availableItems)"
+        class="w-1/2"
+        color="primary"
+        mat-stroked-button
+      >
+        {{ format.none }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Add / Remove buttons -->
+  <div class="flex flex-col justify-center gap-1">
+    <button
+      (click)="moveItem(availableItems, selectedItems)"
+      [disabled]="availableItems.pickList.length === 0"
+      color="primary"
+      mat-stroked-button
+    >
+      <div class="grid grid-cols-[1fr_4rem_1fr] items-center gap-2">
+        <div></div>
+        <p>{{ format.remove }}</p>
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </div>
+    </button>
+    <button
+      (click)="moveItem(selectedItems, availableItems)"
+      [disabled]="selectedItems.pickList.length === 0"
+      color="primary"
+      mat-stroked-button
+    >
+      <div class="grid grid-cols-[1fr_4rem_1fr] items-center gap-2">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+        <p>{{ format.add }}</p>
+        <div></div>
+      </div>
+    </button>
+  </div>
+
+  <!-- Hidden columns -->
+  <div>
+    <p class="text-lg font-medium">{{ destinationTitle }}</p>
+    <div class="relative w-72 overflow-auto rounded border">
+      <ul
+        (dragleave)="dragLeave()"
+        (dragover)="allowDrop($event, selectedItems)"
+        (drop)="drop($event, availableItems)"
+        [ngClass]="{ 'bg-blue-100': selectedItems.dragOver }"
+        class="h-[300px] min-h-[300px]"
+      >
+        <li
+          (click)="
+            selectItem(selectedItems.pickList, item);
+            shiftClick($event, idx, selectedItems, item)
+          "
+          (dragend)="dragEnd(selectedItems)"
+          (dragstart)="drag($event, item, selectedItems)"
+          *ngFor="let item of selectedItems.selectedList; let idx = index"
+          [draggable]="format.draggable"
+          [ngClass]="{
+            'bg-blue-100': isItemSelected(selectedItems.pickList, item),
+          }"
+          class="cursor-pointer select-none whitespace-nowrap border-b p-1 pl-3 last:border-b-0 hover:bg-neutral-100"
+        >
+          <label class="cursor-pointer">{{ item.name }}</label>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mt-1 flex flex-row justify-between gap-1">
+      <button
+        (click)="selectAll(selectedItems)"
+        [disabled]="isAllSelected(selectedItems)"
+        class="w-1/2"
+        color="primary"
+        mat-stroked-button
+      >
+        {{ format.all }}
+      </button>
+      <button
+        (click)="selectNone(selectedItems)"
+        [disabled]="!isAnySelected(selectedItems)"
+        class="w-1/2"
+        color="primary"
+        mat-stroked-button
+      >
+        {{ format.none }}
+      </button>
+    </div>
+  </div>
+</div>

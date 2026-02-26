@@ -1,0 +1,70 @@
+<ng-container *ngIf="isEmpty()"></ng-container>
+
+<ng-container *ngIf="searchType === gst.DEFAULT && !skip">
+  <input
+    (keydown.enter)="refreshSearch()"
+    (ngModelChange)="filter.next($event)"
+    [(ngModel)]="filterValue"
+    [disabled]="isSearchFieldDisabled()"
+    [ngClass]="[getColor(), hasValue() ? 'border-prod-primary' : '']"
+    class="w-full rounded border border-neutral-400 p-0.5 text-xs font-normal outline-none"
+    id="{{ searchField }}"
+    matInput
+    matTooltip="{{ getTooltip() }}"
+    maxlength="300"
+    trimInput
+  />
+</ng-container>
+
+<ng-container *ngIf="isFromToSearch()">
+  <input
+    (click)="popupDialog()"
+    [disabled]="isSearchFieldDisabled()"
+    [matTooltip]="getTooltip()"
+    [ngClass]="[getColor(), hasValue() ? 'border-prod-primary' : '']"
+    [ngModel]="displayFromTo"
+    class="w-full rounded border border-neutral-400 p-0.5 text-center text-xs font-normal outline-none"
+    matInput
+    readonly
+  />
+</ng-container>
+
+<ng-container *ngIf="isDropdownMultiSelectSearch()">
+  <mat-select
+    #selectionModel="ngModel"
+    (ngModelChange)="filter.next($event)"
+    [(ngModel)]="filterValue"
+    [disabled]="isSearchFieldDisabled()"
+    [ngClass]="[getColor(), hasValue() ? 'border-2 border-prod-primary' : '']"
+    [panelWidth]="null"
+    class="w-full rounded border border-neutral-400 text-xs font-normal outline-none"
+    multiple
+  >
+    <app-select-check-all
+      [model]="selectionModel"
+      [values]="getEnumValuesArray(enumValues)"
+    ></app-select-check-all>
+    <mat-option *ngFor="let item of enumValues" [value]="item[0]">
+      {{ item[1] | genericSearchMultiSelect }}
+    </mat-option>
+  </mat-select>
+</ng-container>
+
+<ng-container *ngIf="isDropdownSingleSelectSearch()">
+  <mat-select
+    (ngModelChange)="filter.next($event)"
+    [(ngModel)]="filterValue"
+    [disabled]="isSearchFieldDisabled()"
+    [ngClass]="[getColor(), hasValue() ? 'border-prod-primary' : '']"
+    [panelWidth]="null"
+    class="w-full rounded border border-neutral-400 text-xs font-normal outline-none"
+    hideSingleSelectionIndicator
+  >
+    <mat-select-trigger>
+      {{ convertIfNeeded(filterValue) }}
+    </mat-select-trigger>
+    <mat-option *ngFor="let state of booleanValues" [value]="state">
+      {{ state | genericSearchBooleanSelect }}
+    </mat-option>
+  </mat-select>
+</ng-container>

@@ -1,0 +1,44 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <!-- Header -->
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2>{{ selectedNotification.title }}</h2>
+
+    <button (click)="closeDialog()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <div [innerHTML]="selectedNotification.message"></div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button
+      (click)="okAndClose()"
+      *ngIf="isNotificationUnread()"
+      color="primary"
+      mat-flat-button
+    >
+      Acknowledge
+    </button>
+    <button
+      (click)="okAndNext()"
+      *ngIf="isNotificationUnread()"
+      color="accent"
+      mat-flat-button
+    >
+      Acknowledge and Next
+    </button>
+    <button
+      (click)="okAndAll()"
+      *ngIf="isNotificationUnread()"
+      color="accent"
+      mat-flat-button
+    >
+      Acknowledge All
+    </button>
+    <button (click)="closeDialog()" mat-stroked-button>Close</button>
+  </mat-dialog-actions>
+
+  <app-spinner *ngIf="isLoading"></app-spinner>
+</div>

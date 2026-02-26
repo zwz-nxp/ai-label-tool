@@ -1,0 +1,8 @@
+<div
+  (click)="toggleSelection()"
+  class="flex cursor-pointer items-center gap-4 px-4 py-3 hover:bg-neutral-100"
+>
+  <mat-pseudo-checkbox [state]="getCheckboxState()"></mat-pseudo-checkbox>
+
+  <p>{{ text }}</p>
+</div>

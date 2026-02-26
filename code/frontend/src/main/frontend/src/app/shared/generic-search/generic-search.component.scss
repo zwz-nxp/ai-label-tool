@@ -1,0 +1,14 @@
+:host ::ng-deep {
+  .mat-mdc-select {
+    line-height: 20px !important;
+  }
+
+  .mat-mdc-select-value {
+    max-width: 200px;
+  }
+
+  .mat-mdc-select-arrow-wrapper {
+    padding: 0 0.2rem 0 0.2rem;
+    height: 20px !important;
+  }
+}

@@ -1,0 +1,66 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2>Notifications</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content class="!flex flex-col !p-0">
+    <app-spinner *ngIf="isLoading === true" [isAbsolute]="false"></app-spinner>
+
+    <p
+      *ngIf="unreadNotifications.length === 0 && !isLoading"
+      class="p-4 text-center"
+    >
+      There are no notifications
+    </p>
+
+    <div [hidden]="unreadNotifications.length === 0" class="overflow-auto">
+      <table [dataSource]="unreadNotificationDataSource" mat-table matSort>
+        <ng-container matColumnDef="timestamp">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>
+            Date Received
+          </th>
+          <td *matCellDef="let element" mat-cell nowrap>
+            {{ element.timestamp | date: "yyyy-MM-dd" }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="severityLevel">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Type</th>
+          <td *matCellDef="let element" mat-cell>
+            {{ getLevel(element) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="message">
+          <th *matHeaderCellDef mat-header-cell mat-sort-header>Title</th>
+          <td *matCellDef="let element" mat-cell nowrap>
+            {{ getTitle(element) }}
+          </td>
+        </ng-container>
+
+        <tr
+          *matHeaderRowDef="displayedColumnsNotifications; sticky: true"
+          mat-header-row
+        ></tr>
+        <tr
+          (click)="openNotification(row.id, row.severityLevel)"
+          *matRowDef="let row; columns: displayedColumnsNotifications"
+          [ngClass]="setNotificationColor(row.severityLevel)"
+          class="cursor-pointer hover:brightness-90"
+          mat-row
+        ></tr>
+      </table>
+    </div>
+
+    <mat-paginator
+      #MatPaginator
+      [pageSizeOptions]="[25, 50, 100]"
+      showFirstLastButtons
+    >
+    </mat-paginator>
+  </mat-dialog-content>
+</div>

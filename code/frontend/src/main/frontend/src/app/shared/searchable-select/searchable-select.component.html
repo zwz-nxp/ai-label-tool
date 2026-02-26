@@ -1,0 +1,23 @@
+<mat-form-field [subscriptSizing]="subscriptSizing" class="w-full">
+  <mat-label>{{ label }}</mat-label>
+
+  <mat-select
+    (selectionChange)="itemSelected.emit($event.value)"
+    [compareWith]="compareFn"
+    [formControl]="itemCtrl"
+    [panelWidth]="panelWidth"
+    [required]="required ?? false"
+  >
+    <mat-option class="bg-white">
+      <ngx-mat-select-search
+        [formControl]="itemFilterCtrl"
+        noEntriesFoundLabel="No matching item found"
+        placeholderLabel="Type to search..."
+      ></ngx-mat-select-search>
+    </mat-option>
+
+    <mat-option *ngFor="let item of filteredItems | async" [value]="item">
+      {{ displayFn(item) }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

@@ -1,0 +1,56 @@
+<div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+  <mat-toolbar cdkDragHandle class="justify-between" color="primary">
+    <h2 class="text-lg">Min / Max search values</h2>
+
+    <button (click)="close()" class="ml-2" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <!--- body ------>
+  <mat-dialog-content>
+    <div
+      *ngIf="searchType === gst.NUM_FROM_TO"
+      class="flex flex-col items-center"
+    >
+      <mat-form-field>
+        <mat-label>Min</mat-label>
+        <input [(ngModel)]="valueFrom" matInput type="number" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Max</mat-label>
+        <input [(ngModel)]="valueTo" matInput type="number" />
+      </mat-form-field>
+    </div>
+
+    <div
+      *ngIf="searchType === gst.DATE_FROM_TO"
+      class="flex flex-col items-center"
+    >
+      <mat-form-field>
+        <mat-label>Min</mat-label>
+        <input [(ngModel)]="valueFrom" [matDatepicker]="picker1" matInput />
+        <mat-hint>YYYY-MM-DD</mat-hint>
+        <mat-datepicker-toggle
+          [for]="picker1"
+          matSuffix
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Max</mat-label>
+        <input [(ngModel)]="valueTo" [matDatepicker]="picker2" matInput />
+        <mat-hint>YYYY-MM-DD</mat-hint>
+        <mat-datepicker-toggle
+          [for]="picker2"
+          matSuffix
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="center">
+    <button (click)="close()" mat-stroked-button>Search</button>
+  </mat-dialog-actions>
+</div>
