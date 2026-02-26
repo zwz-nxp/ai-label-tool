@@ -1,0 +1,10 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue Apr 02 14:11:36 CEST 2024
+https\://repo.maven.apache.org/maven2/.lastUpdated=1712059896251
+file\://C\:\\dev\\iemdm\\code\\backend\\api/libs/.error=
+https\://build.shibboleth.net/nexus/content/repositories/releases/.error=Could not transfer artifact org.opensaml\:opensaml-security-impl\:pom\:4.3.0 from/to shibboleth-releases (https\://build.shibboleth.net/nexus/content/repositories/releases/)\: PKIX path building failed\: sun.security.provider.certpath.SunCertPathBuilderException\: unable to find valid certification path to requested target
+https\://repo.maven.apache.org/maven2/.error=
+@default-shibboleth-releases-https\://build.shibboleth.net/nexus/content/repositories/releases/.lastUpdated=1712059896145
+file\://C\:\\dev\\iemdm\\code\\backend\\api/libs/.lastUpdated=1712059896149
+https\://nl-nxrm.sw.nxp.com/repository/maven-public/.lastUpdated=1712059896106
+https\://nl-nxrm.sw.nxp.com/repository/maven-public/.error=
