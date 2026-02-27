@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <artifactId>parent</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <format>json</format>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
+                    <gitDescribe>
+                        <always>false</always>
+                        <dirty>-dirty</dirty>
+                        <skip>false</skip>
+                        <tags>true</tags>
+                    </gitDescribe>
+                    <prefix>git</prefix>
+                    <verbose>false</verbose>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <id>get-the-git-infos</id>
+                    </execution>
+                </executions>
+                <groupId>pl.project13.maven</groupId>
+                <version>2.2.4</version>
+            </plugin>
+        </plugins>
+    </build>
+    <description>The IE-MDM parent project</description>
+    <groupId>com.nxp.iemdm</groupId>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>frontend</module>
+        <module>backend</module>
+    </modules>
+    <name>parent</name>
+
+    <packaging>pom</packaging>
+
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <relativePath/>
+        <version>3.1.6</version>        <!-- lookup parent from repository -->
+    </parent>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>ie-mdm-local-repository</id>
+            <url>file://${project.basedir}/libs</url>
+        </repository>
+    </repositories>
+
+    <version>0.2-SNAPSHOT</version>
+
+</project>
