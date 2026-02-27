@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: iemdm-interface
+  config:
+    import: optional:classpath:ie-mdm-interface.properties,optional:classpath:ie-mdm-interface.override.properties
+
+# Logging Configuration
+logging:
+  level:
+    com.nxp.iemdm.mdminterface: INFO
+    com.databricks: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Note: All Databricks configuration is in ie-mdm-interface.properties
+# Use databricks.mode=mock or databricks.mode=real to switch implementations
