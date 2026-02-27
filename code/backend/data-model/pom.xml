@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>backend</artifactId>
+        <groupId>com.nxp.iemdm</groupId>
+        <version>0.2-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>data-model</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-envers</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate.orm</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.data</groupId>
+                    <artifactId>spring-data-jpa</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>2.5.0</version>
+                <executions>
+                    <execution>
+                        <id>schemagen</id>
+                        <goals>
+                            <goal>schemagen</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sources>
+                        <source>src/main/java/com/nxp/iemdm/model/xml</source>
+                    </sources>
+                    <!-- Excludes builders from source, otherwise schemagen breaks-->
+                    <schemaSourceExcludeFilters>
+                        <filter
+                                implementation="org.codehaus.mojo.jaxb2.shared.filters.pattern.PatternFileFilter">
+                            <patterns>
+                                <pattern>\Builder.java</pattern>
+                            </patterns>
+                        </filter>
+                    </schemaSourceExcludeFilters>
+                    <transformSchemas>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/equipment</uri>
+                            <toPrefix>equipment</toPrefix>
+                            <toFile>equipment.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/event</uri>
+                            <toPrefix>event</toPrefix>
+                            <toFile>event.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/consparams</uri>
+                            <toPrefix>consparamsoutput</toPrefix>
+                            <toFile>consparamsoutput.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/capacityplanning</uri>
+                            <toPrefix>capacityplanningview</toPrefix>
+                            <toFile>capacityplanningview.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/capabilitystatement</uri>
+                            <toPrefix>capabilitystatement</toPrefix>
+                            <toFile>capabilitystatement.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/equipmentcode</uri>
+                            <toPrefix>equipmentcode</toPrefix>
+                            <toFile>equipmentcode.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/resourcegroup</uri>
+                            <toPrefix>resourcegroup</toPrefix>
+                            <toFile>resourcegroup.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/dcm/borfeed</uri>
+                            <toPrefix>dcmborfeed</toPrefix>
+                            <toFile>dcmborfeed.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/jda/resourcefeed</uri>
+                            <toPrefix>dcmresourcefeed</toPrefix>
+                            <toFile>dcmresourcefeed.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/dcm/flowfeed</uri>
+                            <toPrefix>dcmflowfeed</toPrefix>
+                            <toFile>dcmflowfeed.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/dcm/tmdb</uri>
+                            <toPrefix>dcmtmdbrgecsfeed</toPrefix>
+                            <toFile>dcmtmdbrgecsfeed.xsd</toFile>
+                        </transformSchema>
+                        <transformSchema>
+                            <uri>https://nww.ie-mdm.nxp.com/ie-mdm/tibco/messaging</uri>
+                            <toPrefix>messaging</toPrefix>
+                            <toFile>usagerateoverview_messaging.xsd</toFile>
+                        </transformSchema>
+                    </transformSchemas>
+                    <outputDirectory>${project.build.directory}/xsd_output/</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>5.22.0</version>
+                <configuration>
+                    <activeRecipes>
+                        <recipe>com.yourorg.UpgradePluginVersionExample</recipe>
+                    </activeRecipes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

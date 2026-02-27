@@ -1,0 +1,24 @@
+package com.nxp.iemdm.enums.configuration;
+
+// Types for websocket topic/update
+public enum UpdateType {
+  PERSON,
+  USERROLE,
+  LOCATION,
+  EQUIPMENT,
+  RESOURCEGROUP,
+  RESOURCECLASS,
+  EQUIPMENTCODE,
+  SAPCODE,
+  PLANNING,
+  PROCESS_STAGE,
+  PART_12NC,
+  PLANNING_FLAG,
+  CONFIG_VALUE_ITEM,
+  IEMDM_ALERT,
+  APPROVAL,
+  USER_ALERT,
+  SCHEDULED_TRIGGER,
+  MASS_UPLOAD_PROGRESS,
+  MANUAL_FLOW
+}
