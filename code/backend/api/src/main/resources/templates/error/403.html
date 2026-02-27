@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>IE-MDM</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <style type="text/css">
+      html {
+          background-color: #eff7ff;
+      }
+
+      ::ng-deep .cdk-overlay-container {
+          z-index: 1200 !important;
+      }
+
+      *,
+      *:before,
+      *:after {
+          box-sizing: border-box;
+      }
+
+      .error-page-header {
+          background-color: #2196f3;
+          vertical-align: top;
+          padding: 12px 0px 12px 20px;
+      }
+
+      .error-title {
+          font-size: 16px;
+          font-weight: bold;
+          color: #ffffff;
+          text-align: left;
+          line-height: 24px;
+      }
+
+      .error-page-content {
+          text-align: center;
+          margin: auto;
+          width: 60%;
+          padding: 24px;
+      }
+
+      .text-wrapper {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .content-title {
+          font-size: 2em;
+          font-weight: 500;
+      }
+
+      .content-subtitle {
+          font-size: 15px;
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .image-container {
+          margin: 12px;
+      }
+
+      .footer {
+          font-size: 12px
+      }
+
+      .ReadMsgBody {
+          width: 100%;
+          background-color: #ffffff;
+      }
+
+      .ExternalClass {
+          width: 100%;
+          background-color: #ffffff;
+      }
+
+      body {
+          width: 100%;
+          background-color: #eff7ff;
+          margin: 0;
+          padding: 0;
+          -webkit-font-smoothing: antialiased;
+          font-family: Arial, Helvetica, "Helvetica Neue", sans-serif
+      }
+
+      table {
+          border-collapse: collapse;
+      }
+
+      @media only screen and (max-width: 640px) {
+          .deviceWidth {
+              width: 440px !important;
+              padding: 0;
+          }
+
+          .center {
+              text-align: center !important;
+          }
+      }
+
+      @media only screen and (max-width: 479px) {
+          .deviceWidth {
+              width: 280px !important;
+              padding: 0;
+          }
+
+          .center {
+              text-align: center !important;
+          }
+      }
+  </style>
+</head>
+<body>
+<div class="error-page-header">
+  <span class="error-title">IE-MDM warning page (403, Forbidden)</span>
+</div>
+<div class="error-page-content">
+  <div class="text-wrapper">
+    <div class="content-title" data-content="403">
+      HTTP code: 403 Forbidden
+    </div>
+
+    <div class="image-container">
+      <img src="/images/factory.svg" alt="factory.svg">
+    </div>
+
+    <div class="content-subtitle">
+      You are not authorized to use this function within the application
+    </div>
+
+    <div>
+      If you think this is not correct, please close your browser <br> and try again using the NXP
+      Apps-dashboard page: <a href="https://myapplications.microsoft.com/">MyApps Microsoft</a>.
+    </div>
+
+  </div>
+  <div style="height:15px;margin:0 auto;">&nbsp;</div>
+  <div class="footer">
+    For support on IE-MDM see: <a
+    href="https://confluence.sw.nxp.com/pages/viewpage.action?pageId=250763787">IE-MDM
+    First Line Support</a>
+  </div>
+</div>
+</body>
+</html>
