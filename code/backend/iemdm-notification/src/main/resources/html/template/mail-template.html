@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>IE-MDM</title>
+    <style type="text/css">
+
+        .ReadMsgBody {
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        .ExternalClass {
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        body {
+            width: 100%;
+            background-color: #F6F6F6;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            font-family: Arial, Helvetica, "Helvetica Neue", sans-serif
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        @media only screen and (max-width: 640px) {
+            .deviceWidth {
+                width: 440px !important;
+                padding: 0;
+            }
+
+            .center {
+                text-align: center !important;
+            }
+        }
+
+        @media only screen and (max-width: 479px) {
+            .deviceWidth {
+                width: 280px !important;
+                padding: 0;
+            }
+
+            .center {
+                text-align: center !important;
+            }
+        }
+
+        .preheader {
+            color: transparent;
+            display: none;
+            height: 0;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            mso-hide: all;
+            visibility: hidden;
+            width: 0;
+        }
+
+        .openhtml {
+            text-align: center !important;
+            width: auto !important;
+        }
+
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<!-- PREHEADER:  Some clients will show this text as a preview -->
+<span class="preheader">${message_title}</span>
+
+<!-- Wrapper -->
+<table width="100%" border="0" cellpadding="0" cellspacing="0" align="center">
+    <tr>
+        <td width="100%" valign="top" style="padding-top:5px">
+
+            <!-- Start Header-->
+            <table width="580" border="0" cellpadding="0" cellspacing="0" align="center" class="deviceWidth"
+                   style="margin:0 auto;">
+                <tr>
+                    <td width="100%">
+                        <table border="0" cellpadding="0" cellspacing="0" class="deviceWidth">
+                            <tr>
+                                <td>
+                                    ${message_type}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!-- End Header -->
+
+            <!-- One Column -->
+            <table width="580" class="deviceWidth" border="0" cellpadding="0" cellspacing="0" align="center"
+                   bgcolor="#ffffff" style="margin:0 auto;">
+                <tr>
+                    <td valign="top" style="padding:0" bgcolor="#ffffff">
+                        <a href="${application_link}">
+                            <img class="deviceWidth" src="${banner_file}" alt="${application_name}" border="0"
+                                 style="display: block; border-radius: 4px;"/>
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 13px; color: #000000; font-weight: normal; text-align: left; line-height: 20px; vertical-align: top; padding:10px 8px 10px 8px">
+                        <h3>To: ${user.name}</h3>
+                        ${message}
+                    </td>
+                </tr>
+                <tr bgcolor="#f6f6f6">
+                    <td style="padding-top:3px; font-size: 9px; color: #101010" align="right" valign="top">
+                        <p>${application_name} Version ${application_version}, © Copyright ${application_year} NXP
+                        </p>
+                    </td>
+                </tr>
+                <tr bgcolor="#f6f6f6">
+                    <td style="padding-top:12px; padding-left: 12px; padding-right: 12px;color: #101010; font-size: 11px; padding-bottom: 7px; line-height: 15px; text-align: left;"
+                        valign="top">
+                        <p>
+                            Please do not reply to this e-mail, this e-mail address is not monitored.
+                            If you need more information or want to be removed from the mailing list, please contact
+                            your local IE-MDM key-user or report an incident in <a
+                                href="https://nxp1.sharepoint.com/teams/eTracker/SNP/SitePages/Home.aspx">eTracker</a>.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            <!-- End One Column -->
+
+
+            <div style="height:15px;margin:0 auto;">;</div>
+            <!-- spacer -->
+
+
+        </td>
+    </tr>
+</table>
+<!-- End Wrapper -->
+<div style="display:none; white-space:nowrap; font:15px courier; color:#f6f6f6;">
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</div>
+</body>
+</html>
