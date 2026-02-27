@@ -115,6 +115,8 @@ export class TopToolbarComponent implements OnInit, OnDestroy {
     // If unchecking "No Class", automatically activate bounding box tool
     if (!checked && this.hasButton("boundingBox")) {
       this.buttonClick.emit("boundingBox");
+    } else if (!checked && this.hasButton("obbBoundingBox")) {
+      this.buttonClick.emit("obbBoundingBox");
     }
   }
 
@@ -251,6 +253,9 @@ export class TopToolbarComponent implements OnInit, OnDestroy {
     }
     if (buttonId === "boundingBox") {
       return this.activeTool === "boundingBox";
+    }
+    if (buttonId === "obbBoundingBox") {
+      return this.activeTool === "obbBoundingBox";
     }
     // Add more active states as needed
     return false;

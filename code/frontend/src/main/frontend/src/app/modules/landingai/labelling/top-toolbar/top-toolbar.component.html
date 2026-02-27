@@ -25,6 +25,18 @@
         <mat-icon>{{ getButton("boundingBox")?.icon }}</mat-icon>
       </button>
 
+      <!-- OBB Bounding Box button (Oriented Bounding Box) -->
+      <button
+        (click)="onButtonClick('obbBoundingBox')"
+        *ngIf="hasButton('obbBoundingBox')"
+        [class.active]="isButtonActive('obbBoundingBox')"
+        [disabled]="isNoClass"
+        [matTooltip]="getButton('obbBoundingBox')?.tooltip || ''"
+        mat-icon-button
+      >
+        <mat-icon>{{ getButton("obbBoundingBox")?.icon }}</mat-icon>
+      </button>
+
       <!-- Classes Dropdown (for Object Detection and Classification) -->
       <mat-form-field
         *ngIf="classes.length > 0 && !isNoClass"
@@ -67,7 +79,10 @@
       <!-- No Class Toggle -->
       <mat-slide-toggle
         (change)="onNoClassChange($event.checked)"
-        *ngIf="hasButton('boundingBox') && projectType !== 'Classification'"
+        *ngIf="
+          (hasButton('boundingBox') || hasButton('obbBoundingBox')) &&
+          projectType !== 'Classification'
+        "
         [checked]="isNoClass"
         [disabled]="!currentImage"
         class="no-class-toggle"

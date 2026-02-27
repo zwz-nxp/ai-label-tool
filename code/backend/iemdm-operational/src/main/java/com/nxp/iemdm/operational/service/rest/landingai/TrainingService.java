@@ -2128,7 +2128,11 @@ public class TrainingService {
   /**
    * Generate YOLO label content from snapshot image labels. Format for detection: class_id center_x
    * center_y width height (normalized 0-1) Format for segmentation: class_id x1 y1 x2 y2 ... xn yn
-   * (normalized polygon coordinates)
+   * (normalized polygon coordinates) Format for OBB: class_id x1 y1 x2 y2 x3 y3 x4 y4 (4 corner
+   * points, normalized 0-1) Generate YOLO label content from snapshot image labels with OBB
+   * support. Format for detection: class_id center_x center_y width height (normalized 0-1) Format
+   * for segmentation: class_id x1 y1 x2 y2 ... xn yn (normalized polygon coordinates) Format for
+   * OBB: class_id x1 y1 x2 y2 x3 y3 x4 y4 (4 corner points, normalized 0-1)
    */
   private String generateYoloLabelContentFromSnapshot(
       List<SnapshotImageLabel> labels,
@@ -2153,13 +2157,18 @@ public class TrainingService {
         // Parse position JSON
         @SuppressWarnings("unchecked")
         Map<String, Object> position = objectMapper.readValue(label.getPosition(), Map.class);
+        log.info("position is {}", position);
 
         if (isSegmentation) {
           // For segmentation, use polygon points if available
           content.append(generateSegmentationLabel(classIndex, position, imageWidth, imageHeight));
         } else {
           // For detection, use bounding box
-          content.append(generateDetectionLabel(classIndex, position, imageWidth, imageHeight));
+          if ("obb".equalsIgnoreCase((String) position.get("type"))) {
+            content.append(generateObbLabel(classIndex, position, imageWidth, imageHeight));
+          } else {
+            content.append(generateDetectionLabel(classIndex, position, imageWidth, imageHeight));
+          }
         }
       } catch (JsonProcessingException e) {
         log.warn("Failed to parse label position for snapshot label ID: {}", label.getId());
@@ -2330,10 +2339,10 @@ public class TrainingService {
     }
 
     // Convert to YOLO format (center_x, center_y, width, height) normalized to 0-1
-    double centerX = (x + width / 2.0) / imageWidth;
-    double centerY = (y + height / 2.0) / imageHeight;
-    double normWidth = width / imageWidth;
-    double normHeight = height / imageHeight;
+    double centerX = x; // (x + width / 2.0) / imageWidth;
+    double centerY = y; // (y + height / 2.0) / imageHeight;
+    double normWidth = width; // / imageWidth;
+    double normHeight = height; // / imageHeight;
 
     return String.format(
         "%d %.6f %.6f %.6f %.6f\n", classIndex, centerX, centerY, normWidth, normHeight);
@@ -2374,6 +2383,52 @@ public class TrainingService {
 
     // Fallback to bounding box if no polygon points
     return generateDetectionLabel(classIndex, position, imageWidth, imageHeight);
+  }
+
+  /**
+   * Generate OBB (Oriented Bounding Box) label line in YOLO OBB format. Format: class_id x1 y1 x2
+   * y2 x3 y3 x4 y4 (4 corner points, normalized 0-1)
+   *
+   * <p>Supports two position formats: 1. Rotated rectangle: {"x", "y", "width", "height",
+   * "rotation"} where (x,y) is the top-left corner and rotation is in degrees. 2. Four corner
+   * points: {"points": [{"x":x1,"y":y1}, {"x":x2,"y":y2}, {"x":x3,"y":y3}, {"x":x4,"y":y4}]}
+   */
+  @SuppressWarnings("unchecked")
+  private String generateObbLabel(
+      Integer classIndex, Map<String, Object> position, Integer imageWidth, Integer imageHeight) {
+
+    // Try to read x1,y1,x2,y2,x3,y3,x4,y4 directly from position
+    // Position structure: {type=obb, x1=..., y1=..., x2=..., y2=..., x3=..., y3=..., x4=...,
+    // y4=...}
+    // Values are already normalized (0-1 range)
+    Double x1 = getDoubleValue(position, "x1");
+    Double y1 = getDoubleValue(position, "y1");
+    Double x2 = getDoubleValue(position, "x2");
+    Double y2 = getDoubleValue(position, "y2");
+    Double x3 = getDoubleValue(position, "x3");
+    Double y3 = getDoubleValue(position, "y3");
+    Double x4 = getDoubleValue(position, "x4");
+    Double y4 = getDoubleValue(position, "y4");
+
+    StringBuilder strBuilder = new StringBuilder();
+
+    if (x1 != null
+        && y1 != null
+        && x2 != null
+        && y2 != null
+        && x3 != null
+        && y3 != null
+        && x4 != null
+        && y4 != null) {
+      strBuilder.append(classIndex);
+      strBuilder.append(String.format(" %.6f %.6f", x1, y1));
+      strBuilder.append(String.format(" %.6f %.6f", x2, y2));
+      strBuilder.append(String.format(" %.6f %.6f", x3, y3));
+      strBuilder.append(String.format(" %.6f %.6f", x4, y4));
+    }
+
+    strBuilder.append("\n");
+    return strBuilder.toString();
   }
 
   /** Process images for classification format (organized by class folders). */

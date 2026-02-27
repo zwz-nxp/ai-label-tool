@@ -3,12 +3,13 @@ import Konva from "konva";
 import {
   Annotation,
   AnnotationType,
+  OBBPoints,
 } from "app/models/landingai/annotation.model";
 import { BaseAnnotationCanvasComponent } from "../base-annotation-canvas";
 
 /**
  * Canvas component for Object Detection projects
- * Supports bounding box annotations
+ * Supports bounding box and OBB (Oriented Bounding Box) annotations
  */
 @Component({
   selector: "app-object-detection-canvas",
@@ -22,6 +23,13 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
 
   private isDrawing = false;
   private currentShape: Konva.Rect | null = null;
+
+  // OBB drawing state
+  private obbPhase: "idle" | "edge" | "width" = "idle";
+  private obbEdgeStart: { x: number; y: number } | null = null;
+  private obbEdgeEnd: { x: number; y: number } | null = null;
+  private obbTempLine: Konva.Line | null = null;
+  private obbTempPolygon: Konva.Line | null = null;
 
   protected override setupEventHandlers(): void {
     super.setupEventHandlers();
@@ -42,6 +50,10 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
   }
 
   protected handleMouseDown(e: Konva.KonvaEventObject<MouseEvent>): void {
+    if (this.activeTool === "obbBoundingBox") {
+      this.handleObbMouseDown(e);
+      return;
+    }
     if (this.activeTool !== "boundingBox" || !this.selectedClass) return;
 
     const pos = this.getRelativePointerPosition();
@@ -65,6 +77,10 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
   }
 
   protected handleMouseMove(e: Konva.KonvaEventObject<MouseEvent>): void {
+    if (this.activeTool === "obbBoundingBox") {
+      this.handleObbMouseMove(e);
+      return;
+    }
     if (!this.isDrawing || !this.currentShape) return;
 
     const pos = this.getRelativePointerPosition();
@@ -80,6 +96,10 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
   }
 
   protected handleMouseUp(e: Konva.KonvaEventObject<MouseEvent>): void {
+    if (this.activeTool === "obbBoundingBox") {
+      this.handleObbMouseUp(e);
+      return;
+    }
     if (!this.isDrawing || !this.currentShape || !this.selectedClass) {
       this.isDrawing = false;
       return;
@@ -145,6 +165,8 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
     this.getFilteredAnnotations().forEach((annotation) => {
       if (annotation.type === AnnotationType.Rectangle) {
         this.renderRectangle(annotation);
+      } else if (annotation.type === AnnotationType.OBB) {
+        this.renderObb(annotation);
       }
     });
 
@@ -157,21 +179,21 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
     const stageScale = this.stage.scaleX();
     const baseAnchorSize = 10;
     const baseStrokeWidth = 1;
-    // Inversely scale to keep consistent screen-pixel size
     const anchorSize = baseAnchorSize / stageScale;
 
     this.annotationLayer.children.forEach((child) => {
       if (child instanceof Konva.Group) {
         const transformer = child.findOne("Transformer") as Konva.Transformer;
         const rect = child.findOne("Rect") as Konva.Rect;
+        const line = child.findOne("Line") as Konva.Line;
         const annotation = child.getAttr("annotation") as Annotation;
         if (annotation) {
           const isSelected = this.selectedAnnotation?.id === annotation.id;
           const isPrediction = annotation.annotationType === "Prediction";
-          // Only show transformer for Ground Truth annotations
+
+          // Handle Rectangle annotations
           if (transformer && !isPrediction) {
             transformer.visible(isSelected);
-            // Update transformer sizes for current zoom level
             if (isSelected) {
               transformer.anchorSize(anchorSize);
               transformer.anchorStrokeWidth(0);
@@ -192,6 +214,11 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
           if (rect) {
             const rectBaseStroke = isSelected ? 3 : 2;
             rect.strokeWidth(rectBaseStroke / stageScale);
+          }
+          // Apply highlight for OBB (Line-based) annotations
+          if (line && annotation.type === AnnotationType.OBB) {
+            const lineBaseStroke = isSelected ? 3 : 2;
+            line.strokeWidth(lineBaseStroke / stageScale);
           }
           // Show label when selected, even if showLabelDetails is off
           const labelBg = child.findOne(".labelBg");
@@ -219,6 +246,7 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
       if (child instanceof Konva.Group) {
         const transformer = child.findOne("Transformer") as Konva.Transformer;
         const rect = child.findOne("Rect") as Konva.Rect;
+        const line = child.findOne("Line") as Konva.Line;
         const annotation = child.getAttr("annotation") as Annotation;
         if (annotation) {
           const isSelected = selectedIds.includes(annotation.id);
@@ -259,6 +287,23 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
               rect.shadowColor("#ffffff");
               rect.shadowBlur(10 / stageScale);
               rect.shadowOpacity(0.8);
+            }
+          }
+          // Apply highlight for OBB (Line-based) annotations
+          if (line && annotation.type === AnnotationType.OBB) {
+            const lineBaseStroke = isSelected ? 3 : 2;
+            line.strokeWidth(lineBaseStroke / stageScale);
+            if (!isPrediction) {
+              const dashSize = 8 / stageScale;
+              const dashGap = 4 / stageScale;
+              line.dash(isSelected ? [dashSize, dashGap] : []);
+              line.dashEnabled(isSelected);
+            }
+            line.shadowEnabled(isSelected);
+            if (isSelected) {
+              line.shadowColor("#ffffff");
+              line.shadowBlur(10 / stageScale);
+              line.shadowOpacity(0.8);
             }
           }
           // Show label when selected, even if showLabelDetails is off
@@ -604,6 +649,470 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
 
     group.setAttr("annotation", annotation);
 
+    this.annotationLayer.add(group);
+  }
+
+  /**
+   * Handle OBB mouse down - Phase 1: start edge, Phase 2: confirm width
+   */
+  private handleObbMouseDown(e: Konva.KonvaEventObject<MouseEvent>): void {
+    if (!this.selectedClass) return;
+    const pos = this.getRelativePointerPosition();
+    if (!pos || !this.annotationLayer) return;
+
+    // If the user clicked on an existing annotation, let the drag handle it instead of starting a new OBB draw
+    const target = e.target;
+    if (target && target !== this.stage) {
+      const parent = target.getParent();
+      if (parent && parent.getAttr("annotation")) {
+        return;
+      }
+    }
+
+    if (this.obbPhase === "idle") {
+      // Phase 1: Start defining the first edge
+      const clampedPos = this.clampToImageBounds(pos);
+      this.obbPhase = "edge";
+      this.obbEdgeStart = { x: clampedPos.x, y: clampedPos.y };
+      this.obbEdgeEnd = null;
+
+      const stageScale = this.stage?.scaleX() || 1;
+      this.obbTempLine = new Konva.Line({
+        points: [clampedPos.x, clampedPos.y, clampedPos.x, clampedPos.y],
+        stroke: this.selectedClass.colorCode,
+        strokeWidth: 2 / stageScale,
+        dash: [6 / stageScale, 3 / stageScale],
+      });
+      this.annotationLayer.add(this.obbTempLine);
+      this.annotationLayer.batchDraw();
+    } else if (this.obbPhase === "width") {
+      // Phase 2: Confirm the width - create the OBB annotation
+      this.completeObb(this.clampToImageBounds(pos));
+    }
+  }
+
+  /**
+   * Handle OBB mouse move - update preview
+   */
+  private handleObbMouseMove(e: Konva.KonvaEventObject<MouseEvent>): void {
+    const rawPos = this.getRelativePointerPosition();
+    if (!rawPos || !this.annotationLayer || !this.selectedClass) return;
+    const pos = this.clampToImageBounds(rawPos);
+
+    if (this.obbPhase === "edge" && this.obbEdgeStart && this.obbTempLine) {
+      // Update edge line preview
+      this.obbTempLine.points([
+        this.obbEdgeStart.x,
+        this.obbEdgeStart.y,
+        pos.x,
+        pos.y,
+      ]);
+      this.annotationLayer.batchDraw();
+    } else if (
+      this.obbPhase === "width" &&
+      this.obbEdgeStart &&
+      this.obbEdgeEnd
+    ) {
+      // Calculate perpendicular offset for width preview
+      const corners = this.calculateObbCorners(
+        this.obbEdgeStart,
+        this.obbEdgeEnd,
+        pos
+      );
+
+      // Clamp preview corners to image bounds
+      const imageBounds = this.getImageBoundsInCanvas();
+      const imgRight = imageBounds.x + imageBounds.width;
+      const imgBottom = imageBounds.y + imageBounds.height;
+      const clamp = (val: number, min: number, max: number) =>
+        Math.max(min, Math.min(max, val));
+      corners.x1 = clamp(corners.x1, imageBounds.x, imgRight);
+      corners.y1 = clamp(corners.y1, imageBounds.y, imgBottom);
+      corners.x2 = clamp(corners.x2, imageBounds.x, imgRight);
+      corners.y2 = clamp(corners.y2, imageBounds.y, imgBottom);
+      corners.x3 = clamp(corners.x3, imageBounds.x, imgRight);
+      corners.y3 = clamp(corners.y3, imageBounds.y, imgBottom);
+      corners.x4 = clamp(corners.x4, imageBounds.x, imgRight);
+      corners.y4 = clamp(corners.y4, imageBounds.y, imgBottom);
+
+      if (this.obbTempPolygon) {
+        this.obbTempPolygon.points([
+          corners.x1,
+          corners.y1,
+          corners.x2,
+          corners.y2,
+          corners.x3,
+          corners.y3,
+          corners.x4,
+          corners.y4,
+        ]);
+      } else {
+        const stageScale = this.stage?.scaleX() || 1;
+        this.obbTempPolygon = new Konva.Line({
+          points: [
+            corners.x1,
+            corners.y1,
+            corners.x2,
+            corners.y2,
+            corners.x3,
+            corners.y3,
+            corners.x4,
+            corners.y4,
+          ],
+          stroke: this.selectedClass.colorCode,
+          strokeWidth: 2 / stageScale,
+          fill: this.selectedClass.colorCode + "20",
+          closed: true,
+        });
+        this.annotationLayer.add(this.obbTempPolygon);
+      }
+      this.annotationLayer.batchDraw();
+    }
+  }
+
+  /**
+   * Handle OBB mouse up - end edge definition phase
+   */
+  private handleObbMouseUp(e: Konva.KonvaEventObject<MouseEvent>): void {
+    if (this.obbPhase !== "edge" || !this.obbEdgeStart) return;
+
+    const rawPos = this.getRelativePointerPosition();
+    if (!rawPos) return;
+    const pos = this.clampToImageBounds(rawPos);
+
+    const dx = pos.x - this.obbEdgeStart.x;
+    const dy = pos.y - this.obbEdgeStart.y;
+    const edgeLen = Math.sqrt(dx * dx + dy * dy);
+
+    // Ignore very short edges
+    if (edgeLen < 10) {
+      this.resetObbState();
+      return;
+    }
+
+    this.obbEdgeEnd = { x: pos.x, y: pos.y };
+    this.obbPhase = "width";
+
+    // Remove the temp line, polygon preview will take over
+    if (this.obbTempLine) {
+      this.obbTempLine.destroy();
+      this.obbTempLine = null;
+    }
+    this.annotationLayer?.batchDraw();
+  }
+
+  /**
+   * Calculate OBB 4 corners from edge + mouse position (perpendicular width)
+   */
+  private calculateObbCorners(
+    edgeStart: { x: number; y: number },
+    edgeEnd: { x: number; y: number },
+    mousePos: { x: number; y: number }
+  ): OBBPoints {
+    // Edge vector
+    const ex = edgeEnd.x - edgeStart.x;
+    const ey = edgeEnd.y - edgeStart.y;
+    const edgeLen = Math.sqrt(ex * ex + ey * ey);
+
+    // Unit perpendicular vector (rotated 90 degrees)
+    const px = -ey / edgeLen;
+    const py = ex / edgeLen;
+
+    // Project mouse position onto perpendicular direction to get signed width
+    const mx = mousePos.x - edgeStart.x;
+    const my = mousePos.y - edgeStart.y;
+    const widthDist = mx * px + my * py;
+
+    // Four corners: edge defines one side, offset by width on perpendicular
+    return {
+      x1: edgeStart.x,
+      y1: edgeStart.y,
+      x2: edgeEnd.x,
+      y2: edgeEnd.y,
+      x3: edgeEnd.x + px * widthDist,
+      y3: edgeEnd.y + py * widthDist,
+      x4: edgeStart.x + px * widthDist,
+      y4: edgeStart.y + py * widthDist,
+    };
+  }
+
+  /**
+   * Complete OBB creation and emit annotation
+   */
+  private completeObb(mousePos: { x: number; y: number }): void {
+    if (!this.obbEdgeStart || !this.obbEdgeEnd || !this.selectedClass) {
+      this.resetObbState();
+      return;
+    }
+
+    const corners = this.calculateObbCorners(
+      this.obbEdgeStart,
+      this.obbEdgeEnd,
+      mousePos
+    );
+
+    // Clamp all corners to image bounds in canvas coordinates
+    const imageBounds = this.getImageBoundsInCanvas();
+    const imgRight = imageBounds.x + imageBounds.width;
+    const imgBottom = imageBounds.y + imageBounds.height;
+    const clamp = (val: number, min: number, max: number) =>
+      Math.max(min, Math.min(max, val));
+
+    corners.x1 = clamp(corners.x1, imageBounds.x, imgRight);
+    corners.y1 = clamp(corners.y1, imageBounds.y, imgBottom);
+    corners.x2 = clamp(corners.x2, imageBounds.x, imgRight);
+    corners.y2 = clamp(corners.y2, imageBounds.y, imgBottom);
+    corners.x3 = clamp(corners.x3, imageBounds.x, imgRight);
+    corners.y3 = clamp(corners.y3, imageBounds.y, imgBottom);
+    corners.x4 = clamp(corners.x4, imageBounds.x, imgRight);
+    corners.y4 = clamp(corners.y4, imageBounds.y, imgBottom);
+
+    // Convert canvas coordinates to image coordinates
+    const p1 = this.canvasToImageCoords(corners.x1, corners.y1);
+    const p2 = this.canvasToImageCoords(corners.x2, corners.y2);
+    const p3 = this.canvasToImageCoords(corners.x3, corners.y3);
+    const p4 = this.canvasToImageCoords(corners.x4, corners.y4);
+
+    const obbPoints: OBBPoints = {
+      x1: p1.x,
+      y1: p1.y,
+      x2: p2.x,
+      y2: p2.y,
+      x3: p3.x,
+      y3: p3.y,
+      x4: p4.x,
+      y4: p4.y,
+    };
+
+    const annotation: Annotation = {
+      id: 0,
+      label: this.selectedClass.className,
+      type: AnnotationType.OBB,
+      color: this.selectedClass.colorCode,
+      x: Math.min(p1.x, p2.x, p3.x, p4.x),
+      y: Math.min(p1.y, p2.y, p3.y, p4.y),
+      width: 0,
+      height: 0,
+      points: [],
+      classId: this.selectedClass.id,
+      className: this.selectedClass.className,
+      annotationType: "Ground truth",
+      obbPoints: obbPoints,
+    };
+
+    this.annotationCreated.emit(annotation);
+    this.resetObbState();
+  }
+
+  /**
+   * Reset OBB drawing state
+   */
+  private resetObbState(): void {
+    this.obbPhase = "idle";
+    this.obbEdgeStart = null;
+    this.obbEdgeEnd = null;
+    if (this.obbTempLine) {
+      this.obbTempLine.destroy();
+      this.obbTempLine = null;
+    }
+    if (this.obbTempPolygon) {
+      this.obbTempPolygon.destroy();
+      this.obbTempPolygon = null;
+    }
+    this.annotationLayer?.batchDraw();
+  }
+
+  /**
+   * Clamp a canvas position to stay within image bounds
+   */
+  private clampToImageBounds(pos: { x: number; y: number }): {
+    x: number;
+    y: number;
+  } {
+    const bounds = this.getImageBoundsInCanvas();
+    return {
+      x: Math.max(bounds.x, Math.min(bounds.x + bounds.width, pos.x)),
+      y: Math.max(bounds.y, Math.min(bounds.y + bounds.height, pos.y)),
+    };
+  }
+
+  /**
+   * Render an OBB annotation as a rotated quadrilateral
+   */
+  private renderObb(annotation: Annotation): void {
+    if (!this.annotationLayer || !annotation.obbPoints) return;
+
+    const obb = annotation.obbPoints;
+    const isPrediction = annotation.annotationType === "Prediction";
+
+    // Convert image coordinates to canvas coordinates
+    const c1 = this.imageToCanvasCoords(obb.x1, obb.y1);
+    const c2 = this.imageToCanvasCoords(obb.x2, obb.y2);
+    const c3 = this.imageToCanvasCoords(obb.x3, obb.y3);
+    const c4 = this.imageToCanvasCoords(obb.x4, obb.y4);
+
+    const stageScale = this.stage?.scaleX() || 1;
+    const strokeWidth = 2 / stageScale;
+    const dashSize = 8 / stageScale;
+    const dashGap = 4 / stageScale;
+
+    const polygon = new Konva.Line({
+      points: [c1.x, c1.y, c2.x, c2.y, c3.x, c3.y, c4.x, c4.y],
+      stroke: annotation.color,
+      strokeWidth: strokeWidth,
+      fill: annotation.color + "20",
+      closed: true,
+      dash: isPrediction ? [dashSize, dashGap] : [],
+      dashEnabled: isPrediction,
+    });
+
+    const group = new Konva.Group({
+      draggable: !isPrediction,
+      dragBoundFunc: !isPrediction
+        ? (pos) => {
+            const imageBounds = this.getImageBoundsInCanvas();
+            const curStageScale = this.stage?.scaleX() || 1;
+            const stagePos = this.stage?.position() || { x: 0, y: 0 };
+
+            // Current polygon points (relative to group at position 0,0)
+            const pts = polygon.points();
+            const xs = [pts[0], pts[2], pts[4], pts[6]];
+            const ys = [pts[1], pts[3], pts[5], pts[7]];
+            const polyMinX = Math.min(...xs);
+            const polyMaxX = Math.max(...xs);
+            const polyMinY = Math.min(...ys);
+            const polyMaxY = Math.max(...ys);
+
+            // Convert pos (screen coords) to canvas coords
+            const canvasPosX = (pos.x - stagePos.x) / curStageScale;
+            const canvasPosY = (pos.y - stagePos.y) / curStageScale;
+
+            // Clamp so the OBB stays within image bounds
+            const minX = imageBounds.x - polyMinX;
+            const maxX = imageBounds.x + imageBounds.width - polyMaxX;
+            const minY = imageBounds.y - polyMinY;
+            const maxY = imageBounds.y + imageBounds.height - polyMaxY;
+
+            const clampedX = Math.max(minX, Math.min(maxX, canvasPosX));
+            const clampedY = Math.max(minY, Math.min(maxY, canvasPosY));
+
+            return {
+              x: clampedX * curStageScale + stagePos.x,
+              y: clampedY * curStageScale + stagePos.y,
+            };
+          }
+        : undefined,
+    });
+
+    // Label
+    let labelContent = annotation.label || annotation.className || "Unlabeled";
+    if (isPrediction && annotation.confidenceRate !== undefined) {
+      labelContent += ` (${annotation.confidenceRate})`;
+    }
+
+    const labelText = new Konva.Text({
+      text: labelContent,
+      fontSize: 14,
+      fontFamily: "Arial",
+      fill: "#ffffff",
+      padding: 4,
+    });
+
+    // Position label at top-left corner of OBB
+    const minX = Math.min(c1.x, c2.x, c3.x, c4.x);
+    const minY = Math.min(c1.y, c2.y, c3.y, c4.y);
+    const labelX = minX;
+    const labelY = minY - labelText.height() - 2;
+
+    labelText.x(labelX);
+    labelText.y(labelY);
+
+    const labelBg = new Konva.Rect({
+      x: labelX,
+      y: labelY,
+      width: labelText.width(),
+      height: labelText.height(),
+      fill: annotation.color,
+      opacity: 0.9,
+      cornerRadius: 3,
+    });
+
+    group.add(polygon);
+
+    const isSelected =
+      this.selectedAnnotation?.id === annotation.id ||
+      this.selectedAnnotations.some((a) => a.id === annotation.id);
+
+    labelBg.name("labelBg");
+    labelText.name("labelText");
+    labelBg.visible(this.showLabelDetails || isSelected);
+    labelText.visible(this.showLabelDetails || isSelected);
+    group.add(labelBg);
+    group.add(labelText);
+
+    if (!isPrediction) {
+      group.on("click", () => {
+        this.annotationSelected.emit(annotation);
+      });
+
+      group.on("dragend", () => {
+        const dx = group.x();
+        const dy = group.y();
+
+        if (annotation.obbPoints) {
+          // Update all corner points by the drag offset (convert canvas delta to image delta)
+          const imgDx = this.scaleToImage(dx);
+          const imgDy = this.scaleToImage(dy);
+          annotation.obbPoints.x1 += imgDx;
+          annotation.obbPoints.y1 += imgDy;
+          annotation.obbPoints.x2 += imgDx;
+          annotation.obbPoints.y2 += imgDy;
+          annotation.obbPoints.x3 += imgDx;
+          annotation.obbPoints.y3 += imgDy;
+          annotation.obbPoints.x4 += imgDx;
+          annotation.obbPoints.y4 += imgDy;
+          annotation.x = Math.min(
+            annotation.obbPoints.x1,
+            annotation.obbPoints.x2,
+            annotation.obbPoints.x3,
+            annotation.obbPoints.x4
+          );
+          annotation.y = Math.min(
+            annotation.obbPoints.y1,
+            annotation.obbPoints.y2,
+            annotation.obbPoints.y3,
+            annotation.obbPoints.y4
+          );
+
+          // Update polygon points to new canvas coordinates
+          const nc1 = this.imageToCanvasCoords(annotation.obbPoints.x1, annotation.obbPoints.y1);
+          const nc2 = this.imageToCanvasCoords(annotation.obbPoints.x2, annotation.obbPoints.y2);
+          const nc3 = this.imageToCanvasCoords(annotation.obbPoints.x3, annotation.obbPoints.y3);
+          const nc4 = this.imageToCanvasCoords(annotation.obbPoints.x4, annotation.obbPoints.y4);
+          polygon.points([nc1.x, nc1.y, nc2.x, nc2.y, nc3.x, nc3.y, nc4.x, nc4.y]);
+
+          // Update label position to follow the dragged OBB
+          const newMinX = Math.min(nc1.x, nc2.x, nc3.x, nc4.x);
+          const newMinY = Math.min(nc1.y, nc2.y, nc3.y, nc4.y);
+          const newLabelX = newMinX;
+          const newLabelY = newMinY - labelText.height() - 2;
+          labelText.x(newLabelX);
+          labelText.y(newLabelY);
+          labelBg.x(newLabelX);
+          labelBg.y(newLabelY);
+        }
+
+        group.position({ x: 0, y: 0 });
+        this.annotationLayer?.batchDraw();
+        this.annotationUpdated.emit(annotation);
+      });
+    } else {
+      group.on("click", () => {
+        this.annotationSelected.emit(annotation);
+      });
+    }
+
+    group.setAttr("annotation", annotation);
     this.annotationLayer.add(group);
   }
 

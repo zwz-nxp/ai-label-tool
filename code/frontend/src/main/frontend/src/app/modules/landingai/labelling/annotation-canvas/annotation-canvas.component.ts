@@ -27,6 +27,7 @@ import { EnhanceSettings } from "app/models/landingai/enhance-settings.model";
 export type AnnotationTool =
   | "pan"
   | "boundingBox"
+  | "obbBoundingBox"
   | "polygon"
   | "brush"
   | "polyline"

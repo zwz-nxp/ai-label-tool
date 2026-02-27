@@ -23,7 +23,6 @@ import { ModelService } from "app/services/landingai/model.service";
 import { AuthorizationService } from "app/utils/services/authorization.service";
 import * as CurrentUserSelectors from "app/state/current-user/current-user.selectors";
 import { ClassCreationDialogComponent } from "../class-creation-dialog/class-creation-dialog.component";
-import { DEFAULT_PROJECT_CLASSES } from "../default-project-config";
 
 /**
  * Toolbar button configuration
@@ -127,6 +126,7 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
   activeTool:
     | "pan"
     | "boundingBox"
+    | "obbBoundingBox"
     | "polygon"
     | "brush"
     | "polyline"
@@ -302,6 +302,12 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
             label: "Bounding Box",
             icon: "crop_square",
             tooltip: "Draw bounding box",
+          },
+          {
+            id: "obbBoundingBox",
+            label: "OBB",
+            icon: "crop_rotate",
+            tooltip: "Draw YOLO OBB (Oriented Bounding Box)",
           },
           {
             id: "undo",
@@ -581,7 +587,19 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
                             width: ann!.width,
                             height: ann!.height,
                           }
-                        : { points: ann!.points },
+                        : ann!.type === "OBB" && ann!.obbPoints
+                          ? {
+                              type: "obb",
+                              x1: ann!.obbPoints.x1,
+                              y1: ann!.obbPoints.y1,
+                              x2: ann!.obbPoints.x2,
+                              y2: ann!.obbPoints.y2,
+                              x3: ann!.obbPoints.x3,
+                              y3: ann!.obbPoints.y3,
+                              x4: ann!.obbPoints.x4,
+                              y4: ann!.obbPoints.y4,
+                            }
+                          : { points: ann!.points },
                   })),
                 };
 
@@ -730,6 +748,9 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
         break;
       case "boundingBox":
         this.activateBoundingBoxTool();
+        break;
+      case "obbBoundingBox":
+        this.activateObbBoundingBoxTool();
         break;
       case "smartLabeling":
         this.activateSmartLabelingTool();
@@ -1437,6 +1458,21 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Activate OBB (Oriented Bounding Box) tool
+   */
+  private activateObbBoundingBoxTool(): void {
+    if (this.activeTool === "obbBoundingBox") {
+      this.activeTool = "none";
+      return;
+    }
+    this.isPanMode = false;
+    this.activeTool = "obbBoundingBox";
+    if (!this.state.selectedClass) {
+      alert("Please select a class before drawing annotations.");
+    }
+  }
+
+  /**
    * Activate smart labeling tool
    */
   private activateSmartLabelingTool(): void {
@@ -1478,6 +1514,7 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
       this.state.annotations = [
         ...this.state.annotationHistory[this.state.historyIndex],
       ];
+      this.saveAllAnnotationsToDatabase();
     }
   }
 
@@ -1490,7 +1527,69 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
       this.state.annotations = [
         ...this.state.annotationHistory[this.state.historyIndex],
       ];
+      this.saveAllAnnotationsToDatabase();
     }
+  }
+
+  /**
+   * Save all current annotations to database (used after undo/redo)
+   * Deletes all existing labels for the image, then batch-saves current annotations
+   */
+  private saveAllAnnotationsToDatabase(): void {
+    if (!this.currentImage) {
+      return;
+    }
+
+    const imageId = this.currentImage.id;
+    // Filter out prediction annotations - only save ground truth
+    const groundTruthAnnotations = this.state.annotations.filter(
+      (a) => !a.isPrediction
+    );
+
+    this.updateSaveStatus("saving", "Saving...");
+
+    // Delete all existing labels first, then batch-save current annotations
+    this.labelService
+      .deleteLabelsByImageId(imageId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          if (groundTruthAnnotations.length === 0) {
+            this.updateSaveStatus("saved", "Saved");
+            return;
+          }
+
+          const imageLabels = groundTruthAnnotations.map((a) =>
+            this.annotationToImageLabel(a)
+          );
+
+          this.labelService
+            .saveBatch(imageLabels)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (createdLabels) => {
+                // Update annotation IDs with database IDs
+                createdLabels.forEach((label, index) => {
+                  if (label.id && index < groundTruthAnnotations.length) {
+                    groundTruthAnnotations[index].id = label.id;
+                  }
+                });
+                this.updateSaveStatus("saved", "Saved");
+              },
+              error: (error) => {
+                console.error("Error batch saving annotations:", error);
+                this.updateSaveStatus(
+                  "error",
+                  "Save failed: " + error.message
+                );
+              },
+            });
+        },
+        error: (error) => {
+          console.error("Error deleting annotations before save:", error);
+          this.updateSaveStatus("error", "Save failed: " + error.message);
+        },
+      });
   }
 
   /**
@@ -1891,6 +1990,24 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
         width: widthPercent,
         height: heightPercent,
       });
+    } else if (annotation.type === "OBB" && annotation.obbPoints) {
+      // OBB Point-based format: <class_index> x1 y1 x2 y2 x3 y3 x4 y4
+      // All coordinates normalized to 0-1 range
+      const imgWidth = this.currentImage?.width || 1;
+      const imgHeight = this.currentImage?.height || 1;
+      const obb = annotation.obbPoints;
+
+      position = JSON.stringify({
+        type: "obb",
+        x1: obb.x1 / imgWidth,
+        y1: obb.y1 / imgHeight,
+        x2: obb.x2 / imgWidth,
+        y2: obb.y2 / imgHeight,
+        x3: obb.x3 / imgWidth,
+        y3: obb.y3 / imgHeight,
+        x4: obb.x4 / imgWidth,
+        y4: obb.y4 / imgHeight,
+      });
     } else if (
       annotation.type === "POLYGON" ||
       annotation.type === "BRUSH" ||
@@ -2155,6 +2272,16 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
             height = heightPercent * imgHeight;
             x = xCenter * imgWidth - width / 2;
             y = yCenter * imgHeight - height / 2;
+          } else if (position.type === "obb") {
+            annotationTypeFromPosition = AnnotationType.OBB;
+            // Convert normalized OBB coordinates back to pixel coordinates
+            const imgWidth = this.currentImage?.width || 1;
+            const imgHeight = this.currentImage?.height || 1;
+            // obbPoints will be set on the annotation after creation
+            x = (position.x1 || 0) * imgWidth;
+            y = (position.y1 || 0) * imgHeight;
+            // Store raw pixel obbPoints for later use
+            points = []; // not used for OBB
           } else if (position.type === "polygon") {
             annotationTypeFromPosition = AnnotationType.Polygon;
             points = position.points || [];
@@ -2196,6 +2323,27 @@ export class ImageLabellingComponent implements OnInit, OnDestroy {
         confidenceRate: label.confidenceRate,
         isPrediction: label.annotationType === "Prediction", // Helper flag for UI
       };
+
+      // Restore OBB corner points from position data
+      if (annotationTypeFromPosition === AnnotationType.OBB && label.position) {
+        try {
+          const position = JSON.parse(label.position);
+          const imgWidth = this.currentImage?.width || 1;
+          const imgHeight = this.currentImage?.height || 1;
+          annotation.obbPoints = {
+            x1: (position.x1 || 0) * imgWidth,
+            y1: (position.y1 || 0) * imgHeight,
+            x2: (position.x2 || 0) * imgWidth,
+            y2: (position.y2 || 0) * imgHeight,
+            x3: (position.x3 || 0) * imgWidth,
+            y3: (position.y3 || 0) * imgHeight,
+            x4: (position.x4 || 0) * imgWidth,
+            y4: (position.y4 || 0) * imgHeight,
+          };
+        } catch {
+          /* already handled above */
+        }
+      }
 
       return annotation;
     } catch (error) {

@@ -131,6 +131,13 @@ export class LabelsBlockComponent implements OnChanges {
       case "RECTANGLE":
         return `x: ${Math.round(annotation.x)}, y: ${Math.round(annotation.y)}, w: ${Math.round(annotation.width)}, h: ${Math.round(annotation.height)}`;
 
+      case "OBB":
+        if (annotation.obbPoints) {
+          const o = annotation.obbPoints;
+          return `OBB (${Math.round(o.x1)},${Math.round(o.y1)}) (${Math.round(o.x2)},${Math.round(o.y2)}) (${Math.round(o.x3)},${Math.round(o.y3)}) (${Math.round(o.x4)},${Math.round(o.y4)})`;
+        }
+        return "OBB";
+
       case "POLYGON":
       case "POLYLINE":
         if (annotation.points && annotation.points.length > 0) {
