@@ -681,7 +681,6 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
         points: [clampedPos.x, clampedPos.y, clampedPos.x, clampedPos.y],
         stroke: this.selectedClass.colorCode,
         strokeWidth: 2 / stageScale,
-        dash: [6 / stageScale, 3 / stageScale],
       });
       this.annotationLayer.add(this.obbTempLine);
       this.annotationLayer.batchDraw();
@@ -1018,11 +1017,26 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
       padding: 4,
     });
 
-    // Position label at top-left corner of OBB
+    // Position label based on annotation type:
+    // - Ground Truth: top-left corner (above the OBB)
+    // - Prediction: bottom-right corner (below the OBB)
     const minX = Math.min(c1.x, c2.x, c3.x, c4.x);
     const minY = Math.min(c1.y, c2.y, c3.y, c4.y);
-    const labelX = minX;
-    const labelY = minY - labelText.height() - 2;
+    const maxX = Math.max(c1.x, c2.x, c3.x, c4.x);
+    const maxY = Math.max(c1.y, c2.y, c3.y, c4.y);
+
+    let labelX: number;
+    let labelY: number;
+
+    if (isPrediction) {
+      // Bottom-right corner for Prediction
+      labelX = maxX - labelText.width();
+      labelY = maxY + 2;
+    } else {
+      // Top-left corner for Ground Truth
+      labelX = minX;
+      labelY = minY - labelText.height() - 2;
+    }
 
     labelText.x(labelX);
     labelText.y(labelY);
@@ -1085,11 +1099,32 @@ export class ObjectDetectionCanvasComponent extends BaseAnnotationCanvasComponen
           );
 
           // Update polygon points to new canvas coordinates
-          const nc1 = this.imageToCanvasCoords(annotation.obbPoints.x1, annotation.obbPoints.y1);
-          const nc2 = this.imageToCanvasCoords(annotation.obbPoints.x2, annotation.obbPoints.y2);
-          const nc3 = this.imageToCanvasCoords(annotation.obbPoints.x3, annotation.obbPoints.y3);
-          const nc4 = this.imageToCanvasCoords(annotation.obbPoints.x4, annotation.obbPoints.y4);
-          polygon.points([nc1.x, nc1.y, nc2.x, nc2.y, nc3.x, nc3.y, nc4.x, nc4.y]);
+          const nc1 = this.imageToCanvasCoords(
+            annotation.obbPoints.x1,
+            annotation.obbPoints.y1
+          );
+          const nc2 = this.imageToCanvasCoords(
+            annotation.obbPoints.x2,
+            annotation.obbPoints.y2
+          );
+          const nc3 = this.imageToCanvasCoords(
+            annotation.obbPoints.x3,
+            annotation.obbPoints.y3
+          );
+          const nc4 = this.imageToCanvasCoords(
+            annotation.obbPoints.x4,
+            annotation.obbPoints.y4
+          );
+          polygon.points([
+            nc1.x,
+            nc1.y,
+            nc2.x,
+            nc2.y,
+            nc3.x,
+            nc3.y,
+            nc4.x,
+            nc4.y,
+          ]);
 
           // Update label position to follow the dragged OBB
           const newMinX = Math.min(nc1.x, nc2.x, nc3.x, nc4.x);
